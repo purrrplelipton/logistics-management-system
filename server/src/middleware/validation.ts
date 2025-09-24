@@ -129,7 +129,7 @@ export const validateUserUpdate = [
 ];
 
 // Status update validation
-export const validateStatusUpdate = [
+export const validateDeliveryStatus = [
   body('status')
     .isIn(['Pending', 'InTransit', 'Delivered'])
     .withMessage('Status must be Pending, InTransit, or Delivered'),
@@ -138,4 +138,13 @@ export const validateStatusUpdate = [
     .optional()
     .isLength({ max: 1000 })
     .withMessage('Delivery notes must not exceed 1000 characters')
+];
+
+// Driver assignment validation
+export const validateDriverAssignment = [
+  body('driverId')
+    .notEmpty()
+    .withMessage('Driver ID is required')
+    .isMongoId()
+    .withMessage('Invalid driver ID format')
 ];
