@@ -31,7 +31,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     'aria-describedby': ariaDescribedBy,
     ...props 
   }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
     const errorId = error ? `${inputId}-error` : undefined;
     const finalAriaDescribedBy = [ariaDescribedBy, errorId].filter(Boolean).join(' ') || undefined;
 
@@ -46,9 +46,15 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         
-        <div className="relative">
+        <div className={cn(
+          "flex items-center border rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors",
+          {
+            "border-red-300 focus-within:border-red-500 focus-within:ring-red-500": error,
+            "border-gray-300": !error
+          }
+        )}>
           {(startIcon || startElement) && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="flex items-center pl-3 flex-shrink-0">
               {startIcon && (
                 <span className="h-5 w-5 text-gray-400" aria-hidden="true">
                   {startIcon}
@@ -61,11 +67,9 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             className={cn(
-              "appearance-none relative block w-full py-2 px-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors",
+              "flex-1 min-w-0 py-2 px-3 bg-transparent border-0 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-0 sm:text-sm",
               {
-                "pl-10": startIcon || startElement,
-                "pr-10": endIcon || endElement,
-                "border-red-300 focus:border-red-500 focus:ring-red-500": error,
+                "text-red-900 placeholder-red-300": error,
               },
               className
             )}
@@ -78,7 +82,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           
           {(endIcon || endElement) && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+            <div className="flex items-center pr-3 flex-shrink-0">
               {endIcon && (
                 <span className="h-5 w-5 text-gray-400" aria-hidden="true">
                   {endIcon}

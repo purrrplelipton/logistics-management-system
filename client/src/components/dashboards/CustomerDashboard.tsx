@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Package, Plus, Clock, Truck, CheckCircle, MapPin, Weight, DollarSign } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCustomerDeliveries, useCreateDelivery } from '@/lib/queries';
+import { Input } from '@/components/ui/Input';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -193,36 +194,32 @@ export default function CustomerDashboard() {
                 Pickup Address
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
+                <Input
                   name="pickupAddress.street"
                   value={formData.pickupAddress.street}
                   onChange={handleInputChange}
                   placeholder="Street Address"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="pickupAddress.city"
                   value={formData.pickupAddress.city}
                   onChange={handleInputChange}
                   placeholder="City"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="pickupAddress.state"
                   value={formData.pickupAddress.state}
                   onChange={handleInputChange}
                   placeholder="State"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="pickupAddress.zipCode"
                   value={formData.pickupAddress.zipCode}
                   onChange={handleInputChange}
                   placeholder="ZIP Code"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -235,36 +232,32 @@ export default function CustomerDashboard() {
                 Delivery Address
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
+                <Input
                   name="deliveryAddress.street"
                   value={formData.deliveryAddress.street}
                   onChange={handleInputChange}
                   placeholder="Street Address"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="deliveryAddress.city"
                   value={formData.deliveryAddress.city}
                   onChange={handleInputChange}
                   placeholder="City"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="deliveryAddress.state"
                   value={formData.deliveryAddress.state}
                   onChange={handleInputChange}
                   placeholder="State"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
-                <input
+                <Input
                   name="deliveryAddress.zipCode"
                   value={formData.deliveryAddress.zipCode}
                   onChange={handleInputChange}
                   placeholder="ZIP Code"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -287,74 +280,55 @@ export default function CustomerDashboard() {
                   required
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      <Weight className="h-4 w-4 inline mr-1" />
-                      Weight (lbs)
-                    </label>
-                    <input
-                      name="packageDetails.weight"
-                      type="number"
-                      step="0.1"
-                      value={formData.packageDetails.weight}
-                      onChange={handleInputChange}
-                      placeholder="0.0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Length (in)</label>
-                    <input
-                      name="packageDetails.dimensions.length"
-                      type="number"
-                      step="0.1"
-                      value={formData.packageDetails.dimensions.length}
-                      onChange={handleInputChange}
-                      placeholder="0.0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Width (in)</label>
-                    <input
-                      name="packageDetails.dimensions.width"
-                      type="number"
-                      step="0.1"
-                      value={formData.packageDetails.dimensions.width}
-                      onChange={handleInputChange}
-                      placeholder="0.0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Height (in)</label>
-                    <input
-                      name="packageDetails.dimensions.height"
-                      type="number"
-                      step="0.1"
-                      value={formData.packageDetails.dimensions.height}
-                      onChange={handleInputChange}
-                      placeholder="0.0"
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    <DollarSign className="h-4 w-4 inline mr-1" />
-                    Package Value ($)
-                  </label>
-                  <input
-                    name="packageDetails.value"
+                  <Input
+                    name="packageDetails.weight"
                     type="number"
-                    step="0.01"
-                    value={formData.packageDetails.value}
+                    step="0.1"
+                    label="Weight (lbs)"
+                    startIcon={<Weight />}
+                    value={formData.packageDetails.weight}
                     onChange={handleInputChange}
-                    placeholder="0.00"
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0.0"
+                    required
+                  />
+                  <Input
+                    name="packageDetails.dimensions.length"
+                    type="number"
+                    step="0.1"
+                    label="Length (in)"
+                    value={formData.packageDetails.dimensions.length}
+                    onChange={handleInputChange}
+                    placeholder="0.0"
+                  />
+                  <Input
+                    name="packageDetails.dimensions.width"
+                    type="number"
+                    step="0.1"
+                    label="Width (in)"
+                    value={formData.packageDetails.dimensions.width}
+                    onChange={handleInputChange}
+                    placeholder="0.0"
+                  />
+                  <Input
+                    name="packageDetails.dimensions.height"
+                    type="number"
+                    step="0.1"
+                    label="Height (in)"
+                    value={formData.packageDetails.dimensions.height}
+                    onChange={handleInputChange}
+                    placeholder="0.0"
                   />
                 </div>
+                <Input
+                  name="packageDetails.value"
+                  type="number"
+                  step="0.01"
+                  label="Package Value ($)"
+                  startIcon={<DollarSign />}
+                  value={formData.packageDetails.value}
+                  onChange={handleInputChange}
+                  placeholder="0.00"
+                />
               </div>
             </div>
 

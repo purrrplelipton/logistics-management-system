@@ -1,17 +1,10 @@
 'use client';
 
-import React, { useState, forwardRef, ReactNode } from 'react';
+import React, { useState, forwardRef, useEffect } from 'react';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { Input, InputProps } from './Input';
 import { cn } from '@/lib/utils';
-
-export type PasswordStrength = 'weak' | 'okay' | 'strong';
-
-export interface PasswordStrengthInfo {
-  strength: PasswordStrength;
-  score: number;
-  feedback: string[];
-}
+import { calculatePasswordStrength, PasswordStrength, PasswordStrengthInfo } from '@/lib/password-strength';
 
 export interface PasswordInputProps extends Omit<InputProps, 'type' | 'endElement'> {
   showStrengthIndicator?: boolean;
@@ -19,69 +12,6 @@ export interface PasswordInputProps extends Omit<InputProps, 'type' | 'endElemen
   strengthInfo?: PasswordStrengthInfo;
   onStrengthChange?: (info: PasswordStrengthInfo) => void;
 }
-
-const calculatePasswordStrength = (password: string): PasswordStrengthInfo => {
-  if (!password) {
-    return {
-      strength: 'weak',
-      score: 0,
-      feedback: ['Enter a password']
-    };
-  }
-
-  let score = 0;
-  const feedback: string[] = [];
-
-  // Length check
-  if (password.length >= 8) {
-    score += 2;
-  } else if (password.length >= 6) {
-    score += 1;
-    feedback.push('Use at least 8 characters');
-  } else {
-    feedback.push('Use at least 8 characters');
-  }
-
-  // Character variety checks
-  if (/[a-z]/.test(password)) score += 1;
-  else feedback.push('Add lowercase letters');
-
-  if (/[A-Z]/.test(password)) score += 1;
-  else feedback.push('Add uppercase letters');
-
-  if (/\d/.test(password)) score += 1;
-  else feedback.push('Add numbers');
-
-  if (/[^a-zA-Z\d]/.test(password)) score += 1;
-  else feedback.push('Add special characters');
-
-  // Common patterns penalty
-  if (/(.)\1{2,}/.test(password)) {
-    score -= 1;
-    feedback.push('Avoid repeated characters');
-  }
-
-  if (/123|abc|password|qwerty/i.test(password)) {
-    score -= 2;
-    feedback.push('Avoid common patterns');
-  }
-
-  // Determine strength
-  let strength: PasswordStrength;
-  if (score >= 5) {
-    strength = 'strong';
-  } else if (score >= 3) {
-    strength = 'okay';
-  } else {
-    strength = 'weak';
-  }
-
-  if (strength === 'strong' && feedback.length === 0) {
-    feedback.push('Strong password!');
-  }
-
-  return { strength, score: Math.max(0, Math.min(6, score)), feedback };
-};
 
 const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ 
@@ -102,15 +32,15 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     const strengthInfo = externalStrengthInfo || internalStrengthInfo;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      
+    useEffect(() => {
       if (showStrengthIndicator && !externalStrengthInfo) {
-        const newStrengthInfo = calculatePasswordStrength(newValue);
+        const newStrengthInfo = calculatePasswordStrength(String(value));
         setInternalStrengthInfo(newStrengthInfo);
         onStrengthChange?.(newStrengthInfo);
       }
-      
+    }, [value, showStrengthIndicator, externalStrengthInfo, onStrengthChange]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(e);
     };
 
@@ -178,13 +108,13 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
               ))}
             </div>
             
-            {/* Strength label */}
+            {/* Strength label and crack time */}
             <div className="flex justify-between items-center">
               <span className={cn("text-xs font-medium capitalize", getStrengthTextColor(strengthInfo.strength))}>
                 {strengthInfo.strength} password
               </span>
               <span className="text-xs text-gray-500">
-                {strengthInfo.score}/6
+                Crack time: {strengthInfo.crackTimeDisplay}
               </span>
             </div>
             
@@ -195,7 +125,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                   <div key={i} className="flex items-center space-x-1">
                     <span className={cn(
                       "w-1 h-1 rounded-full",
-                      feedback === 'Strong password!' ? 'bg-green-500' : 'bg-gray-400'
+                      feedback.includes('Excellent') || feedback.includes('Strong') ? 'bg-green-500' : 'bg-gray-400'
                     )} />
                     <span>{feedback}</span>
                   </div>

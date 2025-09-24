@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Truck, Package, MapPin, Phone, Clock, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDriverDeliveries, useUpdateDeliveryStatus } from '@/lib/queries';
+import { Input } from '@/components/ui/Input';
 
 export default function DriverDashboard() {
   const { user } = useAuth();
@@ -150,18 +151,13 @@ export default function DriverDashboard() {
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Delivery Notes
-            </label>
-            <input
-              type="text"
-              value={deliveryNotes}
-              onChange={(e) => setDeliveryNotes(e.target.value)}
-              placeholder="Optional notes..."
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+          <Input
+            label="Delivery Notes"
+            type="text"
+            value={deliveryNotes}
+            onChange={(e) => setDeliveryNotes(e.target.value)}
+            placeholder="Optional notes..."
+          />
 
           <div className="flex items-end">
             <button
