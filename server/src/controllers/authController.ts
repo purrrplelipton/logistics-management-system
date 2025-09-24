@@ -11,6 +11,15 @@ const generateToken = (id: string): string => {
   } as jwt.SignOptions);
 };
 
+// Cookie options
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+});
+
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -49,15 +58,15 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
       address
     });
 
-    // Generate token
+    // Generate token and set cookie
     const token = generateToken((user._id as string).toString());
+    res.cookie('auth-token', token, getCookieOptions());
 
-    const response: ApiResponse<{ user: IUser; token: string }> = {
+    const response: ApiResponse<{ user: IUser }> = {
       success: true,
       message: 'User registered successfully',
       data: {
-        user,
-        token
+        user
       }
     };
 
@@ -105,18 +114,18 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
       return;
     }
 
-    // Generate token
+    // Generate token and set cookie
     const token = generateToken((user._id as string).toString());
+    res.cookie('auth-token', token, getCookieOptions());
 
     // Remove password from response
     const userObject = user.toJSON();
 
-    const response: ApiResponse<{ user: IUser; token: string }> = {
+    const response: ApiResponse<{ user: IUser }> = {
       success: true,
       message: 'Login successful',
       data: {
-        user: userObject as IUser,
-        token
+        user: userObject as IUser
       }
     };
 
@@ -143,6 +152,30 @@ export const getMe = async (req: AuthenticatedRequest, res: Response, next: Next
       success: true,
       data: req.user
     };
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Logout user
+// @route   POST /api/auth/logout
+// @access  Private
+export const logout = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    res.clearCookie('auth-token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+    });
+
+    const response: ApiResponse<null> = {
+      success: true,
+      message: 'Logged out successfully',
+      data: null
+    };
+    
     res.json(response);
   } catch (error) {
     next(error);

@@ -11,12 +11,19 @@
     "test:watch": "jest --watch",
     "lint": "tsc --noEmit"
   },
-  "keywords": ["logistics", "express", "typescript", "mongodb"],
+  "keywords": [
+    "logistics",
+    "express",
+    "typescript",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.17.1",
   "dependencies": {
+    "@types/cookie-parser": "^1.4.9",
     "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
