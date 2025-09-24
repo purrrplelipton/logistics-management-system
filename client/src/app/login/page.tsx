@@ -3,7 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Truck, Mail, AlertCircle } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import truckIcon from '@iconify-icons/solar/delivery-outline';
+import mailIcon from '@iconify-icons/solar/letter-outline';
+import alertIcon from '@iconify-icons/solar/danger-triangle-outline';
 import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
@@ -39,7 +42,7 @@ export default function LoginPage() {
         <header className="text-center">
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
-              <Truck className="h-12 w-12 text-blue-600" aria-hidden="true" />
+              <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" aria-hidden="true" />
               <span className="text-3xl font-bold text-gray-900">LogiTrack</span>
             </div>
           </div>
@@ -72,7 +75,7 @@ export default function LoginPage() {
                 aria-live="polite"
               >
                 <div className="flex items-start">
-                  <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <Icon icon={alertIcon} className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
                   <div className="ml-3">
                     <p className="text-sm text-red-800">{error}</p>
                   </div>
@@ -89,7 +92,7 @@ export default function LoginPage() {
                 required
                 label="Email Address"
                 placeholder="Enter your email"
-                startIcon={<Mail />}
+                startIcon={<Icon icon={mailIcon} className="w-5 h-5" />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

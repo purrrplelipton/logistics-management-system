@@ -3,7 +3,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Truck, User, Mail, Phone, MapPin, AlertCircle, Car, FileText, Shield } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import truckIcon from '@iconify-icons/solar/delivery-outline';
+import userIcon from '@iconify-icons/solar/user-outline';
+import mailIcon from '@iconify-icons/solar/letter-outline';
+import phoneIcon from '@iconify-icons/solar/phone-outline';
+import mapIcon from '@iconify-icons/solar/map-point-outline';
+import alertIcon from '@iconify-icons/solar/danger-triangle-outline';
+import carIcon from '@iconify-icons/solar/tram-outline';
+import documentIcon from '@iconify-icons/solar/document-text-outline';
+import shieldIcon from '@iconify-icons/solar/shield-check-outline';
 import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
@@ -177,7 +186,7 @@ export default function RegisterPage() {
         <header className="text-center mb-8">
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
-              <Truck className="h-12 w-12 text-blue-600" aria-hidden="true" />
+              <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" aria-hidden="true" />
               <span className="text-3xl font-bold text-gray-900">LogiTrack</span>
             </div>
           </div>
@@ -210,7 +219,7 @@ export default function RegisterPage() {
                 aria-live="polite"
               >
                 <div className="flex items-start">
-                  <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <Icon icon={alertIcon} className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
                   <div className="ml-3">
                     <p className="text-sm text-red-800">{error}</p>
                   </div>
@@ -242,9 +251,9 @@ export default function RegisterPage() {
                     />
                     <div className="flex items-center space-x-3">
                       {role === 'customer' ? (
-                        <User className="h-6 w-6 text-blue-600" />
+                        <Icon icon={userIcon} className="h-6 w-6 text-blue-600" />
                       ) : (
-                        <Truck className="h-6 w-6 text-blue-600" />
+                        <Icon icon={truckIcon} className="h-6 w-6 text-blue-600" />
                       )}
                       <div>
                         <div className="font-medium text-gray-900 capitalize">{role}</div>
@@ -270,7 +279,7 @@ export default function RegisterPage() {
                   required
                   label="Full Name"
                   placeholder="Enter your full name"
-                  startIcon={<User />}
+                  startIcon={<Icon icon={userIcon} className="w-5 h-5" />}
                   value={formData.name}
                   onChange={handleInputChange}
                 />
@@ -281,7 +290,7 @@ export default function RegisterPage() {
                   required
                   label="Email Address"
                   placeholder="Enter your email"
-                  startIcon={<Mail />}
+                  startIcon={<Icon icon={mailIcon} className="w-5 h-5" />}
                   value={formData.email}
                   onChange={handleInputChange}
                 />
@@ -294,7 +303,7 @@ export default function RegisterPage() {
                   required
                   label="Phone Number"
                   placeholder="Enter your phone number"
-                  startIcon={<Phone />}
+                  startIcon={<Icon icon={phoneIcon} className="w-5 h-5" />}
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
@@ -321,7 +330,7 @@ export default function RegisterPage() {
                   required
                   label="Street Address"
                   placeholder="Enter your street address"
-                  startIcon={<MapPin />}
+                  startIcon={<Icon icon={mapIcon} className="w-5 h-5" />}
                   value={formData.address.street}
                   onChange={handleInputChange}
                 />
@@ -372,7 +381,7 @@ export default function RegisterPage() {
                       required
                       label="Driver's License Number"
                       placeholder="Enter license number"
-                      startIcon={<FileText />}
+                      startIcon={<Icon icon={documentIcon} className="w-5 h-5" />}
                       value={formData.licenseNumber || ''}
                       onChange={handleInputChange}
                     />
@@ -399,7 +408,7 @@ export default function RegisterPage() {
                       required
                       label="Vehicle Make"
                       placeholder="e.g., Toyota"
-                      startIcon={<Car />}
+                      startIcon={<Icon icon={carIcon} className="w-5 h-5" />}
                       value={formData.vehicleInfo?.make || ''}
                       onChange={handleInputChange}
                     />
@@ -449,7 +458,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Name"
                       placeholder="Emergency contact name"
-                      startIcon={<User />}
+                      startIcon={<Icon icon={userIcon} className="w-5 h-5" />}
                       value={formData.emergencyContact?.name || ''}
                       onChange={handleInputChange}
                     />
@@ -460,7 +469,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Phone"
                       placeholder="Emergency contact phone"
-                      startIcon={<Phone />}
+                      startIcon={<Icon icon={phoneIcon} className="w-5 h-5" />}
                       value={formData.emergencyContact?.phone || ''}
                       onChange={handleInputChange}
                     />
@@ -480,7 +489,7 @@ export default function RegisterPage() {
                       className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label htmlFor="backgroundCheckConsent" className="text-sm text-gray-700">
-                      <Shield className="h-4 w-4 inline mr-1 text-blue-600" />
+                      <Icon icon={shieldIcon} className="h-4 w-4 inline mr-1 text-blue-600" />
                       I consent to a background verification check as required for driver accounts. 
                       This helps ensure the safety and security of our delivery network.
                       <span className="text-red-500 ml-1" aria-label="required">*</span>
