@@ -4,8 +4,6 @@ import React, { forwardRef, ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  startIcon?: ReactNode;
-  endIcon?: ReactNode;
   startElement?: ReactNode;
   endElement?: ReactNode;
   error?: string;
@@ -18,8 +16,6 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ 
     className, 
     type, 
-    startIcon, 
-    endIcon, 
     startElement, 
     endElement, 
     error, 
