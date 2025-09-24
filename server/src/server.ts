@@ -12,6 +12,8 @@ import errorHandler from './middleware/errorHandler';
 
 // Route imports
 import authRoutes from './routes/auth';
+import deliveryRoutes from './routes/deliveries';
+import userRoutes from './routes/users';
 
 const app: Application = express();
 
@@ -27,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/deliveries', deliveryRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
