@@ -115,26 +115,11 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             </div>
             
             {/* Strength label only */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-center">
               <span className={cn("text-xs font-medium capitalize", getStrengthTextColor(strengthInfo.strength))}>
                 {strengthInfo.strength} password
               </span>
             </div>
-            
-            {/* Feedback */}
-            {strengthInfo.feedback.length > 0 && (
-              <div className="text-xs text-gray-600 space-y-1">
-                {strengthInfo.feedback.slice(0, 3).map((feedback, i) => (
-                  <div key={i} className="flex items-center space-x-1">
-                    <span className={cn(
-                      "w-1 h-1 rounded-full",
-                      feedback.includes('Excellent') || feedback.includes('Strong') ? 'bg-green-500' : 'bg-gray-400'
-                    )} />
-                    <span>{feedback}</span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         )}
       </div>

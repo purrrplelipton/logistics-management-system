@@ -21,11 +21,8 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
-    }
+    // Don't automatically redirect on 401 errors
+    // Let individual components handle authentication state
     return Promise.reject(error);
   }
 );

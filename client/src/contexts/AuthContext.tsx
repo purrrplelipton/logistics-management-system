@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { User, RegisterData } from '@/types';
 import { authAPI } from '@/lib/api';
 
@@ -29,23 +29,36 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    // Prevent multiple initializations
+    if (initialized.current) {
+      return;
+    }
+
     let mounted = true;
     
     const initializeAuth = async () => {
-      if (typeof window === 'undefined' || !mounted) {
+      // Skip if running on server or already initialized
+      if (typeof window === 'undefined' || initialized.current || !mounted) {
         return;
       }
+
+      initialized.current = true;
 
       try {
         // Try to get current user from server (will use cookie automatically)
         const response = await authAPI.getMe();
+        if (mounted && !initialized.current) {
+          return; // Another initialization started, abort
+        }
         if (mounted) {
           setUser(response.data.data);
         }
       } catch {
         // User is not authenticated, which is fine
+        // Don't redirect here, let the page components handle routing
         if (mounted) {
           setUser(null);
         }
@@ -56,7 +69,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
-    // Only run once on mount
+    // Only run initialization once
     initializeAuth();
     
     return () => {
