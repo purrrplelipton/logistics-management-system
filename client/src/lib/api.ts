@@ -16,9 +16,15 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+// Token retrieval helper
+const getToken = () => {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem('token') || localStorage.getItem('token');
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use((config) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -31,6 +37,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/login';
@@ -49,8 +57,8 @@ export const authAPI = {
 };
 
 // Users API
-export const usersAPI = {
-  getUsers: (params?: UserParams) => api.get<ApiResponse<User[]>>('/users', { params }),
+export const userAPI = {
+  getAllUsers: (params?: UserParams) => api.get<ApiResponse<User[]>>('/users', { params }),
   getUserById: (id: string) => api.get<ApiResponse<User>>(`/users/${id}`),
   updateUser: (id: string, userData: Partial<RegisterData>) =>
     api.put<ApiResponse<User>>(`/users/${id}`, userData),
@@ -59,20 +67,17 @@ export const usersAPI = {
 };
 
 // Deliveries API
-export const deliveriesAPI = {
+export const deliveryAPI = {
   createDelivery: (deliveryData: DeliveryData) =>
     api.post<ApiResponse<Delivery>>('/deliveries', deliveryData),
-  getDeliveries: (params?: DeliveryParams) =>
+  getAllDeliveries: (params?: DeliveryParams) =>
     api.get<ApiResponse<Delivery[]>>('/deliveries', { params }),
-  getDeliveryById: (id: string) =>
+  getDelivery: (id: string) =>
     api.get<ApiResponse<Delivery>>(`/deliveries/${id}`),
-  assignDriver: (id: string, driverId: string) =>
-    api.put<ApiResponse<Delivery>>(`/deliveries/${id}/assign`, { driverId }),
-  updateStatus: (id: string, status: string, deliveryNotes?: string) =>
-    api.put<ApiResponse<Delivery>>(`/deliveries/${id}/status`, {
-      status,
-      deliveryNotes,
-    }),
+  assignDriver: (deliveryId: string, driverId: string) =>
+    api.put<ApiResponse<Delivery>>(`/deliveries/${deliveryId}/assign`, { driverId }),
+  updateDeliveryStatus: (id: string, data: { status: string; deliveryNotes?: string }) =>
+    api.put<ApiResponse<Delivery>>(`/deliveries/${id}/status`, data),
   trackDelivery: (trackingNumber: string) =>
     api.get<ApiResponse<{ trackingNumber: string; status: string; createdAt: string; actualDeliveryDate?: string; estimatedDeliveryDate?: string; deliveryNotes?: string }>>(`/deliveries/track/${trackingNumber}`),
 };

@@ -103,6 +103,8 @@ export interface UserParams {
 
 export interface DeliveryParams {
   status?: string;
+  customerId?: string;
+  driverId?: string;
   page?: number;
   limit?: number;
 }
