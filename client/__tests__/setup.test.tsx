@@ -1,1 +1,1 @@
-Test setup complete
+// Test setup placeholder - empty file for now

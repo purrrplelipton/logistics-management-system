@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '@iconify/react';
 import closeIcon from '@iconify-icons/solar/close-circle-bold';
 
@@ -13,7 +14,7 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose, title, children, size = 'lg' }: ModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   const sizeClasses = {
@@ -25,100 +26,93 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
   };
 
   useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
     if (isOpen) {
       // Store the previously focused element
       previousActiveElement.current = document.activeElement as HTMLElement;
       
+      // Show the dialog
+      dialog.showModal();
+      
       // Prevent scrolling on the body
       document.body.style.overflow = 'hidden';
+    } else {
+      // Close the dialog
+      dialog.close();
       
-      // Focus the modal
-      if (modalRef.current) {
-        modalRef.current.focus();
-      }
+      // Restore body scroll
+      document.body.style.overflow = '';
       
-      // Add escape key listener
-      const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          onClose();
-        }
-      };
-      
-      document.addEventListener('keydown', handleEscape);
-      
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = '';
-        
-        // Restore focus to the previously focused element
-        if (previousActiveElement.current) {
-          previousActiveElement.current.focus();
-        }
-      };
-    }
-  }, [isOpen, onClose]);
-
-  // Focus trap implementation
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Tab') {
-      const modal = modalRef.current;
-      if (!modal) return;
-
-      const focusableElements = modal.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-      if (e.shiftKey) {
-        // Shift + Tab
-        if (document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement.focus();
-        }
-      } else {
-        // Tab
-        if (document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
+      // Restore focus to the previously focused element
+      if (previousActiveElement.current) {
+        previousActiveElement.current.focus();
       }
     }
-  };
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Handle dialog close events
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      onClose();
+    };
+
+    const handleCancel = (e: Event) => {
+      e.preventDefault();
+      onClose();
+    };
+
+    dialog.addEventListener('close', handleClose);
+    dialog.addEventListener('cancel', handleCancel);
+
+    return () => {
+      dialog.removeEventListener('close', handleClose);
+      dialog.removeEventListener('cancel', handleCancel);
+    };
+  }, [onClose]);
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    // Check if the click was on the backdrop (outside the dialog content)
+    const rect = dialog.getBoundingClientRect();
+    const clickedOnBackdrop = 
+      e.clientX < rect.left || 
+      e.clientX > rect.right || 
+      e.clientY < rect.top || 
+      e.clientY > rect.bottom;
+
+    if (clickedOnBackdrop) {
       onClose();
     }
   };
 
   if (!isOpen) return null;
 
-  return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
-        onClick={handleBackdropClick}
-        aria-hidden="true"
-      />
-      
-      {/* Modal */}
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-8"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
+  const modalContent = (
+    <dialog
+      ref={dialogRef}
+      className="backdrop:bg-black/50 backdrop:backdrop-blur-sm bg-transparent p-0 max-w-none max-h-none w-screen h-screen"
+      onClick={handleBackdropClick}
+      aria-labelledby="modal-title"
+    >
+      <div className="flex items-center justify-center min-h-full p-4 sm:p-6 lg:p-8">
         <div
-          ref={modalRef}
           className={`
             bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]}
             max-h-[90vh] overflow-hidden flex flex-col
             transform transition-all duration-200 ease-out
           `}
-          onKeyDown={handleKeyDown}
-          tabIndex={-1}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
@@ -142,6 +136,9 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
           </div>
         </div>
       </div>
-    </>
+    </dialog>
   );
+
+  // Portal the modal to the body
+  return createPortal(modalContent, document.body);
 }
