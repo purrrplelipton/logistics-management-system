@@ -24,14 +24,14 @@ export default function CustomerDashboard() {
       city: '',
       state: '',
       zipCode: '',
-      country: 'USA'
+      country: ''
     },
     deliveryAddress: {
       street: '',
       city: '',
       state: '',
       zipCode: '',
-      country: 'USA'
+      country: ''
     },
     packageDetails: {
       description: '',
@@ -120,8 +120,8 @@ export default function CustomerDashboard() {
       await createDeliveryMutation.mutateAsync(deliveryData);
       setShowCreateModal(false);
       setFormData({
-        pickupAddress: { street: '', city: '', state: '', zipCode: '', country: 'USA' },
-        deliveryAddress: { street: '', city: '', state: '', zipCode: '', country: 'USA' },
+        pickupAddress: { street: '', city: '', state: '', zipCode: '', country: '' },
+        deliveryAddress: { street: '', city: '', state: '', zipCode: '', country: '' },
         packageDetails: {
           description: '',
           weight: '',
@@ -212,7 +212,7 @@ export default function CustomerDashboard() {
                 label="Street Address"
                 value={formData.pickupAddress.street}
                 onChange={handleInputChange}
-                placeholder="123 Main Street"
+                placeholder="e.g., 123 Main Street, Apartment 4B"
                 required
                 aria-describedby="pickup-street-help"
               />
@@ -221,23 +221,31 @@ export default function CustomerDashboard() {
                 label="City"
                 value={formData.pickupAddress.city}
                 onChange={handleInputChange}
-                placeholder="New York"
+                placeholder="e.g., London, Tokyo, São Paulo"
                 required
               />
               <Input
                 name="pickupAddress.state"
-                label="State"
+                label="State/Province/Region"
                 value={formData.pickupAddress.state}
                 onChange={handleInputChange}
-                placeholder="NY"
+                placeholder="State/Province/Region"
                 required
               />
               <Input
                 name="pickupAddress.zipCode"
-                label="ZIP Code"
+                label="Postal Code"
                 value={formData.pickupAddress.zipCode}
                 onChange={handleInputChange}
-                placeholder="10001"
+                placeholder="Postal/ZIP Code"
+                required
+              />
+              <Input
+                name="pickupAddress.country"
+                label="Country"
+                value={formData.pickupAddress.country}
+                onChange={handleInputChange}
+                placeholder="e.g., United Kingdom, Japan, Brazil"
                 required
               />
             </div>
@@ -255,7 +263,7 @@ export default function CustomerDashboard() {
                 label="Street Address"
                 value={formData.deliveryAddress.street}
                 onChange={handleInputChange}
-                placeholder="456 Oak Avenue"
+                placeholder="e.g., 456 Oak Avenue, Suite 200"
                 required
               />
               <Input
@@ -263,23 +271,31 @@ export default function CustomerDashboard() {
                 label="City"
                 value={formData.deliveryAddress.city}
                 onChange={handleInputChange}
-                placeholder="Los Angeles"
+                placeholder="e.g., Berlin, Sydney, Mumbai"
                 required
               />
               <Input
                 name="deliveryAddress.state"
-                label="State"
+                label="State/Province/Region"
                 value={formData.deliveryAddress.state}
                 onChange={handleInputChange}
-                placeholder="CA"
+                placeholder="State/Province/Region"
                 required
               />
               <Input
                 name="deliveryAddress.zipCode"
-                label="ZIP Code"
+                label="Postal Code"
                 value={formData.deliveryAddress.zipCode}
                 onChange={handleInputChange}
-                placeholder="90210"
+                placeholder="Postal/ZIP Code"
+                required
+              />
+              <Input
+                name="deliveryAddress.country"
+                label="Country"
+                value={formData.deliveryAddress.country}
+                onChange={handleInputChange}
+                placeholder="e.g., Germany, Australia, India"
                 required
               />
             </div>
@@ -301,7 +317,7 @@ export default function CustomerDashboard() {
                   name="packageDetails.description"
                   value={formData.packageDetails.description}
                   onChange={handleInputChange}
-                  placeholder="Describe the package contents, fragility, special handling requirements..."
+                  placeholder="Describe contents, fragility, special handling needs..."
                   rows={3}
                   className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -317,11 +333,11 @@ export default function CustomerDashboard() {
                   type="number"
                   step="0.1"
                   min="0.1"
-                  label="Weight (lbs)"
+                  label="Weight (kg/lbs)"
                   startIcon={<Icon icon={scaleIcon} className="w-5 h-5" />}
                   value={formData.packageDetails.weight}
                   onChange={handleInputChange}
-                  placeholder="0.0"
+                  placeholder="Enter weight"
                   required
                   aria-describedby="weight-help"
                 />
@@ -330,30 +346,30 @@ export default function CustomerDashboard() {
                   type="number"
                   step="0.1"
                   min="0"
-                  label="Length (inches)"
+                  label="Length (cm/inches)"
                   value={formData.packageDetails.dimensions.length}
                   onChange={handleInputChange}
-                  placeholder="0.0"
+                  placeholder="Enter length"
                 />
                 <Input
                   name="packageDetails.dimensions.width"
                   type="number"
                   step="0.1"
                   min="0"
-                  label="Width (inches)"
+                  label="Width (cm/inches)"
                   value={formData.packageDetails.dimensions.width}
                   onChange={handleInputChange}
-                  placeholder="0.0"
+                  placeholder="Enter width"
                 />
                 <Input
                   name="packageDetails.dimensions.height"
                   type="number"
                   step="0.1"
                   min="0"
-                  label="Height (inches)"
+                  label="Height (cm/inches)"
                   value={formData.packageDetails.dimensions.height}
                   onChange={handleInputChange}
-                  placeholder="0.0"
+                  placeholder="Enter height"
                 />
               </div>
               <Input
@@ -361,17 +377,16 @@ export default function CustomerDashboard() {
                 type="number"
                 step="0.01"
                 min="0"
-                label="Package Value (USD)"
+                label="Package Value"
                 startIcon={<Icon icon={dollarIcon} className="w-5 h-5" />}
                 value={formData.packageDetails.value}
                 onChange={handleInputChange}
-                placeholder="0.00"
+                placeholder="Declared value (optional)"
                 aria-describedby="value-help"
               />
-              <div className="text-sm text-gray-500 space-y-1">
-                <p id="weight-help">* Weight is required for shipping calculations</p>
-                <p id="value-help">* Declared value is used for insurance purposes</p>
-              </div>
+              <p id="value-help" className="text-sm text-gray-500">
+                Enter the declared value for insurance purposes.
+              </p>
             </div>
           </fieldset>
 

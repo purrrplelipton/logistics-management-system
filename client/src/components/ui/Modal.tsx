@@ -79,22 +79,47 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
     };
   }, [onClose]);
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+  // Implement focus trapping since native dialog doesn't handle it reliably
+  useEffect(() => {
     const dialog = dialogRef.current;
-    if (!dialog) return;
+    if (!dialog || !isOpen) return;
 
-    // Check if the click was on the backdrop (outside the dialog content)
-    const rect = dialog.getBoundingClientRect();
-    const clickedOnBackdrop = 
-      e.clientX < rect.left || 
-      e.clientX > rect.right || 
-      e.clientY < rect.top || 
-      e.clientY > rect.bottom;
+    const focusableElementsSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    
+    const handleTabNavigation = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      
+      const focusableElements = dialog.querySelectorAll(focusableElementsSelector);
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      
+      if (e.shiftKey) {
+        // Shift + Tab - moving backwards
+        if (document.activeElement === firstElement || document.activeElement === dialog) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        // Tab - moving forwards
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
 
-    if (clickedOnBackdrop) {
-      onClose();
+    dialog.addEventListener('keydown', handleTabNavigation);
+    
+    // Focus the first focusable element when modal opens
+    const focusableElements = dialog.querySelectorAll(focusableElementsSelector);
+    if (focusableElements.length > 0) {
+      (focusableElements[0] as HTMLElement).focus();
     }
-  };
+
+    return () => {
+      dialog.removeEventListener('keydown', handleTabNavigation);
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -102,7 +127,6 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
     <dialog
       ref={dialogRef}
       className="backdrop:bg-black/50 backdrop:backdrop-blur-sm bg-transparent p-0 max-w-none max-h-none w-screen h-screen"
-      onClick={handleBackdropClick}
       aria-labelledby="modal-title"
     >
       <div className="flex items-center justify-center min-h-full p-4 sm:p-6 lg:p-8">
