@@ -31,24 +31,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+    
     const initializeAuth = async () => {
-      if (typeof window === 'undefined') {
-        setLoading(false);
+      if (typeof window === 'undefined' || !mounted) {
         return;
       }
 
       try {
         // Try to get current user from server (will use cookie automatically)
         const response = await authAPI.getMe();
-        setUser(response.data.data);
+        if (mounted) {
+          setUser(response.data.data);
+        }
       } catch (error) {
-        console.error('Auth initialization failed:', error);
         // User is not authenticated, which is fine
+        if (mounted) {
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
       }
-      setLoading(false);
     };
 
     initializeAuth();
+    
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -82,10 +94,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = async () => {
     try {
       await authAPI.logout();
+      setUser(null);
+      // Redirect to login page after logout
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
+      // Even if logout fails on server, clear user on client
       setUser(null);
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
     }
   };
 
