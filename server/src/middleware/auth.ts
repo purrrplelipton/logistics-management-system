@@ -6,7 +6,12 @@ import { AuthenticatedRequest, JwtPayload } from '../types';
 // Verify JWT token and attach user to request
 export const authenticate = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+    // Try to get token from cookie first, then fallback to Authorization header
+    let token = req.cookies['auth-token'];
+    
+    if (!token) {
+      token = req.header('Authorization')?.replace('Bearer ', '');
+    }
     
     if (!token) {
       res.status(401).json({

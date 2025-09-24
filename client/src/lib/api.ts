@@ -14,21 +14,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/a
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-});
-
-// Token retrieval helper
-const getToken = () => {
-  if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem('token') || localStorage.getItem('token');
-};
-
-// Request interceptor to add auth token
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  withCredentials: true, // Enable cookies to be sent with requests
 });
 
 // Response interceptor to handle errors
@@ -37,10 +23,6 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
         window.location.href = '/login';
       }
     }
@@ -54,6 +36,7 @@ export const authAPI = {
   login: (credentials: { email: string; password: string }) =>
     api.post<AuthResponse>('/auth/login', credentials),
   getMe: () => api.get<ApiResponse<User>>('/auth/me'),
+  logout: () => api.post<ApiResponse<null>>('/auth/logout'),
 };
 
 // Users API

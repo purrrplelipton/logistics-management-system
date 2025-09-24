@@ -86,6 +86,20 @@ export interface RegisterData {
     zipCode?: string;
     country?: string;
   };
+  // Driver-specific fields
+  licenseNumber?: string;
+  vehicleInfo?: {
+    make?: string;
+    model?: string;
+    year?: number;
+    licensePlate?: string;
+  };
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+  };
+  yearsOfExperience?: number;
+  backgroundCheckConsent?: boolean;
 }
 
 export interface DeliveryData {

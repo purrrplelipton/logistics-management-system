@@ -6,10 +6,9 @@ import { authAPI } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (userData: RegisterData) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   loading: boolean;
 }
 
@@ -27,53 +26,8 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-// Secure storage utilities - prefer sessionStorage over localStorage
-const TokenStorage = {
-  getToken: (): string | null => {
-    if (typeof window === 'undefined') return null;
-    // Try sessionStorage first (more secure), fallback to localStorage for persistence
-    return sessionStorage.getItem('token') || localStorage.getItem('token');
-  },
-  
-  setToken: (token: string, persistent: boolean = false): void => {
-    if (typeof window === 'undefined') return;
-    sessionStorage.setItem('token', token);
-    if (persistent) {
-      localStorage.setItem('token', token);
-    }
-  },
-  
-  removeToken: (): void => {
-    if (typeof window === 'undefined') return;
-    sessionStorage.removeItem('token');
-    localStorage.removeItem('token');
-  },
-  
-  getUser: (): User | null => {
-    if (typeof window === 'undefined') return null;
-    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
-  },
-  
-  setUser: (user: User, persistent: boolean = false): void => {
-    if (typeof window === 'undefined') return;
-    const userStr = JSON.stringify(user);
-    sessionStorage.setItem('user', userStr);
-    if (persistent) {
-      localStorage.setItem('user', userStr);
-    }
-  },
-  
-  removeUser: (): void => {
-    if (typeof window === 'undefined') return;
-    sessionStorage.removeItem('user');
-    localStorage.removeItem('user');
-  }
-};
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -83,20 +37,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const savedToken = TokenStorage.getToken();
-      const savedUser = TokenStorage.getUser();
-
-      if (savedToken && savedUser) {
-        try {
-          setToken(savedToken);
-          setUser(savedUser);
-          
-          // Verify token is still valid
-          await authAPI.getMe();
-        } catch (error) {
-          console.error('Token validation failed:', error);
-          logout();
-        }
+      try {
+        // Try to get current user from server (will use cookie automatically)
+        const response = await authAPI.getMe();
+        setUser(response.data.data);
+      } catch (error) {
+        console.error('Auth initialization failed:', error);
+        // User is not authenticated, which is fine
       }
       setLoading(false);
     };
@@ -107,14 +54,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     try {
       const response = await authAPI.login({ email, password });
-      const { user: userData, token: userToken } = response.data.data;
+      const { user: userData } = response.data.data;
 
       setUser(userData);
-      setToken(userToken);
-      
-      // Store in sessionStorage by default, with option for persistent storage
-      TokenStorage.setToken(userToken, false);
-      TokenStorage.setUser(userData, false);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -126,14 +68,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (userData: RegisterData) => {
     try {
       const response = await authAPI.register(userData);
-      const { user: newUser, token: userToken } = response.data.data;
+      const { user: newUser } = response.data.data;
 
       setUser(newUser);
-      setToken(userToken);
-      
-      // Store in sessionStorage by default
-      TokenStorage.setToken(userToken, false);
-      TokenStorage.setUser(newUser, false);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -142,16 +79,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    TokenStorage.removeToken();
-    TokenStorage.removeUser();
+  const logout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+    }
   };
 
   const value = {
     user,
-    token,
     login,
     register,
     logout,
