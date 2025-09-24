@@ -23,6 +23,7 @@ export interface PasswordStrengthInfo {
   score: number;
   feedback: string[];
   crackTimeDisplay: string;
+  isValid: boolean; // For registration validation
 }
 
 export const calculatePasswordStrength = (password: string): PasswordStrengthInfo => {
@@ -31,7 +32,8 @@ export const calculatePasswordStrength = (password: string): PasswordStrengthInf
       strength: 'weak',
       score: 0,
       feedback: ['Enter a password'],
-      crackTimeDisplay: 'instantly'
+      crackTimeDisplay: 'instantly',
+      isValid: false
     };
   }
 
@@ -71,6 +73,7 @@ export const calculatePasswordStrength = (password: string): PasswordStrengthInf
     strength,
     score: normalizedScore,
     feedback,
-    crackTimeDisplay: result.crackTimesDisplay.offlineSlowHashing1e4PerSecond
+    crackTimeDisplay: result.crackTimesDisplay.offlineSlowHashing1e4PerSecond,
+    isValid: strength !== 'weak' // Passwords must be at least 'okay' or 'strong'
   };
 };

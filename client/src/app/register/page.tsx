@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { RegisterData } from '@/types';
+import { PasswordStrengthInfo } from '@/lib/password-strength';
 
 type UserRole = 'customer' | 'driver';
 
@@ -72,6 +73,7 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<PasswordStrengthInfo | null>(null);
   
   const { register } = useAuth();
   const router = useRouter();
@@ -140,6 +142,13 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate password strength before submission
+    if (!passwordStrength || !passwordStrength.isValid) {
+      setError('Password is too weak. Please choose a stronger password.');
+      setLoading(false);
+      return;
+    }
 
     try {
       // Transform form data to match RegisterData interface
@@ -316,6 +325,7 @@ export default function RegisterPage() {
                   showStrengthIndicator={true}
                   value={formData.password}
                   onChange={handleInputChange}
+                  onStrengthChange={setPasswordStrength}
                 />
               </div>
             </fieldset>
