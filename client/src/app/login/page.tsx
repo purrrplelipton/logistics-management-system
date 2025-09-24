@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Truck, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Truck, Mail, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { Input } from '@/components/ui/Input';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,99 +34,98 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <main role="main" className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
+        <header className="text-center">
           <div className="flex justify-center">
-            <Truck className="h-12 w-12 text-blue-600" />
+            <div className="flex items-center space-x-2">
+              <Truck className="h-12 w-12 text-blue-600" aria-hidden="true" />
+              <span className="text-3xl font-bold text-gray-900">LogiTrack</span>
+            </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to LogiTrack
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <h1 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
             Or{' '}
             <Link
               href="/register"
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
             >
               create a new account
             </Link>
           </p>
-        </div>
+        </header>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
-              <div className="flex">
-                <AlertCircle className="h-5 w-5 text-red-400" />
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
+        <section aria-labelledby="login-form-heading">
+          <h2 id="login-form-heading" className="sr-only">Login Form</h2>
+          
+          <form 
+            className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-lg" 
+            onSubmit={handleSubmit}
+            role="form"
+          >
+            {error && (
+              <div 
+                role="alert" 
+                className="bg-red-50 border border-red-200 rounded-md p-4"
+                aria-live="polite"
+              >
+                <div className="flex items-start">
+                  <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <div className="ml-3">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none rounded-md relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
+            <div className="space-y-4">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                label="Email Address"
+                placeholder="Enter your email"
+                startIcon={<Mail />}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              
+              <PasswordInput
+                id="password"
+                name="password"
+                autoComplete="current-password"
+                required
+                label="Password"
+                placeholder="Enter your password"
+                showStrengthIndicator={false}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none rounded-md relative block w-full px-12 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              ) : (
-                'Sign in'
-              )}
-            </button>
-          </div>
-        </form>
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Signing in...</span>
+                  </div>
+                ) : (
+                  'Sign in'
+                )}
+              </button>
+            </div>
+          </form>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }
