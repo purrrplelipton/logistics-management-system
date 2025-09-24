@@ -5,6 +5,11 @@ import { Providers } from '@/lib/providers';
 export const metadata: Metadata = {
   title: "LogiTrack - Logistics Management System",
   description: "Comprehensive logistics management system with role-based dashboards",
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

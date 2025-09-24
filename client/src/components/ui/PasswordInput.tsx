@@ -1,7 +1,10 @@
 'use client';
 
 import React, { useState, forwardRef, useEffect } from 'react';
-import { Eye, EyeOff, Lock } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import eyeIcon from '@iconify-icons/solar/eye-outline';
+import eyeClosedIcon from '@iconify-icons/solar/eye-closed-outline';
+import lockIcon from '@iconify-icons/solar/lock-password-outline';
 import { Input, InputProps } from './Input';
 import { cn } from '@/lib/utils';
 import { calculatePasswordStrength, PasswordStrength, PasswordStrengthInfo } from '@/lib/password-strength';
@@ -21,7 +24,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     onStrengthChange,
     value = '',
     onChange,
-    startIcon = <Lock />,
+    startIcon = <Icon icon={lockIcon} className="w-5 h-5" />,
     className,
     ...props 
   }, ref) => {
@@ -74,7 +77,10 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         aria-label={showPassword ? 'Hide password' : 'Show password'}
         tabIndex={-1}
       >
-        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        <Icon 
+          icon={showPassword ? eyeClosedIcon : eyeIcon} 
+          className="w-4 h-4" 
+        />
       </button>
     ) : undefined;
 
@@ -95,12 +101,12 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           <div className="space-y-2">
             {/* Strength bar */}
             <div className="flex space-x-1">
-              {[...Array(6)].map((_, i) => (
+              {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
                   className={cn(
                     "h-1 flex-1 rounded-full transition-colors duration-200",
-                    i < strengthInfo.score
+                    i < Math.ceil(strengthInfo.score / 2)
                       ? getStrengthColor(strengthInfo.strength)
                       : "bg-gray-200"
                   )}
@@ -108,13 +114,10 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
               ))}
             </div>
             
-            {/* Strength label and crack time */}
+            {/* Strength label only */}
             <div className="flex justify-between items-center">
               <span className={cn("text-xs font-medium capitalize", getStrengthTextColor(strengthInfo.strength))}>
                 {strengthInfo.strength} password
-              </span>
-              <span className="text-xs text-gray-500">
-                Crack time: {strengthInfo.crackTimeDisplay}
               </span>
             </div>
             

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { forwardRef, ReactNode } from 'react';
+import React, { forwardRef, ReactNode, useId } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -31,7 +31,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     'aria-describedby': ariaDescribedBy,
     ...props 
   }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substring(2, 9)}`;
+    const generatedId = useId();
+    const inputId = id || generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const finalAriaDescribedBy = [ariaDescribedBy, errorId].filter(Boolean).join(' ') || undefined;
 
