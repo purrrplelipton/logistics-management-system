@@ -1,6 +1,107 @@
 # Logistics Management System
 
-A comprehensive MERN stack logistics management system with role-based access control for Admins, Customers, and Drivers.
+A comprehensive **Next.js + TypeScript** frontend and **Node.js + TypeScript** backend logistics management system with role-based access control for Admins, Customers, and Drivers.
+
+![Next.js Login Interface](https://github.com/user-attachments/assets/e6ad08c4-34fd-48c7-9d41-3b89ba7192c6)
+
+## 🏗️ Project Structure
+
+```
+logistics-management-system/
+├── client/                    # Next.js 15 + TypeScript Frontend
+│   ├── src/
+│   │   ├── app/              # Next.js App Router pages
+│   │   ├── components/       # Reusable React components
+│   │   ├── contexts/         # React Context (Auth)
+│   │   ├── lib/             # API services and utilities
+│   │   └── types/           # TypeScript type definitions
+│   ├── package.json         # Frontend dependencies (pnpm)
+│   └── tailwind.config.ts   # Tailwind CSS configuration
+├── server/                   # Node.js + TypeScript Backend
+│   ├── src/
+│   │   ├── config/          # Database configuration
+│   │   ├── controllers/     # Route handlers
+│   │   ├── middleware/      # Custom middleware
+│   │   ├── models/          # MongoDB models
+│   │   ├── routes/          # API routes
+│   │   ├── types/           # TypeScript interfaces
+│   │   └── tests/           # Test files
+│   ├── dist/                # Compiled JavaScript
+│   ├── package.json         # Backend dependencies (pnpm)
+│   └── tsconfig.json        # TypeScript configuration
+└── README.md                # This file
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v18 or higher)
+- pnpm (v8 or higher)
+- MongoDB (v5.0 or higher)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd logistics-management-system
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install server dependencies
+   cd server
+   pnpm install
+   
+   # Install client dependencies
+   cd ../client
+   pnpm install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   # Server environment
+   cd ../server
+   cp .env.example .env
+   # Edit .env with your MongoDB URI and JWT secret
+   
+   # Client environment (optional)
+   cd ../client
+   echo "NEXT_PUBLIC_API_URL=http://localhost:5000/api" > .env.local
+   ```
+
+4. **Start Development Servers**
+   ```bash
+   # Terminal 1: Start backend server
+   cd server
+   pnpm run dev
+   
+   # Terminal 2: Start frontend server
+   cd client
+   pnpm run dev
+   ```
+
+5. **Access the Application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000/api
+
+## 🛠️ Tech Stack
+
+### Frontend (Client)
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type safety and better developer experience
+- **Tailwind CSS** - Utility-first CSS framework
+- **Axios** - HTTP client for API calls
+- **React Context** - State management for authentication
+- **Lucide React** - Modern icon library
+
+### Backend (Server)
+- **Node.js** with **Express.js** - RESTful API server
+- **TypeScript** - Complete type safety
+- **MongoDB** with **Mongoose** - Database and ODM
+- **JWT** - Authentication tokens
+- **bcryptjs** - Password hashing
+- **express-validator** - Input validation
 
 ## Features
 
