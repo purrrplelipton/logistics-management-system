@@ -1,14 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Package, Plus, Clock, Truck, CheckCircle, MapPin, Weight, DollarSign } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import packageIcon from '@iconify-icons/solar/box-outline';
+import plusIcon from '@iconify-icons/solar/add-circle-outline';
+import clockIcon from '@iconify-icons/solar/clock-circle-outline';
+import truckIcon from '@iconify-icons/solar/delivery-outline';
+import checkIcon from '@iconify-icons/solar/check-circle-outline';
+import mapIcon from '@iconify-icons/solar/map-point-outline';
+import scaleIcon from '@iconify-icons/solar/scale-outline';
+import dollarIcon from '@iconify-icons/solar/dollar-outline';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCustomerDeliveries, useCreateDelivery } from '@/lib/queries';
 import { Input } from '@/components/ui/Input';
+import Modal from '@/components/ui/Modal';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [formData, setFormData] = useState({
     pickupAddress: {
       street: '',
@@ -109,7 +118,7 @@ export default function CustomerDashboard() {
       };
 
       await createDeliveryMutation.mutateAsync(deliveryData);
-      setShowCreateForm(false);
+      setShowCreateModal(false);
       setFormData({
         pickupAddress: { street: '', city: '', state: '', zipCode: '', country: 'USA' },
         deliveryAddress: { street: '', city: '', state: '', zipCode: '', country: 'USA' },
@@ -135,7 +144,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Deliveries</p>
               <p className="text-3xl font-bold text-gray-900">{stats.totalDeliveries}</p>
             </div>
-            <Package className="h-12 w-12 text-blue-600" />
+            <Icon icon={packageIcon} className="h-12 w-12 text-blue-600" />
           </div>
         </div>
 
@@ -145,7 +154,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-3xl font-bold text-yellow-600">{stats.pendingDeliveries}</p>
             </div>
-            <Clock className="h-12 w-12 text-yellow-600" />
+            <Icon icon={clockIcon} className="h-12 w-12 text-yellow-600" />
           </div>
         </div>
 
@@ -155,7 +164,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">In Transit</p>
               <p className="text-3xl font-bold text-blue-600">{stats.inTransitDeliveries}</p>
             </div>
-            <Truck className="h-12 w-12 text-blue-600" />
+            <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" />
           </div>
         </div>
 
@@ -165,7 +174,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-3xl font-bold text-green-600">{stats.completedDeliveries}</p>
             </div>
-            <CheckCircle className="h-12 w-12 text-green-600" />
+            <Icon icon={checkIcon} className="h-12 w-12 text-green-600" />
           </div>
         </div>
       </div>
@@ -174,183 +183,227 @@ export default function CustomerDashboard() {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">My Deliveries</h2>
         <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
+          onClick={() => setShowCreateModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          aria-label="Create new delivery request"
         >
-          <Plus className="h-5 w-5" />
+          <Icon icon={plusIcon} className="h-5 w-5" />
           <span>New Delivery</span>
         </button>
       </div>
 
-      {/* Create Delivery Form */}
-      {showCreateForm && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Delivery</h3>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Pickup Address */}
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-                <MapPin className="h-5 w-5 mr-2 text-green-600" />
-                Pickup Address
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  name="pickupAddress.street"
-                  value={formData.pickupAddress.street}
-                  onChange={handleInputChange}
-                  placeholder="Street Address"
-                  required
-                />
-                <Input
-                  name="pickupAddress.city"
-                  value={formData.pickupAddress.city}
-                  onChange={handleInputChange}
-                  placeholder="City"
-                  required
-                />
-                <Input
-                  name="pickupAddress.state"
-                  value={formData.pickupAddress.state}
-                  onChange={handleInputChange}
-                  placeholder="State"
-                  required
-                />
-                <Input
-                  name="pickupAddress.zipCode"
-                  value={formData.pickupAddress.zipCode}
-                  onChange={handleInputChange}
-                  placeholder="ZIP Code"
-                  required
-                />
-              </div>
+      {/* Create Delivery Modal */}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Create New Delivery"
+        size="xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Pickup Address */}
+          <fieldset>
+            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
+              <Icon icon={mapIcon} className="h-5 w-5 mr-2 text-green-600" aria-hidden="true" />
+              Pickup Address
+            </legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                name="pickupAddress.street"
+                label="Street Address"
+                value={formData.pickupAddress.street}
+                onChange={handleInputChange}
+                placeholder="123 Main Street"
+                required
+                aria-describedby="pickup-street-help"
+              />
+              <Input
+                name="pickupAddress.city"
+                label="City"
+                value={formData.pickupAddress.city}
+                onChange={handleInputChange}
+                placeholder="New York"
+                required
+              />
+              <Input
+                name="pickupAddress.state"
+                label="State"
+                value={formData.pickupAddress.state}
+                onChange={handleInputChange}
+                placeholder="NY"
+                required
+              />
+              <Input
+                name="pickupAddress.zipCode"
+                label="ZIP Code"
+                value={formData.pickupAddress.zipCode}
+                onChange={handleInputChange}
+                placeholder="10001"
+                required
+              />
             </div>
+          </fieldset>
 
-            {/* Delivery Address */}
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-                <MapPin className="h-5 w-5 mr-2 text-red-600" />
-                Delivery Address
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  name="deliveryAddress.street"
-                  value={formData.deliveryAddress.street}
-                  onChange={handleInputChange}
-                  placeholder="Street Address"
-                  required
-                />
-                <Input
-                  name="deliveryAddress.city"
-                  value={formData.deliveryAddress.city}
-                  onChange={handleInputChange}
-                  placeholder="City"
-                  required
-                />
-                <Input
-                  name="deliveryAddress.state"
-                  value={formData.deliveryAddress.state}
-                  onChange={handleInputChange}
-                  placeholder="State"
-                  required
-                />
-                <Input
-                  name="deliveryAddress.zipCode"
-                  value={formData.deliveryAddress.zipCode}
-                  onChange={handleInputChange}
-                  placeholder="ZIP Code"
-                  required
-                />
-              </div>
+          {/* Delivery Address */}
+          <fieldset>
+            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
+              <Icon icon={mapIcon} className="h-5 w-5 mr-2 text-red-600" aria-hidden="true" />
+              Delivery Address
+            </legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                name="deliveryAddress.street"
+                label="Street Address"
+                value={formData.deliveryAddress.street}
+                onChange={handleInputChange}
+                placeholder="456 Oak Avenue"
+                required
+              />
+              <Input
+                name="deliveryAddress.city"
+                label="City"
+                value={formData.deliveryAddress.city}
+                onChange={handleInputChange}
+                placeholder="Los Angeles"
+                required
+              />
+              <Input
+                name="deliveryAddress.state"
+                label="State"
+                value={formData.deliveryAddress.state}
+                onChange={handleInputChange}
+                placeholder="CA"
+                required
+              />
+              <Input
+                name="deliveryAddress.zipCode"
+                label="ZIP Code"
+                value={formData.deliveryAddress.zipCode}
+                onChange={handleInputChange}
+                placeholder="90210"
+                required
+              />
             </div>
+          </fieldset>
 
-            {/* Package Details */}
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-3 flex items-center">
-                <Package className="h-5 w-5 mr-2 text-blue-600" />
-                Package Details
-              </h4>
-              <div className="space-y-4">
+          {/* Package Details */}
+          <fieldset>
+            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
+              <Icon icon={packageIcon} className="h-5 w-5 mr-2 text-blue-600" aria-hidden="true" />
+              Package Details
+            </legend>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="package-description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Package Description *
+                </label>
                 <textarea
+                  id="package-description"
                   name="packageDetails.description"
                   value={formData.packageDetails.description}
                   onChange={handleInputChange}
-                  placeholder="Package Description"
+                  placeholder="Describe the package contents, fragility, special handling requirements..."
                   rows={3}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
+                  aria-describedby="description-help"
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Input
-                    name="packageDetails.weight"
-                    type="number"
-                    step="0.1"
-                    label="Weight (lbs)"
-                    startIcon={<Weight />}
-                    value={formData.packageDetails.weight}
-                    onChange={handleInputChange}
-                    placeholder="0.0"
-                    required
-                  />
-                  <Input
-                    name="packageDetails.dimensions.length"
-                    type="number"
-                    step="0.1"
-                    label="Length (in)"
-                    value={formData.packageDetails.dimensions.length}
-                    onChange={handleInputChange}
-                    placeholder="0.0"
-                  />
-                  <Input
-                    name="packageDetails.dimensions.width"
-                    type="number"
-                    step="0.1"
-                    label="Width (in)"
-                    value={formData.packageDetails.dimensions.width}
-                    onChange={handleInputChange}
-                    placeholder="0.0"
-                  />
-                  <Input
-                    name="packageDetails.dimensions.height"
-                    type="number"
-                    step="0.1"
-                    label="Height (in)"
-                    value={formData.packageDetails.dimensions.height}
-                    onChange={handleInputChange}
-                    placeholder="0.0"
-                  />
-                </div>
+                <p id="description-help" className="mt-1 text-sm text-gray-500">
+                  Provide a detailed description to help our drivers handle your package properly.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Input
-                  name="packageDetails.value"
+                  name="packageDetails.weight"
                   type="number"
-                  step="0.01"
-                  label="Package Value ($)"
-                  startIcon={<DollarSign />}
-                  value={formData.packageDetails.value}
+                  step="0.1"
+                  min="0.1"
+                  label="Weight (lbs)"
+                  startIcon={<Icon icon={scaleIcon} className="w-5 h-5" />}
+                  value={formData.packageDetails.weight}
                   onChange={handleInputChange}
-                  placeholder="0.00"
+                  placeholder="0.0"
+                  required
+                  aria-describedby="weight-help"
+                />
+                <Input
+                  name="packageDetails.dimensions.length"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  label="Length (inches)"
+                  value={formData.packageDetails.dimensions.length}
+                  onChange={handleInputChange}
+                  placeholder="0.0"
+                />
+                <Input
+                  name="packageDetails.dimensions.width"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  label="Width (inches)"
+                  value={formData.packageDetails.dimensions.width}
+                  onChange={handleInputChange}
+                  placeholder="0.0"
+                />
+                <Input
+                  name="packageDetails.dimensions.height"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  label="Height (inches)"
+                  value={formData.packageDetails.dimensions.height}
+                  onChange={handleInputChange}
+                  placeholder="0.0"
                 />
               </div>
+              <Input
+                name="packageDetails.value"
+                type="number"
+                step="0.01"
+                min="0"
+                label="Package Value (USD)"
+                startIcon={<Icon icon={dollarIcon} className="w-5 h-5" />}
+                value={formData.packageDetails.value}
+                onChange={handleInputChange}
+                placeholder="0.00"
+                aria-describedby="value-help"
+              />
+              <div className="text-sm text-gray-500 space-y-1">
+                <p id="weight-help">* Weight is required for shipping calculations</p>
+                <p id="value-help">* Declared value is used for insurance purposes</p>
+              </div>
             </div>
+          </fieldset>
 
-            <div className="flex space-x-4">
-              <button
-                type="submit"
-                disabled={createDeliveryMutation.isPending}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-400"
-              >
-                {createDeliveryMutation.isPending ? 'Creating...' : 'Create Delivery'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowCreateForm(false)}
-                className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={() => setShowCreateModal(false)}
+              className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={createDeliveryMutation.isPending}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
+              aria-describedby="submit-help"
+            >
+              {createDeliveryMutation.isPending ? (
+                <>
+                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                  Creating...
+                </>
+              ) : (
+                'Create Delivery'
+              )}
+            </button>
+            <p id="submit-help" className="sr-only">
+              This will create a new delivery request and generate a tracking number
+            </p>
+          </div>
+        </form>
+      </Modal>
 
       {/* Deliveries List */}
       <div className="bg-white p-6 rounded-lg shadow-sm border">
