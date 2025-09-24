@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from '@/contexts/AuthContext';
+import { Providers } from '@/lib/providers';
 
 export const metadata: Metadata = {
   title: "LogiTrack - Logistics Management System",
@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased font-sans">
-        <AuthProvider>
+        <Providers>
           {children}
-        </AuthProvider>
+        </Providers>
       </body>
     </html>
   );

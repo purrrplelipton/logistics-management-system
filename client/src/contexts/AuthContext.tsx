@@ -27,6 +27,50 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+// Secure storage utilities - prefer sessionStorage over localStorage
+const TokenStorage = {
+  getToken: (): string | null => {
+    if (typeof window === 'undefined') return null;
+    // Try sessionStorage first (more secure), fallback to localStorage for persistence
+    return sessionStorage.getItem('token') || localStorage.getItem('token');
+  },
+  
+  setToken: (token: string, persistent: boolean = false): void => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.setItem('token', token);
+    if (persistent) {
+      localStorage.setItem('token', token);
+    }
+  },
+  
+  removeToken: (): void => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
+  },
+  
+  getUser: (): User | null => {
+    if (typeof window === 'undefined') return null;
+    const userData = sessionStorage.getItem('user') || localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  },
+  
+  setUser: (user: User, persistent: boolean = false): void => {
+    if (typeof window === 'undefined') return;
+    const userStr = JSON.stringify(user);
+    sessionStorage.setItem('user', userStr);
+    if (persistent) {
+      localStorage.setItem('user', userStr);
+    }
+  },
+  
+  removeUser: (): void => {
+    if (typeof window === 'undefined') return;
+    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
+  }
+};
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -39,13 +83,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const savedToken = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
+      const savedToken = TokenStorage.getToken();
+      const savedUser = TokenStorage.getUser();
 
       if (savedToken && savedUser) {
         try {
           setToken(savedToken);
-          setUser(JSON.parse(savedUser));
+          setUser(savedUser);
           
           // Verify token is still valid
           await authAPI.getMe();
@@ -68,10 +112,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(userData);
       setToken(userToken);
       
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', userToken);
-        localStorage.setItem('user', JSON.stringify(userData));
-      }
+      // Store in sessionStorage by default, with option for persistent storage
+      TokenStorage.setToken(userToken, false);
+      TokenStorage.setUser(userData, false);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -88,10 +131,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(newUser);
       setToken(userToken);
       
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('token', userToken);
-        localStorage.setItem('user', JSON.stringify(newUser));
-      }
+      // Store in sessionStorage by default
+      TokenStorage.setToken(userToken, false);
+      TokenStorage.setUser(newUser, false);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -103,11 +145,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-    }
+    TokenStorage.removeToken();
+    TokenStorage.removeUser();
   };
 
   const value = {

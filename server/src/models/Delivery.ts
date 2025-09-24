@@ -108,7 +108,7 @@ deliverySchema.index({ trackingNumber: 1 });
 // Generate unique tracking number before saving
 deliverySchema.pre('save', function(next) {
   if (!this.trackingNumber) {
-    this.trackingNumber = 'TRK' + Date.now() + Math.random().toString(36).substr(2, 5).toUpperCase();
+    this.trackingNumber = 'TRK' + Date.now() + Math.random().toString(36).substring(2, 7).toUpperCase();
   }
   next();
 });
