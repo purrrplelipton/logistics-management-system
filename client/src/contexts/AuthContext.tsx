@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (mounted) {
           setUser(response.data.data);
         }
-      } catch (error) {
+      } catch {
         // User is not authenticated, which is fine
         if (mounted) {
           setUser(null);
@@ -56,12 +56,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     };
 
+    // Only run once on mount
     initializeAuth();
     
     return () => {
       mounted = false;
     };
-  }, []);
+  }, []); // Empty dependency array to run only once
 
   const login = async (email: string, password: string) => {
     try {
