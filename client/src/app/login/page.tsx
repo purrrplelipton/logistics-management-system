@@ -92,7 +92,7 @@ export default function LoginPage() {
                 required
                 label="Email Address"
                 placeholder="Enter your email"
-                startIcon={<Icon icon={mailIcon} className="w-5 h-5" />}
+                startElement={<Icon icon={mailIcon} className="w-5 h-5" />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />

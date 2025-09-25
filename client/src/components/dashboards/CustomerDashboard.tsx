@@ -334,7 +334,7 @@ export default function CustomerDashboard() {
                   step="0.1"
                   min="0.1"
                   label="Weight (kg/lbs)"
-                  startIcon={<Icon icon={scaleIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon={scaleIcon} className="w-5 h-5" />}
                   value={formData.packageDetails.weight}
                   onChange={handleInputChange}
                   placeholder="Enter weight"
@@ -378,7 +378,7 @@ export default function CustomerDashboard() {
                 step="0.01"
                 min="0"
                 label="Package Value"
-                startIcon={<Icon icon={dollarIcon} className="w-5 h-5" />}
+                startElement={<Icon icon={dollarIcon} className="w-5 h-5" />}
                 value={formData.packageDetails.value}
                 onChange={handleInputChange}
                 placeholder="Declared value (optional)"
