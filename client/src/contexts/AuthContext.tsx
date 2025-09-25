@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { User, RegisterData } from '@/types';
 import { authAPI } from '@/lib/api';
 
@@ -30,6 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const initialized = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Prevent multiple initializations
@@ -50,18 +52,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // Try to get current user from server (will use cookie automatically)
         const response = await authAPI.getMe();
-        if (mounted && !initialized.current) {
-          return; // Another initialization started, abort
+        if (!mounted) {
+          return;
         }
-        if (mounted) {
-          setUser(response.data.data);
-        }
-      } catch {
+        setUser(response.data.data ?? null);
+      } catch (_error) {
         // User is not authenticated, which is fine
         // Don't redirect here, let the page components handle routing
-        if (mounted) {
-          setUser(null);
-        }
+        setUser(null);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -109,17 +107,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await authAPI.logout();
       setUser(null);
-      // Redirect to login page after logout
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+      router.push('/login');
     } catch (error) {
       console.error('Logout error:', error);
       // Even if logout fails on server, clear user on client
       setUser(null);
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
+      router.push('/login');
     }
   };
 

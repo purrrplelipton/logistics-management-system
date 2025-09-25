@@ -43,8 +43,8 @@ describe('LoginPage Integration', () => {
 
     expect(screen.getByText('LogiTrack')).toBeInTheDocument();
     expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/email/i, { selector: 'input' })).toBeInTheDocument();
+  expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
@@ -52,8 +52,8 @@ describe('LoginPage Integration', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
@@ -68,15 +68,17 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
     await user.click(submitButton);
 
-    expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+    });
   });
 
   it('redirects to dashboard on successful login', async () => {
@@ -85,8 +87,8 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
@@ -105,8 +107,8 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
@@ -126,8 +128,8 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
@@ -145,8 +147,8 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
@@ -166,8 +168,8 @@ describe('LoginPage Integration', () => {
     
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');
@@ -193,7 +195,7 @@ describe('LoginPage Integration', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
     
     await user.type(emailInput, 'invalid-email');
     
@@ -205,8 +207,8 @@ describe('LoginPage Integration', () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     // Submit without filling fields
@@ -230,8 +232,8 @@ describe('LoginPage Integration', () => {
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
     
     // Check for proper form labels
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i, { selector: 'input' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
   });
 
   it('prevents default form submission', async () => {
@@ -245,15 +247,17 @@ describe('LoginPage Integration', () => {
     
     form.onsubmit = submitSpy;
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
     
     fireEvent.submit(form);
 
-    expect(mockLogin).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalled();
+    });
   });
 
   it('handles non-Error exceptions gracefully', async () => {
@@ -262,8 +266,8 @@ describe('LoginPage Integration', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
+    const passwordInput = screen.getByLabelText(/password/i, { selector: 'input' });
     const submitButton = screen.getByRole('button', { name: /sign in/i });
 
     await user.type(emailInput, 'test@example.com');

@@ -44,24 +44,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         
         <div className={cn(
-          "flex items-center border rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors",
+          "flex items-center border rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors text-gray-900",
           {
             "border-red-300 focus-within:border-red-500 focus-within:ring-red-500": error,
             "border-gray-300": !error
           }
         )}>
           {startElement && (
-            <div className="flex items-center pl-3 flex-shrink-0">
-              <span className="h-5 w-5 text-gray-400" aria-hidden="true">
-                {startElement}
-              </span>
+            <div className="flex items-center pl-3 flex-shrink-0 text-current/50">
+              {startElement}
             </div>
           )}
           
           <input
             type={type}
             className={cn(
-              "flex-1 min-w-0 py-2 px-3 bg-transparent border-0 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-0 sm:text-sm",
+              "flex-1 min-w-0 py-2 px-3 outline-none sm:text-sm",
               {
                 "text-red-900 placeholder-red-300": error,
               },
@@ -76,10 +74,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           
           {endElement && (
-            <div className="flex items-center pr-3 flex-shrink-0">
-              <span className="h-5 w-5 text-gray-400" aria-hidden="true">
-                {endElement}
-              </span>
+            <div className="flex items-center pr-3 flex-shrink-0 text-current/50">
+              {endElement}
             </div>
           )}
         </div>

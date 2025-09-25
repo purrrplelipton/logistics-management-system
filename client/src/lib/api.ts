@@ -17,6 +17,11 @@ const api = axios.create({
   withCredentials: true, // Enable cookies to be sent with requests
 });
 
+// Prefer the fetch adapter in environments where it's available (e.g., tests, browsers)
+if (typeof fetch !== 'undefined') {
+  api.defaults.adapter = 'fetch';
+}
+
 // Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => response,

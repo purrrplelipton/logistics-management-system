@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import zxcvbn from 'zxcvbn';
 
 // User registration validation
 export const validateRegister = [
@@ -14,10 +15,18 @@ export const validateRegister = [
     .normalizeEmail(),
   
   body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]).{6,}$/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'),
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .custom((value, { req }) => {
+      const comparisonInputs = [req.body?.email, req.body?.name].filter((input): input is string => Boolean(input));
+      const { score } = zxcvbn(value, comparisonInputs);
+
+      if (score >= 2) {
+        return true;
+      }
+
+      throw new Error('Password strength must be rated okay or strong. Try adding length, numbers, and symbols.');
+    }),
   
   body('role')
     .isIn(['admin', 'customer', 'driver'])
@@ -57,9 +66,7 @@ export const validateDelivery = [
   
   body('pickupAddress.zipCode')
     .notEmpty()
-    .withMessage('Pickup zip code is required')
-    .matches(/^\d{5}(-\d{4})?$/)
-    .withMessage('Invalid zip code format'),
+    .withMessage('Pickup zip code is required'),
   
   body('deliveryAddress.street')
     .notEmpty()
@@ -75,9 +82,7 @@ export const validateDelivery = [
   
   body('deliveryAddress.zipCode')
     .notEmpty()
-    .withMessage('Delivery zip code is required')
-    .matches(/^\d{5}(-\d{4})?$/)
-    .withMessage('Invalid zip code format'),
+    .withMessage('Delivery zip code is required'),
   
   body('packageDetails.description')
     .notEmpty()

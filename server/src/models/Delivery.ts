@@ -103,7 +103,6 @@ deliverySchema.index({ status: 1 });
 deliverySchema.index({ driverId: 1 });
 deliverySchema.index({ customerId: 1 });
 deliverySchema.index({ createdAt: -1 });
-deliverySchema.index({ trackingNumber: 1 });
 
 // Generate unique tracking number before saving
 deliverySchema.pre('save', function(next) {

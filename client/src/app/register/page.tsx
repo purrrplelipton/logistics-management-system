@@ -3,16 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Icon } from '@iconify/react';
-import truckIcon from '@iconify-icons/solar/delivery-outline';
-import userIcon from '@iconify-icons/solar/user-outline';
-import mailIcon from '@iconify-icons/solar/letter-outline';
-import phoneIcon from '@iconify-icons/solar/phone-outline';
-import mapIcon from '@iconify-icons/solar/map-point-outline';
-import alertIcon from '@iconify-icons/solar/danger-triangle-outline';
-import carIcon from '@iconify-icons/solar/tram-outline';
-import documentIcon from '@iconify-icons/solar/document-text-outline';
-import shieldIcon from '@iconify-icons/solar/shield-check-outline';
+import { Icon } from '@iconify-icon/react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
@@ -195,7 +186,7 @@ export default function RegisterPage() {
         <header className="text-center mb-8">
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
-              <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" aria-hidden="true" />
+              <Icon icon="solar:delivery-outline" className="text-5xl text-blue-600" aria-hidden="true" />
               <span className="text-3xl font-bold text-gray-900">LogiTrack</span>
             </div>
           </div>
@@ -228,7 +219,7 @@ export default function RegisterPage() {
                 aria-live="polite"
               >
                 <div className="flex items-start">
-                  <Icon icon={alertIcon} className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <Icon icon="solar:danger-triangle-outline" className="text-xl text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
                   <div className="ml-3">
                     <p className="text-sm text-red-800">{error}</p>
                   </div>
@@ -259,11 +250,7 @@ export default function RegisterPage() {
                       className="sr-only"
                     />
                     <div className="flex items-center space-x-3">
-                      {role === 'customer' ? (
-                        <Icon icon={userIcon} className="h-6 w-6 text-blue-600" />
-                      ) : (
-                        <Icon icon={truckIcon} className="h-6 w-6 text-blue-600" />
-                      )}
+                      <Icon icon={role === 'customer' ? "solar:user-outline" : "solar:delivery-outline"} className="text-2xl text-blue-600" />
                       <div>
                         <div className="font-medium text-gray-900 capitalize">{role}</div>
                         <div className="text-sm text-gray-600">
@@ -288,7 +275,7 @@ export default function RegisterPage() {
                   required
                   label="Full Name"
                   placeholder="Enter your full name"
-                  startElement={<Icon icon={userIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon="solar:user-outline" className="text-xl" />}
                   value={formData.name}
                   onChange={handleInputChange}
                 />
@@ -299,20 +286,20 @@ export default function RegisterPage() {
                   required
                   label="Email Address"
                   placeholder="Enter your email"
-                  startElement={<Icon icon={mailIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon="solar:letter-outline" className="text-xl" />}
                   value={formData.email}
                   onChange={handleInputChange}
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   name="phone"
                   type="tel"
                   required
                   label="Phone Number"
                   placeholder="Enter your phone number"
-                  startElement={<Icon icon={phoneIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon="solar:phone-outline" className="text-xl" />}
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
@@ -340,7 +327,7 @@ export default function RegisterPage() {
                   required
                   label="Street Address"
                   placeholder="Enter your street address"
-                  startElement={<Icon icon={mapIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon="solar:map-point-outline" className="text-xl" />}
                   value={formData.address.street}
                   onChange={handleInputChange}
                 />
@@ -391,7 +378,7 @@ export default function RegisterPage() {
                       required
                       label="Driver's License Number"
                       placeholder="Enter license number"
-                      startElement={<Icon icon={documentIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon="solar:document-text-outline" className="text-xl" />}
                       value={formData.licenseNumber || ''}
                       onChange={handleInputChange}
                     />
@@ -418,7 +405,7 @@ export default function RegisterPage() {
                       required
                       label="Vehicle Make"
                       placeholder="e.g., Toyota"
-                      startElement={<Icon icon={carIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon="solar:tram-outline" className="text-xl" />}
                       value={formData.vehicleInfo?.make || ''}
                       onChange={handleInputChange}
                     />
@@ -434,7 +421,7 @@ export default function RegisterPage() {
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
                       name="vehicleInfo.year"
                       type="number"
@@ -468,7 +455,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Name"
                       placeholder="Emergency contact name"
-                      startElement={<Icon icon={userIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon="solar:user-outline" className="text-xl" />}
                       value={formData.emergencyContact?.name || ''}
                       onChange={handleInputChange}
                     />
@@ -479,7 +466,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Phone"
                       placeholder="Emergency contact phone"
-                      startElement={<Icon icon={phoneIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon="solar:phone-outline" className="text-xl" />}
                       value={formData.emergencyContact?.phone || ''}
                       onChange={handleInputChange}
                     />
@@ -496,10 +483,10 @@ export default function RegisterPage() {
                       required
                       checked={formData.backgroundCheckConsent || false}
                       onChange={handleInputChange}
-                      className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="mt-1 text-base text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label htmlFor="backgroundCheckConsent" className="text-sm text-gray-700">
-                      <Icon icon={shieldIcon} className="h-4 w-4 inline mr-1 text-blue-600" />
+                      <Icon icon="solar:shield-check-outline" className="align-middle text-[1.125em] mr-1 text-blue-600" />
                       I consent to a background verification check as required for driver accounts. 
                       This helps ensure the safety and security of our delivery network.
                       <span className="text-red-500 ml-1" aria-label="required">*</span>

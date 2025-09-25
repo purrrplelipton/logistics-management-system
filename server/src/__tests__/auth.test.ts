@@ -1,12 +1,10 @@
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import request from 'supertest';
 import app from '../server';
-import connectDB from '../config/database';
 import User from '../models/User';
 
 describe('Authentication Endpoints', () => {
-  beforeAll(async () => {
-    await connectDB();
-  });
+  const strongPassword = 'VeryStrongP@ssw0rd!2025';
 
   beforeEach(async () => {
     await User.deleteMany({});
@@ -16,7 +14,7 @@ describe('Authentication Endpoints', () => {
     const validUserData = {
       name: 'Test User',
       email: 'test@example.com',
-      password: 'Test123!',
+      password: strongPassword,
       phone: '1234567890',
       role: 'customer',
       address: {
@@ -78,6 +76,23 @@ describe('Authentication Endpoints', () => {
       expect(response.body.success).toBe(false);
     });
 
+    it('should return 400 for weak password', async () => {
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({ ...validUserData, password: 'password' })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            msg: expect.stringContaining('Password strength must be rated okay or strong'),
+            path: 'password'
+          })
+        ])
+      );
+    });
+
     it('should return 400 for duplicate email', async () => {
       await User.create(validUserData);
 
@@ -96,7 +111,7 @@ describe('Authentication Endpoints', () => {
       await User.create({
         name: 'Test User',
         email: 'test@example.com',
-        password: 'Test123!',
+        password: strongPassword,
         role: 'customer'
       });
     });
@@ -106,7 +121,7 @@ describe('Authentication Endpoints', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'Test123!'
+          password: strongPassword
         })
         .expect(200);
 
@@ -135,7 +150,7 @@ describe('Authentication Endpoints', () => {
       await User.create({
         name: 'Test User',
         email: 'test@example.com',
-        password: 'Test123!',
+        password: strongPassword,
         role: 'customer'
       });
 
@@ -143,10 +158,13 @@ describe('Authentication Endpoints', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'Test123!'
+          password: strongPassword
         });
 
-      authCookie = loginResponse.headers['set-cookie'][0];
+      const cookies = loginResponse.headers['set-cookie'];
+      const cookie = cookies?.[0];
+      expect(cookie).toBeDefined();
+      authCookie = cookie as string;
     });
 
     it('should get current user with valid cookie', async () => {
@@ -175,7 +193,7 @@ describe('Authentication Endpoints', () => {
       await User.create({
         name: 'Test User',
         email: 'test@example.com',
-        password: 'Test123!',
+        password: strongPassword,
         role: 'customer'
       });
 
@@ -183,10 +201,13 @@ describe('Authentication Endpoints', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'Test123!'
+          password: strongPassword
         });
 
-      authCookie = loginResponse.headers['set-cookie'][0];
+      const cookies = loginResponse.headers['set-cookie'];
+      const cookie = cookies?.[0];
+      expect(cookie).toBeDefined();
+      authCookie = cookie as string;
     });
 
     it('should logout successfully', async () => {

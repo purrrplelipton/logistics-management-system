@@ -1,21 +1,20 @@
 import "@testing-library/jest-dom";
-// import { server } from "./__tests__/mocks/server";
-
+import { ReadableStream, TransformStream, WritableStream } from "stream/web";
 // Establish API mocking before all tests
-// beforeAll(() => {
-//   server.listen({ onUnhandledRequest: "error" });
-// });
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: "error" });
+});
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests
-// afterEach(() => {
-//   server.resetHandlers();
-// });
+afterEach(() => {
+  server.resetHandlers();
+});
 
 // Clean up after the tests are finished
-// afterAll(() => {
-//   server.close();
-// });
+afterAll(() => {
+  server.close();
+});
 
 // Mock Next.js router
 jest.mock("next/navigation", () => ({
@@ -42,8 +41,8 @@ jest.mock("next/headers", () => ({
   }),
 }));
 
-// Mock @iconify/react
-jest.mock("@iconify/react", () => ({
+// Mock @iconify-icon/react
+jest.mock("@iconify-icon/react", () => ({
   Icon: ({ icon, className, ...props }) => (
     <span
       data-testid={`icon-${icon?.name || icon || "unknown"}`}
@@ -114,3 +113,22 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+if (typeof global.TransformStream === "undefined") {
+  // @ts-expect-error - assigning to global in test environment
+  global.TransformStream = TransformStream;
+}
+
+if (typeof global.ReadableStream === "undefined") {
+  // @ts-expect-error - assigning to global in test environment
+  global.ReadableStream = ReadableStream;
+}
+
+if (typeof global.WritableStream === "undefined") {
+  // @ts-expect-error - assigning to global in test environment
+  global.WritableStream = WritableStream;
+}
+
+// Defer requiring the MSW server until after polyfills are in place
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { server } = require("./__tests__/mocks/server");

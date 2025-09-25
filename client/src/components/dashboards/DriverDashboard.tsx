@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Truck, Package, MapPin, Phone, Clock, CheckCircle, AlertCircle, Navigation } from 'lucide-react';
+import { Icon } from '@iconify-icon/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useDriverDeliveries, useUpdateDeliveryStatus } from '@/lib/queries';
 import { Input } from '@/components/ui/Input';
@@ -72,7 +72,7 @@ export default function DriverDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Assigned</p>
               <p className="text-3xl font-bold text-gray-900">{stats.totalAssigned}</p>
             </div>
-            <Truck className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:delivery-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function DriverDashboard() {
               <p className="text-sm font-medium text-gray-600">Pending Pickup</p>
               <p className="text-3xl font-bold text-yellow-600">{stats.pendingPickup}</p>
             </div>
-            <Clock className="h-12 w-12 text-yellow-600" />
+            <Icon icon="solar:clock-circle-outline" className="text-5xl text-yellow-600" />
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function DriverDashboard() {
               <p className="text-sm font-medium text-gray-600">In Transit</p>
               <p className="text-3xl font-bold text-blue-600">{stats.inTransit}</p>
             </div>
-            <Package className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:box-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -102,7 +102,7 @@ export default function DriverDashboard() {
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-3xl font-bold text-green-600">{stats.completed}</p>
             </div>
-            <CheckCircle className="h-12 w-12 text-green-600" />
+            <Icon icon="solar:check-circle-outline" className="text-5xl text-green-600" />
           </div>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function DriverDashboard() {
                 {/* Pickup Address */}
                 <div className="bg-green-50 p-4 rounded-lg">
                   <h5 className="flex items-center text-sm font-semibold text-gray-900 mb-2">
-                    <MapPin className="h-4 w-4 mr-2 text-green-600" />
+                    <Icon icon="solar:map-point-outline" className="text-base mr-2 text-green-600" />
                     Pickup Address
                   </h5>
                   <div className="text-sm text-gray-700">
@@ -217,7 +217,7 @@ export default function DriverDashboard() {
                     }}
                     className="mt-2 flex items-center text-sm text-green-600 hover:text-green-800"
                   >
-                    <Navigation className="h-4 w-4 mr-1" />
+                    <Icon icon="solar:map-arrow-up-outline" className="text-base mr-1" />
                     Get Directions
                   </button>
                 </div>
@@ -225,7 +225,7 @@ export default function DriverDashboard() {
                 {/* Delivery Address */}
                 <div className="bg-red-50 p-4 rounded-lg">
                   <h5 className="flex items-center text-sm font-semibold text-gray-900 mb-2">
-                    <MapPin className="h-4 w-4 mr-2 text-red-600" />
+                    <Icon icon="solar:map-point-outline" className="text-base mr-2 text-red-600" />
                     Delivery Address
                   </h5>
                   <div className="text-sm text-gray-700">
@@ -240,7 +240,7 @@ export default function DriverDashboard() {
                     }}
                     className="mt-2 flex items-center text-sm text-red-600 hover:text-red-800"
                   >
-                    <Navigation className="h-4 w-4 mr-1" />
+                    <Icon icon="solar:map-arrow-up-outline" className="text-base mr-1" />
                     Get Directions
                   </button>
                 </div>
@@ -272,7 +272,7 @@ export default function DriverDashboard() {
                           onClick={() => window.open(`tel:${delivery.customerId.phone}`)}
                           className="flex items-center text-blue-600 hover:text-blue-800 mt-1"
                         >
-                          <Phone className="h-4 w-4 mr-1" />
+                          <Icon icon="solar:phone-outline" className="text-base mr-1" />
                           {delivery.customerId.phone}
                         </button>
                       )}
@@ -308,7 +308,7 @@ export default function DriverDashboard() {
 
           {deliveries?.length === 0 && (
             <div className="text-center py-8">
-              <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <Icon icon="solar:danger-circle-outline" className="text-5xl text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">No deliveries assigned to you yet.</p>
             </div>
           )}

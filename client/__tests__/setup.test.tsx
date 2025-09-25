@@ -1,1 +1,5 @@
-// Test setup placeholder - empty file for now
+describe('testing environment sanity check', () => {
+	it('is configured correctly', () => {
+		expect(true).toBe(true);
+	});
+});
