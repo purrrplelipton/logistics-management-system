@@ -24,7 +24,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     onStrengthChange,
     value = '',
     onChange,
-    startIcon = <Icon icon={lockIcon} className="w-5 h-5" />,
+    startElement = <Icon icon={lockIcon} className="w-5 h-5" />,
     className,
     ...props 
   }, ref) => {
@@ -91,7 +91,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           type={showPassword ? 'text' : 'password'}
           value={value}
           onChange={handleChange}
-          startIcon={startIcon}
+          startElement={startElement}
           endElement={endElement}
           className={cn(className)}
           {...props}

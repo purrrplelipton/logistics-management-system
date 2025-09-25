@@ -50,14 +50,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             "border-gray-300": !error
           }
         )}>
-          {(startIcon || startElement) && (
+          {startElement && (
             <div className="flex items-center pl-3 flex-shrink-0">
-              {startIcon && (
-                <span className="h-5 w-5 text-gray-400" aria-hidden="true">
-                  {startIcon}
-                </span>
-              )}
-              {startElement}
+              <span className="h-5 w-5 text-gray-400" aria-hidden="true">
+                {startElement}
+              </span>
             </div>
           )}
           
@@ -78,14 +75,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           
-          {(endIcon || endElement) && (
+          {endElement && (
             <div className="flex items-center pr-3 flex-shrink-0">
-              {endIcon && (
-                <span className="h-5 w-5 text-gray-400" aria-hidden="true">
-                  {endIcon}
-                </span>
-              )}
-              {endElement}
+              <span className="h-5 w-5 text-gray-400" aria-hidden="true">
+                {endElement}
+              </span>
             </div>
           )}
         </div>

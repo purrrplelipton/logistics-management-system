@@ -288,7 +288,7 @@ export default function RegisterPage() {
                   required
                   label="Full Name"
                   placeholder="Enter your full name"
-                  startIcon={<Icon icon={userIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon={userIcon} className="w-5 h-5" />}
                   value={formData.name}
                   onChange={handleInputChange}
                 />
@@ -299,7 +299,7 @@ export default function RegisterPage() {
                   required
                   label="Email Address"
                   placeholder="Enter your email"
-                  startIcon={<Icon icon={mailIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon={mailIcon} className="w-5 h-5" />}
                   value={formData.email}
                   onChange={handleInputChange}
                 />
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                   required
                   label="Phone Number"
                   placeholder="Enter your phone number"
-                  startIcon={<Icon icon={phoneIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon={phoneIcon} className="w-5 h-5" />}
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
@@ -340,7 +340,7 @@ export default function RegisterPage() {
                   required
                   label="Street Address"
                   placeholder="Enter your street address"
-                  startIcon={<Icon icon={mapIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon={mapIcon} className="w-5 h-5" />}
                   value={formData.address.street}
                   onChange={handleInputChange}
                 />
@@ -391,7 +391,7 @@ export default function RegisterPage() {
                       required
                       label="Driver's License Number"
                       placeholder="Enter license number"
-                      startIcon={<Icon icon={documentIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon={documentIcon} className="w-5 h-5" />}
                       value={formData.licenseNumber || ''}
                       onChange={handleInputChange}
                     />
@@ -418,7 +418,7 @@ export default function RegisterPage() {
                       required
                       label="Vehicle Make"
                       placeholder="e.g., Toyota"
-                      startIcon={<Icon icon={carIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon={carIcon} className="w-5 h-5" />}
                       value={formData.vehicleInfo?.make || ''}
                       onChange={handleInputChange}
                     />
@@ -468,7 +468,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Name"
                       placeholder="Emergency contact name"
-                      startIcon={<Icon icon={userIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon={userIcon} className="w-5 h-5" />}
                       value={formData.emergencyContact?.name || ''}
                       onChange={handleInputChange}
                     />
@@ -479,7 +479,7 @@ export default function RegisterPage() {
                       required
                       label="Contact Phone"
                       placeholder="Emergency contact phone"
-                      startIcon={<Icon icon={phoneIcon} className="w-5 h-5" />}
+                      startElement={<Icon icon={phoneIcon} className="w-5 h-5" />}
                       value={formData.emergencyContact?.phone || ''}
                       onChange={handleInputChange}
                     />
