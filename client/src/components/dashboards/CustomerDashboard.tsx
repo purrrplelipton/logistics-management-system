@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Icon } from '@iconify/react';
-import packageIcon from '@iconify-icons/solar/box-outline';
-import plusIcon from '@iconify-icons/solar/add-circle-outline';
-import clockIcon from '@iconify-icons/solar/clock-circle-outline';
-import truckIcon from '@iconify-icons/solar/delivery-outline';
-import checkIcon from '@iconify-icons/solar/check-circle-outline';
-import mapIcon from '@iconify-icons/solar/map-point-outline';
-import scaleIcon from '@iconify-icons/solar/scale-outline';
-import dollarIcon from '@iconify-icons/solar/dollar-outline';
+import { Icon } from '@iconify-icon/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCustomerDeliveries, useCreateDelivery } from '@/lib/queries';
 import { Input } from '@/components/ui/Input';
@@ -51,7 +43,12 @@ export default function CustomerDashboard() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label="Loading deliveries"
+          className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"
+        />
       </div>
     );
   }
@@ -144,7 +141,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Deliveries</p>
               <p className="text-3xl font-bold text-gray-900">{stats.totalDeliveries}</p>
             </div>
-            <Icon icon={packageIcon} className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:box-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -154,7 +151,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-3xl font-bold text-yellow-600">{stats.pendingDeliveries}</p>
             </div>
-            <Icon icon={clockIcon} className="h-12 w-12 text-yellow-600" />
+            <Icon icon="solar:clock-circle-outline" className="text-5xl text-yellow-600" />
           </div>
         </div>
 
@@ -164,7 +161,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">In Transit</p>
               <p className="text-3xl font-bold text-blue-600">{stats.inTransitDeliveries}</p>
             </div>
-            <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:delivery-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -174,7 +171,7 @@ export default function CustomerDashboard() {
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-3xl font-bold text-green-600">{stats.completedDeliveries}</p>
             </div>
-            <Icon icon={checkIcon} className="h-12 w-12 text-green-600" />
+            <Icon icon="solar:check-circle-outline" className="text-5xl text-green-600" />
           </div>
         </div>
       </div>
@@ -187,7 +184,7 @@ export default function CustomerDashboard() {
           className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Create new delivery request"
         >
-          <Icon icon={plusIcon} className="h-5 w-5" />
+          <Icon icon="solar:add-circle-outline" className="text-xl" />
           <span>New Delivery</span>
         </button>
       </div>
@@ -203,7 +200,7 @@ export default function CustomerDashboard() {
           {/* Pickup Address */}
           <fieldset>
             <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon={mapIcon} className="h-5 w-5 mr-2 text-green-600" aria-hidden="true" />
+              <Icon icon="solar:map-point-outline" className="text-xl mr-2 text-green-600" aria-hidden="true" />
               Pickup Address
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -254,7 +251,7 @@ export default function CustomerDashboard() {
           {/* Delivery Address */}
           <fieldset>
             <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon={mapIcon} className="h-5 w-5 mr-2 text-red-600" aria-hidden="true" />
+              <Icon icon="solar:map-point-outline" className="text-xl mr-2 text-red-600" aria-hidden="true" />
               Delivery Address
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,7 +301,7 @@ export default function CustomerDashboard() {
           {/* Package Details */}
           <fieldset>
             <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon={packageIcon} className="h-5 w-5 mr-2 text-blue-600" aria-hidden="true" />
+              <Icon icon="solar:box-outline" className="text-xl mr-2 text-blue-600" aria-hidden="true" />
               Package Details
             </legend>
             <div className="space-y-4">
@@ -334,7 +331,7 @@ export default function CustomerDashboard() {
                   step="0.1"
                   min="0.1"
                   label="Weight (kg/lbs)"
-                  startElement={<Icon icon={scaleIcon} className="w-5 h-5" />}
+                  startElement={<Icon icon="solar:scale-outline" className="text-xl" />}
                   value={formData.packageDetails.weight}
                   onChange={handleInputChange}
                   placeholder="Enter weight"
@@ -378,7 +375,7 @@ export default function CustomerDashboard() {
                 step="0.01"
                 min="0"
                 label="Package Value"
-                startElement={<Icon icon={dollarIcon} className="w-5 h-5" />}
+                startElement={<Icon icon="solar:dollar-outline" className="text-xl" />}
                 value={formData.packageDetails.value}
                 onChange={handleInputChange}
                 placeholder="Declared value (optional)"
@@ -406,7 +403,7 @@ export default function CustomerDashboard() {
             >
               {createDeliveryMutation.isPending ? (
                 <>
-                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                  <span className="inline-block animate-spin rounded-full text-base border-b-2 border-white mr-2"></span>
                   Creating...
                 </>
               ) : (

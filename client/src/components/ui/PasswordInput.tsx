@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState, forwardRef, useEffect } from 'react';
-import { Icon } from '@iconify/react';
-import eyeIcon from '@iconify-icons/solar/eye-outline';
-import eyeClosedIcon from '@iconify-icons/solar/eye-closed-outline';
-import lockIcon from '@iconify-icons/solar/lock-password-outline';
+import { Icon } from '@iconify-icon/react';
 import { Input, InputProps } from './Input';
 import { cn } from '@/lib/utils';
 import { calculatePasswordStrength, PasswordStrength, PasswordStrengthInfo } from '@/lib/password-strength';
@@ -24,8 +21,9 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     onStrengthChange,
     value = '',
     onChange,
-    startElement = <Icon icon={lockIcon} className="w-5 h-5" />,
+    startElement = <Icon icon="solar:lock-password-outline" className="text-xl" />,
     className,
+    disabled,
     ...props 
   }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -69,17 +67,35 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       }
     };
 
+    const getActiveStrengthSegments = (info: PasswordStrengthInfo) => {
+      switch (info.strength) {
+        case 'strong':
+          return 3;
+        case 'okay':
+          return 2;
+        case 'weak':
+        default:
+          return info.score > 0 ? 1 : 0;
+      }
+    };
+
+    const activeSegments = getActiveStrengthSegments(strengthInfo);
+
     const endElement = showToggle ? (
       <button
         type="button"
-        className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors"
+        className={cn(
+          "p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition-colors grid place-items-center",
+          disabled && "cursor-not-allowed opacity-50 hover:text-gray-400 focus:text-gray-400"
+        )}
         onClick={togglePasswordVisibility}
         aria-label={showPassword ? 'Hide password' : 'Show password'}
         tabIndex={-1}
+        disabled={disabled}
       >
         <Icon 
-          icon={showPassword ? eyeClosedIcon : eyeIcon} 
-          className="w-4 h-4" 
+          icon={showPassword ? "solar:eye-closed-outline" : "solar:eye-outline"}
+          className="text-base" 
         />
       </button>
     ) : undefined;
@@ -94,6 +110,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           startElement={startElement}
           endElement={endElement}
           className={cn(className)}
+          disabled={disabled}
           {...props}
         />
         
@@ -106,7 +123,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
                   key={i}
                   className={cn(
                     "h-1 flex-1 rounded-full transition-colors duration-200",
-                    i < Math.ceil(strengthInfo.score / 2)
+                    i < activeSegments
                       ? getStrengthColor(strengthInfo.strength)
                       : "bg-gray-200"
                   )}

@@ -1,4 +1,10 @@
+packages:
+  - client
+  - server
+
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
+  - mongodb-memory-server
+  - msw
   - sharp
   - unrs-resolver

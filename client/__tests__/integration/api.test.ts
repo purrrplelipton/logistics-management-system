@@ -12,12 +12,12 @@ describe('API Integration Tests', () => {
           role: 'customer' as const,
         };
 
-        const response = await authAPI.register(userData);
+        const { data } = await authAPI.register(userData);
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.user.email).toBe('test@example.com');
-        expect(response.data.data.user.name).toBe('Test User');
-        expect(response.data.data.token).toBe('fake-jwt-token');
+        expect(data.success).toBe(true);
+        expect(data.data.user.email).toBe('test@example.com');
+        expect(data.data.user.name).toBe('Test User');
+        expect(data.data.token).toBe('fake-jwt-token');
       });
 
       it('handles registration with existing email', async () => {
@@ -48,11 +48,11 @@ describe('API Integration Tests', () => {
           password: 'password123',
         };
 
-        const response = await authAPI.login(credentials);
+  const { data } = await authAPI.login(credentials);
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.user.email).toBe('john@example.com');
-        expect(response.data.data.token).toBe('fake-jwt-token');
+  expect(data.success).toBe(true);
+  expect(data.data.user.email).toBe('john@example.com');
+  expect(data.data.token).toBe('fake-jwt-token');
       });
 
       it('handles invalid credentials', async () => {
@@ -76,20 +76,20 @@ describe('API Integration Tests', () => {
 
     describe('getMe', () => {
       it('successfully retrieves current user', async () => {
-        const response = await authAPI.getMe();
+  const { data } = await authAPI.getMe();
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.email).toBe('john@example.com');
-        expect(response.data.data.name).toBe('John Doe');
+  expect(data.success).toBe(true);
+  expect(data.data.email).toBe('john@example.com');
+  expect(data.data.name).toBe('John Doe');
       });
     });
 
     describe('logout', () => {
       it('successfully logs out user', async () => {
-        const response = await authAPI.logout();
+  const { data } = await authAPI.logout();
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data).toBeNull();
+  expect(data.success).toBe(true);
+  expect(data.data).toBeNull();
       });
     });
   });
@@ -97,28 +97,28 @@ describe('API Integration Tests', () => {
   describe('User API', () => {
     describe('getAllUsers', () => {
       it('successfully retrieves all users', async () => {
-        const response = await userAPI.getAllUsers();
+  const { data } = await userAPI.getAllUsers();
 
-        expect(response.data.success).toBe(true);
-        expect(Array.isArray(response.data.data)).toBe(true);
-        expect(response.data.data).toHaveLength(2);
+  expect(data.success).toBe(true);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data).toHaveLength(2);
       });
 
       it('filters users by role', async () => {
-        const response = await userAPI.getAllUsers({ role: 'driver' });
+  const { data } = await userAPI.getAllUsers({ role: 'driver' });
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data).toHaveLength(1);
-        expect(response.data.data[0].role).toBe('driver');
+  expect(data.success).toBe(true);
+  expect(data.data).toHaveLength(1);
+  expect(data.data[0].role).toBe('driver');
       });
     });
 
     describe('getUserById', () => {
       it('successfully retrieves user by ID', async () => {
-        const response = await userAPI.getUserById('user123');
+  const { data } = await userAPI.getUserById('user123');
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data._id).toBe('user123');
+  expect(data.success).toBe(true);
+  expect(data.data._id).toBe('user123');
       });
 
       it('handles nonexistent user', async () => {
@@ -137,11 +137,11 @@ describe('API Integration Tests', () => {
 
     describe('getDrivers', () => {
       it('successfully retrieves all drivers', async () => {
-        const response = await userAPI.getDrivers();
+  const { data } = await userAPI.getDrivers();
 
-        expect(response.data.success).toBe(true);
-        expect(Array.isArray(response.data.data)).toBe(true);
-        expect(response.data.data[0].role).toBe('driver');
+  expect(data.success).toBe(true);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data[0].role).toBe('driver');
       });
     });
   });
@@ -149,18 +149,18 @@ describe('API Integration Tests', () => {
   describe('Delivery API', () => {
     describe('getAllDeliveries', () => {
       it('successfully retrieves all deliveries', async () => {
-        const response = await deliveryAPI.getAllDeliveries();
+  const { data } = await deliveryAPI.getAllDeliveries();
 
-        expect(response.data.success).toBe(true);
-        expect(Array.isArray(response.data.data)).toBe(true);
-        expect(response.data.data).toHaveLength(1);
+  expect(data.success).toBe(true);
+  expect(Array.isArray(data.data)).toBe(true);
+  expect(data.data).toHaveLength(1);
       });
 
       it('filters deliveries by customer', async () => {
-        const response = await deliveryAPI.getAllDeliveries({ customerId: 'user123' });
+  const { data } = await deliveryAPI.getAllDeliveries({ customerId: 'user123' });
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data).toHaveLength(1);
+  expect(data.success).toBe(true);
+  expect(data.data).toHaveLength(1);
       });
     });
 
@@ -193,12 +193,12 @@ describe('API Integration Tests', () => {
           },
         };
 
-        const response = await deliveryAPI.createDelivery(deliveryData);
+  const { data } = await deliveryAPI.createDelivery(deliveryData);
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.pickupAddress).toEqual(deliveryData.pickupAddress);
-        expect(response.data.data.deliveryAddress).toEqual(deliveryData.deliveryAddress);
-        expect(response.data.data.trackingNumber).toMatch(/^TRK\d+$/);
+  expect(data.success).toBe(true);
+  expect(data.data.pickupAddress).toEqual(deliveryData.pickupAddress);
+  expect(data.data.deliveryAddress).toEqual(deliveryData.deliveryAddress);
+  expect(data.data.trackingNumber).toMatch(/^TRK\d+$/);
       });
 
       it('handles validation errors', async () => {
@@ -231,10 +231,10 @@ describe('API Integration Tests', () => {
 
     describe('getDelivery', () => {
       it('successfully retrieves delivery by ID', async () => {
-        const response = await deliveryAPI.getDelivery('delivery123');
+  const { data } = await deliveryAPI.getDelivery('delivery123');
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data._id).toBe('delivery123');
+  expect(data.success).toBe(true);
+  expect(data.data._id).toBe('delivery123');
       });
 
       it('handles nonexistent delivery', async () => {
@@ -253,11 +253,11 @@ describe('API Integration Tests', () => {
 
     describe('assignDriver', () => {
       it('successfully assigns driver to delivery', async () => {
-        const response = await deliveryAPI.assignDriver('delivery123', 'driver123');
+  const { data } = await deliveryAPI.assignDriver('delivery123', 'driver123');
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.driverId).toBe('driver123');
-        expect(response.data.data.status).toBe('Assigned');
+  expect(data.success).toBe(true);
+  expect(data.data.driverId).toBe('driver123');
+  expect(data.data.status).toBe('Assigned');
       });
 
       it('handles nonexistent delivery for assignment', async () => {
@@ -281,21 +281,21 @@ describe('API Integration Tests', () => {
           deliveryNotes: 'Package delivered successfully',
         };
 
-        const response = await deliveryAPI.updateDeliveryStatus('delivery123', statusData);
+  const { data } = await deliveryAPI.updateDeliveryStatus('delivery123', statusData);
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.status).toBe('Delivered');
-        expect(response.data.data.deliveryNotes).toBe('Package delivered successfully');
+  expect(data.success).toBe(true);
+  expect(data.data.status).toBe('Delivered');
+  expect(data.data.deliveryNotes).toBe('Package delivered successfully');
       });
     });
 
     describe('trackDelivery', () => {
       it('successfully tracks delivery', async () => {
-        const response = await deliveryAPI.trackDelivery('TRK123456');
+  const { data } = await deliveryAPI.trackDelivery('TRK123456');
 
-        expect(response.data.success).toBe(true);
-        expect(response.data.data.trackingNumber).toBe('TRK123456');
-        expect(response.data.data.status).toBe('InTransit');
+  expect(data.success).toBe(true);
+  expect(data.data.trackingNumber).toBe('TRK123456');
+  expect(data.data.status).toBe('InTransit');
       });
 
       it('handles invalid tracking number', async () => {
@@ -364,14 +364,14 @@ describe('API Integration Tests', () => {
     it('sends requests with credentials', async () => {
       // This would be tested by checking if cookies are sent
       // In a real test environment, you could inspect the request headers
-      const response = await authAPI.getMe();
-      expect(response.data.success).toBe(true);
+  const { data } = await authAPI.getMe();
+  expect(data.success).toBe(true);
     });
 
     it('uses correct base URL', async () => {
       // MSW will handle this by matching the URL patterns
-      const response = await authAPI.getMe();
-      expect(response.data.success).toBe(true);
+  const { data } = await authAPI.getMe();
+  expect(data.success).toBe(true);
     });
   });
 });

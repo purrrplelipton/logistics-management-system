@@ -1,79 +1,58 @@
 'use client';
 
-import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core';
-import * as zxcvbnCommonPackage from '@zxcvbn-ts/language-common';
-import * as zxcvbnEnPackage from '@zxcvbn-ts/language-en';
-
-// Configure zxcvbn with English language support
-const options = {
-  translations: zxcvbnEnPackage.translations,
-  graphs: zxcvbnCommonPackage.adjacencyGraphs,
-  dictionary: {
-    ...zxcvbnCommonPackage.dictionary,
-    ...zxcvbnEnPackage.dictionary,
-  },
-};
-
-zxcvbnOptions.setOptions(options);
+import zxcvbn, { ZXCVBNScore } from 'zxcvbn';
 
 export type PasswordStrength = 'weak' | 'okay' | 'strong';
 
 export interface PasswordStrengthInfo {
   strength: PasswordStrength;
-  score: number;
+  score: ZXCVBNScore;
   feedback: string[];
   crackTimeDisplay: string;
-  isValid: boolean; // For registration validation
+  isValid: boolean;
 }
 
-export const calculatePasswordStrength = (password: string): PasswordStrengthInfo => {
+const mapScoreToStrength = (score: ZXCVBNScore): PasswordStrength => {
+  if (score >= 4) {
+    return 'strong';
+  }
+
+  if (score >= 2) {
+    return 'okay';
+  }
+
+  return 'weak';
+};
+
+const buildFeedback = (score: ZXCVBNScore, warning?: string, suggestions: string[] = []): string[] => {
+  const messages = [warning, ...suggestions].filter((message): message is string => Boolean(message && message.trim()));
+
+  if (messages.length === 0 && score >= 4) {
+    return ['Excellent password strength!'];
+  }
+
+  return messages;
+};
+
+export const calculatePasswordStrength = (password: string, userInputs: string[] = []): PasswordStrengthInfo => {
   if (!password) {
     return {
       strength: 'weak',
       score: 0,
       feedback: ['Enter a password'],
-      crackTimeDisplay: 'instantly',
-      isValid: false
+      crackTimeDisplay: 'instant',
+      isValid: false,
     };
   }
 
-  const result = zxcvbn(password);
-  
-  // Convert zxcvbn score (0-4) to our score (0-6) and strength
-  let strength: PasswordStrength;
-  let normalizedScore: number;
-  
-  if (result.score >= 3) {
-    strength = 'strong';
-    normalizedScore = Math.min(6, result.score + 2); // 5-6 range
-  } else if (result.score >= 2) {
-    strength = 'okay';
-    normalizedScore = result.score + 2; // 4 range
-  } else {
-    strength = 'weak';
-    normalizedScore = Math.max(1, result.score + 1); // 1-2 range
-  }
-
-  // Format feedback messages
-  const feedback: string[] = [];
-  
-  if (result.feedback.warning) {
-    feedback.push(result.feedback.warning);
-  }
-  
-  if (result.feedback.suggestions.length > 0) {
-    feedback.push(...result.feedback.suggestions.slice(0, 2)); // Limit to 2 suggestions
-  }
-  
-  if (feedback.length === 0 && strength === 'strong') {
-    feedback.push('Excellent password strength!');
-  }
+  const result = zxcvbn(password, userInputs);
+  const strength = mapScoreToStrength(result.score);
 
   return {
     strength,
-    score: normalizedScore,
-    feedback,
-    crackTimeDisplay: result.crackTimesDisplay.offlineSlowHashing1e4PerSecond,
-    isValid: strength !== 'weak' // Passwords must be at least 'okay' or 'strong'
+    score: result.score,
+    feedback: buildFeedback(result.score, result.feedback.warning, result.feedback.suggestions),
+    crackTimeDisplay: result.crack_times_display.offline_slow_hashing_1e4_per_second,
+    isValid: result.score >= 2,
   };
 };

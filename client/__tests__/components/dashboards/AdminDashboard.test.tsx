@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
@@ -12,13 +12,11 @@ jest.mock('@/lib/queries', () => ({
   useAssignDriver: jest.fn(),
 }));
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Users: ({ className, ...props }: any) => <div data-testid="users-icon" className={className} {...props} />,
-  Package: ({ className, ...props }: any) => <div data-testid="package-icon" className={className} {...props} />,
-  Truck: ({ className, ...props }: any) => <div data-testid="truck-icon" className={className} {...props} />,
-  Clock: ({ className, ...props }: any) => <div data-testid="clock-icon" className={className} {...props} />,
-  CheckCircle: ({ className, ...props }: any) => <div data-testid="check-circle-icon" className={className} {...props} />,
+// Mock icon component
+jest.mock('@iconify-icon/react', () => ({
+  Icon: ({ icon, className, ...props }: any) => (
+    <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
+  ),
 }));
 
 const { useDeliveries, useUsers, useDrivers, useAssignDriver } = require('@/lib/queries');
@@ -114,34 +112,54 @@ describe('AdminDashboard', () => {
 
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
-    expect(screen.getByRole('status', { hidden: true })).toBeInTheDocument();
+  expect(screen.getByTestId('dashboard-loading')).toBeInTheDocument();
   });
 
   it('displays correct statistics', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
-    // Check delivery statistics
-    expect(screen.getByText('3')).toBeInTheDocument(); // Total deliveries
-    expect(screen.getByText('1')).toBeInTheDocument(); // Pending deliveries
-    expect(screen.getByText('1')).toBeInTheDocument(); // In Transit deliveries
-    expect(screen.getByText('1')).toBeInTheDocument(); // Completed deliveries
+    const getStatValue = (label: string) => {
+      const labelElement = screen.getByText(label, { selector: 'p' });
+      const statCard = labelElement.closest('div');
+      if (!statCard) {
+        throw new Error(`Stat card for ${label} not found`);
+      }
+      return within(statCard).getByText((content, element) => {
+        return element?.tagName === 'P' && element.className.includes('text-3xl');
+      });
+    };
 
-    // Check user statistics
-    expect(screen.getByText('4')).toBeInTheDocument(); // Total users
-    expect(screen.getByText('2')).toBeInTheDocument(); // Drivers
-    expect(screen.getByText('2')).toBeInTheDocument(); // Customers
+    expect(getStatValue('Total Deliveries')).toHaveTextContent('3');
+    expect(getStatValue('Pending')).toHaveTextContent('1');
+    expect(getStatValue('In Transit')).toHaveTextContent('1');
+    expect(getStatValue('Completed')).toHaveTextContent('1');
+
+    const getSecondaryStatValue = (label: string) => {
+      const labelElement = screen.getByText(label, { selector: 'p' });
+      const statCard = labelElement.closest('div');
+      if (!statCard) {
+        throw new Error(`Stat card for ${label} not found`);
+      }
+      return within(statCard).getByText((content, element) => {
+        return element?.tagName === 'P' && element.className.includes('text-2xl');
+      });
+    };
+
+    expect(getSecondaryStatValue('Total Users')).toHaveTextContent('4');
+    expect(getSecondaryStatValue('Drivers')).toHaveTextContent('2');
+    expect(getSecondaryStatValue('Customers')).toHaveTextContent('2');
   });
 
   it('displays statistics labels correctly', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
-    expect(screen.getByText('Total Deliveries')).toBeInTheDocument();
-    expect(screen.getByText('Pending')).toBeInTheDocument();
-    expect(screen.getByText('In Transit')).toBeInTheDocument();
-    expect(screen.getByText('Completed')).toBeInTheDocument();
-    expect(screen.getByText('Total Users')).toBeInTheDocument();
-    expect(screen.getByText('Drivers')).toBeInTheDocument();
-    expect(screen.getByText('Customers')).toBeInTheDocument();
+  expect(screen.getByText('Total Deliveries', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('Pending', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('In Transit', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('Completed', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('Total Users', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('Drivers', { selector: 'p' })).toBeInTheDocument();
+  expect(screen.getByText('Customers', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('renders driver assignment section', () => {
@@ -255,9 +273,9 @@ describe('AdminDashboard', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
     // Find status badges
-    const pendingBadge = screen.getByText('Pending');
-    const inTransitBadge = screen.getByText('InTransit');
-    const deliveredBadge = screen.getByText('Delivered');
+  const pendingBadge = screen.getByText('Pending', { selector: 'span' });
+  const inTransitBadge = screen.getByText('InTransit', { selector: 'span' });
+  const deliveredBadge = screen.getByText('Delivered', { selector: 'span' });
 
     expect(pendingBadge).toHaveClass('bg-yellow-100', 'text-yellow-800');
     expect(inTransitBadge).toHaveClass('bg-blue-100', 'text-blue-800');

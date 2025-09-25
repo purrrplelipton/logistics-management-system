@@ -3,10 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Icon } from '@iconify/react';
-import truckIcon from '@iconify-icons/solar/delivery-outline';
-import mailIcon from '@iconify-icons/solar/letter-outline';
-import alertIcon from '@iconify-icons/solar/danger-triangle-outline';
+import { Icon } from '@iconify-icon/react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
@@ -42,7 +39,7 @@ export default function LoginPage() {
         <header className="text-center">
           <div className="flex justify-center">
             <div className="flex items-center space-x-2">
-              <Icon icon={truckIcon} className="h-12 w-12 text-blue-600" aria-hidden="true" />
+              <Icon icon="solar:delivery-outline" className="text-5xl text-blue-600" aria-hidden="true" />
               <span className="text-3xl font-bold text-gray-900">LogiTrack</span>
             </div>
           </div>
@@ -55,7 +52,7 @@ export default function LoginPage() {
               href="/register"
               className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
             >
-              create a new account
+              create an account
             </Link>
           </p>
         </header>
@@ -75,7 +72,7 @@ export default function LoginPage() {
                 aria-live="polite"
               >
                 <div className="flex items-start">
-                  <Icon icon={alertIcon} className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
+                  <Icon icon="solar:danger-triangle-outline" className="text-xl text-red-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
                   <div className="ml-3">
                     <p className="text-sm text-red-800">{error}</p>
                   </div>
@@ -92,9 +89,10 @@ export default function LoginPage() {
                 required
                 label="Email Address"
                 placeholder="Enter your email"
-                startElement={<Icon icon={mailIcon} className="w-5 h-5" />}
+                startElement={<Icon icon="solar:letter-outline" className="text-xl" />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
               
               <PasswordInput
@@ -107,6 +105,7 @@ export default function LoginPage() {
                 showStrengthIndicator={false}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </div>
 
@@ -125,6 +124,14 @@ export default function LoginPage() {
                   'Sign in'
                 )}
               </button>
+              <div className="mt-4 text-center">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
           </form>
         </section>

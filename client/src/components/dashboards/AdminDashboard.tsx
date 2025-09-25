@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Users, Package, Truck, Clock, CheckCircle } from 'lucide-react';
+import { Icon } from '@iconify-icon/react';
 import { useDeliveries, useUsers, useDrivers, useAssignDriver } from '@/lib/queries';
 
 export default function AdminDashboard() {
@@ -16,7 +16,13 @@ export default function AdminDashboard() {
   if (deliveriesLoading || usersLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-label="Loading dashboard"
+          data-testid="dashboard-loading"
+          className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"
+        />
       </div>
     );
   }
@@ -56,7 +62,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Deliveries</p>
               <p className="text-3xl font-bold text-gray-900">{stats.totalDeliveries}</p>
             </div>
-            <Package className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:box-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -66,7 +72,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Pending</p>
               <p className="text-3xl font-bold text-yellow-600">{stats.pendingDeliveries}</p>
             </div>
-            <Clock className="h-12 w-12 text-yellow-600" />
+            <Icon icon="solar:clock-circle-outline" className="text-5xl text-yellow-600" />
           </div>
         </div>
 
@@ -76,7 +82,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">In Transit</p>
               <p className="text-3xl font-bold text-blue-600">{stats.inTransitDeliveries}</p>
             </div>
-            <Truck className="h-12 w-12 text-blue-600" />
+            <Icon icon="solar:delivery-outline" className="text-5xl text-blue-600" />
           </div>
         </div>
 
@@ -86,7 +92,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-3xl font-bold text-green-600">{stats.completedDeliveries}</p>
             </div>
-            <CheckCircle className="h-12 w-12 text-green-600" />
+            <Icon icon="solar:check-circle-outline" className="text-5xl text-green-600" />
           </div>
         </div>
       </div>
@@ -99,7 +105,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Total Users</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
             </div>
-            <Users className="h-10 w-10 text-purple-600" />
+            <Icon icon="solar:users-group-rounded-outline" className="text-[2.5rem] text-purple-600" />
           </div>
         </div>
 
@@ -109,7 +115,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Drivers</p>
               <p className="text-2xl font-bold text-blue-600">{stats.totalDrivers}</p>
             </div>
-            <Truck className="h-10 w-10 text-blue-600" />
+            <Icon icon="solar:delivery-outline" className="text-[2.5rem] text-blue-600" />
           </div>
         </div>
 
@@ -119,7 +125,7 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium text-gray-600">Customers</p>
               <p className="text-2xl font-bold text-green-600">{stats.totalCustomers}</p>
             </div>
-            <Users className="h-10 w-10 text-green-600" />
+            <Icon icon="solar:users-group-rounded-outline" className="text-[2.5rem] text-green-600" />
           </div>
         </div>
       </div>
@@ -129,10 +135,11 @@ export default function AdminDashboard() {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Assign Driver to Delivery</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="pending-delivery-select" className="block text-sm font-medium text-gray-700 mb-2">
               Select Pending Delivery
             </label>
             <select
+              id="pending-delivery-select"
               value={selectedDelivery}
               onChange={(e) => setSelectedDelivery(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
@@ -147,10 +154,11 @@ export default function AdminDashboard() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="driver-select" className="block text-sm font-medium text-gray-700 mb-2">
               Select Driver
             </label>
             <select
+              id="driver-select"
               value={selectedDriver}
               onChange={(e) => setSelectedDriver(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"

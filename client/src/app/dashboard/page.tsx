@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Truck, LogOut, User } from 'lucide-react';
+import { Icon } from '@iconify-icon/react';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
 import CustomerDashboard from '@/components/dashboards/CustomerDashboard';
 import DriverDashboard from '@/components/dashboards/DriverDashboard';
@@ -42,13 +42,13 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <Truck className="h-8 w-8" />
+              <Icon icon="solar:delivery-outline" className="text-[2rem]" />
               <span className="ml-2 font-bold text-xl">LogiTrack</span>
             </div>
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
+                <Icon icon="solar:user-outline" className="text-xl" />
                 <span className="text-sm">{user.name}</span>
                 <span className="text-xs bg-blue-500 px-2 py-1 rounded-full capitalize">
                   {user.role}
@@ -59,7 +59,7 @@ export default function DashboardPage() {
                 onClick={logout}
                 className="flex items-center space-x-1 hover:text-blue-200 transition-colors"
               >
-                <LogOut className="h-5 w-5" />
+                <Icon icon="solar:logout-2 outline" className="text-xl" />
                 <span>Logout</span>
               </button>
             </div>

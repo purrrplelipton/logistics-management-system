@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Icon } from '@iconify/react';
-import closeIcon from '@iconify-icons/solar/close-circle-bold';
+import { Icon } from '@iconify-icon/react';
+import { cn } from '@/lib/utils';
 
 interface ModalProps {
   isOpen: boolean;
@@ -126,39 +126,26 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
   const modalContent = (
     <dialog
       ref={dialogRef}
-      className="backdrop:bg-black/50 backdrop:backdrop-blur-sm bg-transparent p-0 max-w-none max-h-none w-screen h-screen"
+      className={cn("backdrop:bg-black/50 backdrop:backdrop-blur-sm w-full max-h-[90vh] overflow-auto bg-white rounded-lg shadow-xl transition-all starting:opacity-0 inset-0 m-auto", sizeClasses[size])}
       aria-labelledby="modal-title"
     >
-      <div className="flex items-center justify-center min-h-full p-4 sm:p-6 lg:p-8">
-        <div
-          className={`
-            bg-white rounded-lg shadow-xl w-full ${sizeClasses[size]}
-            max-h-[90vh] overflow-hidden flex flex-col
-            transform transition-all duration-200 ease-out
-          `}
-          onClick={(e) => e.stopPropagation()}
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+        <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+          {title}
+        </h2>
+        <button
+          onClick={onClose}
+          className="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 grid place-items-center"
+          aria-label="Close modal"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
-            <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
-              {title}
-            </h2>
-            <button
-              onClick={onClose}
-              className="rounded-full p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              aria-label="Close modal"
-            >
-              <Icon icon={closeIcon} className="w-6 h-6" />
-            </button>
-          </div>
-          
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6">
-              {children}
-            </div>
-          </div>
-        </div>
+          <Icon icon="solar:close-circle-bold" className="text-2xl" />
+        </button>
+      </div>
+      
+      {/* Content */}
+      <div className="p-6">
+        {children}
       </div>
     </dialog>
   );

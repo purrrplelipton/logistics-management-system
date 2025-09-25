@@ -1,293 +1,107 @@
 import { calculatePasswordStrength } from '@/lib/password-strength';
 
-// Mock zxcvbn
-jest.mock('@zxcvbn-ts/core', () => ({
-  zxcvbn: jest.fn(),
-  zxcvbnOptions: {
-    setOptions: jest.fn(),
-  },
-}));
+import zxcvbn, { ZXCVBNResult } from 'zxcvbn';
 
-const { zxcvbn } = require('@zxcvbn-ts/core');
+jest.mock('zxcvbn');
+
+const mockedZxcvbn = zxcvbn as jest.MockedFunction<typeof zxcvbn>;
+
+const mockResult = (overrides: Partial<ZXCVBNResult>): ZXCVBNResult => ({
+  calc_time: 0,
+  crack_times_seconds: {
+    online_throttling_100_per_hour: 0,
+    online_no_throttling_10_per_second: 0,
+    offline_slow_hashing_1e4_per_second: 0,
+    offline_fast_hashing_1e10_per_second: 0,
+  },
+  crack_times_display: {
+    online_throttling_100_per_hour: 'instant',
+    online_no_throttling_10_per_second: 'instant',
+    offline_slow_hashing_1e4_per_second: 'instant',
+    offline_fast_hashing_1e10_per_second: 'instant',
+  },
+  feedback: {
+    warning: '',
+    suggestions: [],
+  },
+  guesses: 1,
+  guesses_log10: 0,
+  password: '',
+  score: 0,
+  sequence: [],
+  ...overrides,
+});
 
 describe('calculatePasswordStrength', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('handles empty password', () => {
+  it('returns default values when password is empty', () => {
     const result = calculatePasswordStrength('');
-    
+
     expect(result).toEqual({
       strength: 'weak',
       score: 0,
       feedback: ['Enter a password'],
-      crackTimeDisplay: 'instantly',
+      crackTimeDisplay: 'instant',
       isValid: false,
     });
   });
 
-  it('calculates weak password strength', () => {
-    zxcvbn.mockReturnValue({
-      score: 0,
-      feedback: {
-        warning: 'This is a common password',
-        suggestions: ['Add more words', 'Avoid common patterns'],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: 'instantly',
-      },
-    });
+  it('classifies score 0 and 1 as weak', () => {
+    mockedZxcvbn
+      .mockReturnValueOnce(mockResult({ score: 0, feedback: { warning: 'Too common', suggestions: ['Add more words'] } }))
+      .mockReturnValueOnce(mockResult({ score: 1 }));
 
-    const result = calculatePasswordStrength('password');
-    
+    let result = calculatePasswordStrength('password');
     expect(result.strength).toBe('weak');
-    expect(result.score).toBe(1); // max(1, 0 + 1) = 1
+    expect(result.isValid).toBe(false);
+    expect(result.feedback).toEqual(['Too common', 'Add more words']);
+
+    result = calculatePasswordStrength('better');
+    expect(result.strength).toBe('weak');
     expect(result.isValid).toBe(false);
   });
 
-  it('calculates okay password strength', () => {
-    zxcvbn.mockReturnValue({
-      score: 2,
-      feedback: {
-        warning: '',
-        suggestions: ['Add more characters'],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '3 hours',
-      },
-    });
+  it('classifies scores 2 and 3 as okay', () => {
+    mockedZxcvbn
+      .mockReturnValueOnce(mockResult({ score: 2, feedback: { warning: '', suggestions: ['Add symbols'] }, crack_times_display: { offline_slow_hashing_1e4_per_second: '3 hours' } }))
+      .mockReturnValueOnce(mockResult({ score: 3 }));
 
-    const result = calculatePasswordStrength('password123');
-    
+    let result = calculatePasswordStrength('password123');
     expect(result.strength).toBe('okay');
-    expect(result.score).toBe(4); // 2 + 2
     expect(result.isValid).toBe(true);
+    expect(result.score).toBe(2);
+    expect(result.crackTimeDisplay).toBe('3 hours');
+    expect(result.feedback).toEqual(['Add symbols']);
+
+    result = calculatePasswordStrength('BetterPassword123');
+    expect(result.strength).toBe('okay');
+    expect(result.isValid).toBe(true);
+    expect(result.score).toBe(3);
   });
 
-  it('calculates strong password strength', () => {
-    zxcvbn.mockReturnValue({
-      score: 4,
-      feedback: {
-        warning: '',
-        suggestions: [],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: 'centuries',
-      },
-    });
+  it('classifies score 4 as strong and returns celebratory feedback when none provided', () => {
+    mockedZxcvbn.mockReturnValue(mockResult({ score: 4, feedback: { warning: '', suggestions: [] }, crack_times_display: { offline_slow_hashing_1e4_per_second: 'centuries', online_throttling_100_per_hour: '1 year', online_no_throttling_10_per_second: '1 year', offline_fast_hashing_1e10_per_second: 'centuries' } }));
 
     const result = calculatePasswordStrength('MyVeryStrongP@ssw0rd!2024');
-    
+
     expect(result.strength).toBe('strong');
-    expect(result.score).toBe(6); // 4 + 2, capped at 6
     expect(result.isValid).toBe(true);
+    expect(result.score).toBe(4);
+    expect(result.feedback).toEqual(['Excellent password strength!']);
+    expect(result.crackTimeDisplay).toBe('centuries');
   });
 
-  it('handles score of 3 correctly', () => {
-    zxcvbn.mockReturnValue({
-      score: 3,
-      feedback: {
-        warning: '',
-        suggestions: [],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '2 days',
-      },
-    });
+  it('passes user inputs through to zxcvbn', () => {
+    mockedZxcvbn.mockReturnValue(mockResult({ score: 2 }));
 
-    const result = calculatePasswordStrength('GoodPassword123');
-    
-    expect(result.strength).toBe('strong');
-    expect(result.score).toBe(5); // 3 + 2
-    expect(result.isValid).toBe(true);
-  });
+    const password = 'Password123';
+    const userInputs = ['email@example.com'];
 
-  it('caps score at 6', () => {
-    zxcvbn.mockReturnValue({
-      score: 4,
-      feedback: {
-        warning: '',
-        suggestions: [],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: 'centuries',
-      },
-    });
+    calculatePasswordStrength(password, userInputs);
 
-    const result = calculatePasswordStrength('ExtremelyStrongPassword!@#$%^&*()123456');
-    
-    expect(result.score).toBe(6);
-    expect(result.strength).toBe('strong');
-  });
-
-  it('processes feedback correctly', () => {
-    zxcvbn.mockReturnValue({
-      score: 1,
-      feedback: {
-        warning: 'This is a common password',
-        suggestions: ['Add more words', 'Avoid sequences'],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '2 minutes',
-      },
-    });
-
-    const result = calculatePasswordStrength('123456');
-    
-    expect(result.feedback).toContain('This is a common password');
-    expect(result.feedback).toContain('Add more words');
-    expect(result.feedback).toContain('Avoid sequences');
-  });
-
-  it('handles feedback with empty warning', () => {
-    zxcvbn.mockReturnValue({
-      score: 2,
-      feedback: {
-        warning: '',
-        suggestions: ['Add symbols'],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '1 hour',
-      },
-    });
-
-    const result = calculatePasswordStrength('mypassword');
-    
-    expect(result.feedback).toEqual(['Add symbols']);
-  });
-
-  it('handles feedback with empty suggestions', () => {
-    zxcvbn.mockReturnValue({
-      score: 3,
-      feedback: {
-        warning: 'Avoid common patterns',
-        suggestions: [],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '3 days',
-      },
-    });
-
-    const result = calculatePasswordStrength('SomePassword');
-    
-    expect(result.feedback).toEqual(['Avoid common patterns']);
-  });
-
-  it('handles both warning and suggestions', () => {
-    zxcvbn.mockReturnValue({
-      score: 1,
-      feedback: {
-        warning: 'This is too common',
-        suggestions: ['Use a longer password', 'Add symbols'],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '5 minutes',
-      },
-    });
-
-    const result = calculatePasswordStrength('password');
-    
-    expect(result.feedback).toHaveLength(3);
-    expect(result.feedback).toContain('This is too common');
-    expect(result.feedback).toContain('Use a longer password');
-    expect(result.feedback).toContain('Add symbols');
-  });
-
-  it('returns correct crack time display', () => {
-    zxcvbn.mockReturnValue({
-      score: 2,
-      feedback: {
-        warning: '',
-        suggestions: [],
-      },
-      crackTimesDisplay: {
-        offlineSlowHashing1e4PerSecond: '4 days',
-      },
-    });
-
-    const result = calculatePasswordStrength('somepassword');
-    
-    expect(result.crackTimeDisplay).toBe('4 days');
-  });
-
-  it('determines validity correctly for different scores', () => {
-    // Test weak password (invalid)
-    zxcvbn.mockReturnValue({
-      score: 1,
-      feedback: { warning: '', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: 'instantly' },
-    });
-
-    let result = calculatePasswordStrength('weak');
-    expect(result.isValid).toBe(false);
-
-    // Test okay password (valid)
-    zxcvbn.mockReturnValue({
-      score: 2,
-      feedback: { warning: '', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: '1 hour' },
-    });
-
-    result = calculatePasswordStrength('okaypassword');
-    expect(result.isValid).toBe(true);
-
-    // Test strong password (valid)
-    zxcvbn.mockReturnValue({
-      score: 4,
-      feedback: { warning: '', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: 'centuries' },
-    });
-
-    result = calculatePasswordStrength('VeryStrongPassword123!');
-    expect(result.isValid).toBe(true);
-  });
-
-  it('calls zxcvbn with correct password', () => {
-    zxcvbn.mockReturnValue({
-      score: 2,
-      feedback: { warning: '', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: '1 hour' },
-    });
-
-    const testPassword = 'testpassword123';
-    calculatePasswordStrength(testPassword);
-    
-    expect(zxcvbn).toHaveBeenCalledWith(testPassword);
-  });
-
-  it('handles edge case scores', () => {
-    // Test score 0
-    zxcvbn.mockReturnValue({
-      score: 0,
-      feedback: { warning: 'Very weak', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: 'instantly' },
-    });
-
-    let result = calculatePasswordStrength('1');
-    expect(result.strength).toBe('weak');
-    expect(result.score).toBe(1); // max(1, 0 + 1) = 1
-
-    // Test score 1
-    zxcvbn.mockReturnValue({
-      score: 1,
-      feedback: { warning: 'Weak', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: '1 minute' },
-    });
-
-    result = calculatePasswordStrength('12');
-    expect(result.strength).toBe('weak');
-    expect(result.score).toBe(2); // max(1, 1 + 1) = 2
-
-    // Test maximum score 4
-    zxcvbn.mockReturnValue({
-      score: 4,
-      feedback: { warning: '', suggestions: [] },
-      crackTimesDisplay: { offlineSlowHashing1e4PerSecond: 'centuries' },
-    });
-
-    result = calculatePasswordStrength('P@ssW0rd!2024VerySecure');
-    expect(result.strength).toBe('strong');
-    expect(result.score).toBe(6);
+    expect(mockedZxcvbn).toHaveBeenCalledWith(password, userInputs);
   });
 });

@@ -1,483 +1,130 @@
-# Logistics Management System
+# Logistics Management System (a.k.a. “ship it, literally”)
 
-A comprehensive **Next.js + TypeScript** frontend and **Node.js + TypeScript** backend logistics management system with role-based access control for Admins, Customers, and Drivers.
+This repo is a do-it-all logistics sandbox: a Next.js 15 frontend, a TypeScript Express backend, some MongoDB magic, and three different dashboards yelling for attention (Admin, Customer, Driver). It’s not trying to win enterprise buzzword bingo—just help you track boxes from point A to point B.
 
 ![Next.js Login Interface](https://github.com/user-attachments/assets/e6ad08c4-34fd-48c7-9d41-3b89ba7192c6)
 
-## 🏗️ Project Structure
+## 👀 What’s inside?
 
 ```
 logistics-management-system/
-├── client/                    # Next.js 15 + TypeScript Frontend
-│   ├── src/
-│   │   ├── app/              # Next.js App Router pages
-│   │   ├── components/       # Reusable React components
-│   │   ├── contexts/         # React Context (Auth)
-│   │   ├── lib/             # API services and utilities
-│   │   └── types/           # TypeScript type definitions
-│   ├── package.json         # Frontend dependencies (pnpm)
-│   └── tailwind.config.ts   # Tailwind CSS configuration
-├── server/                   # Node.js + TypeScript Backend
-│   ├── src/
-│   │   ├── config/          # Database configuration
-│   │   ├── controllers/     # Route handlers
-│   │   ├── middleware/      # Custom middleware
-│   │   ├── models/          # MongoDB models
-│   │   ├── routes/          # API routes
-│   │   ├── types/           # TypeScript interfaces
-│   │   └── tests/           # Test files
-│   ├── dist/                # Compiled JavaScript
-│   ├── package.json         # Backend dependencies (pnpm)
-│   └── tsconfig.json        # TypeScript configuration
-└── README.md                # This file
+├── client/                  # Next.js + Tailwind UI, lives on :3000
+│   ├── src/app/             # App Router pages (login, dashboard, etc.)
+│   ├── src/components/      # Reusable bits (dashboards, modals, inputs)
+│   ├── src/contexts/        # Auth context & provider
+│   ├── src/lib/             # API helpers, form utils, password helpers
+│   └── src/types/           # Shared TypeScript types
+├── server/                  # Express API, runs on :5000
+│   ├── src/controllers/     # Auth, users, deliveries
+│   ├── src/middleware/      # Auth guard, request validation, errors
+│   ├── src/models/          # Mongoose schemas
+│   ├── src/routes/          # API route definitions
+│   └── src/tests/           # Jest + Supertest unit/integration suite
+└── README.md                # You’re reading it 👋
 ```
 
-## 🚀 Quick Start
+## 🧰 Stuff you’ll need first
 
-### Prerequisites
-- Node.js (v18 or higher)
-- pnpm (v8 or higher)
-- MongoDB (v5.0 or higher)
+- Node.js 18+ (nvm makes life easier)
+- pnpm 8+ (because both apps share a lockfile)
+- MongoDB 5+ (local install or Docker, doesn’t matter)
+- Two terminals, or a tmux tab if you’re fancy
 
-### Installation
+## 🚀 Kickoff in 5-ish steps
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd logistics-management-system
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install server dependencies
-   cd server
-   pnpm install
-   
-   # Install client dependencies
-   cd ../client
-   pnpm install
-   ```
-
-3. **Environment Setup**
-   ```bash
-   # Server environment
-   cd ../server
-   cp .env.example .env
-   # Edit .env with your MongoDB URI and JWT secret
-   
-   # Client environment (optional)
-   cd ../client
-   echo "NEXT_PUBLIC_API_URL=http://localhost:5000/api" > .env.local
-   ```
-
-4. **Start Development Servers**
-   ```bash
-   # Terminal 1: Start backend server
-   cd server
-   pnpm run dev
-   
-   # Terminal 2: Start frontend server
-   cd client
-   pnpm run dev
-   ```
-
-5. **Access the Application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000/api
-
-## 🛠️ Tech Stack
-
-### Frontend (Client)
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type safety and better developer experience
-- **Tailwind CSS** - Utility-first CSS framework
-- **Axios** - HTTP client for API calls
-- **React Context** - State management for authentication
-- **Lucide React** - Modern icon library
-
-### Backend (Server)
-- **Node.js** with **Express.js** - RESTful API server
-- **TypeScript** - Complete type safety
-- **MongoDB** with **Mongoose** - Database and ODM
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
-- **express-validator** - Input validation
-
-## Features
-
-### 🏢 Admin Dashboard
-- **User Management**: Create, view, and manage all users (customers and drivers)
-- **Delivery Management**: View all deliveries, assign drivers to deliveries
-- **Driver Assignment**: Assign available drivers to pending deliveries
-- **System Analytics**: Monitor delivery statistics and performance metrics
-- **Role-based Access Control**: Full system access and management capabilities
-
-### 👤 Customer Dashboard
-- **Delivery Requests**: Create new delivery requests with pickup and delivery addresses
-- **Package Details**: Specify package descriptions, weight, and value
-- **Delivery Tracking**: Track delivery status in real-time
-- **Delivery History**: View all past and current deliveries
-- **Status Updates**: Receive notifications on delivery progress
-
-### 🚛 Driver Dashboard
-- **Assigned Deliveries**: View all deliveries assigned by admin
-- **Status Management**: Update delivery status (Pending → In Transit → Delivered)
-- **Route Information**: Access pickup and delivery addresses
-- **Customer Contact**: View customer information and contact details
-- **Delivery Notes**: Add notes and updates for each delivery
-
-### 🔒 Authentication & Security
-- **JWT-based Authentication**: Secure token-based authentication system
-- **Role-based Authorization**: Different access levels for admins, customers, and drivers
-- **Password Security**: Bcrypt password hashing
-- **Input Validation**: Comprehensive server-side validation using express-validator
-
-### 📦 Delivery Management
-- **Status Workflow**: Enforced delivery status progression (Pending → In Transit → Delivered)
-- **Tracking System**: Unique tracking numbers for each delivery
-- **Public Tracking**: Track deliveries using tracking number (no login required)
-- **Address Validation**: Comprehensive address validation with zip code format checking
-- **Package Details**: Weight, dimensions, value, and description tracking
-
-## Tech Stack
-
-### Backend
-- **Node.js** with **Express.js** - RESTful API server
-- **MongoDB** with **Mongoose** - Database and ODM
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
-- **express-validator** - Input validation
-- **cors** - Cross-origin resource sharing
-- **helmet** - Security middleware
-- **morgan** - HTTP request logging
-
-### Frontend
-- **React** with **TypeScript** - User interface
-- **React Router** - Client-side routing
-- **Axios** - HTTP client for API calls
-- **Context API** - State management for authentication
-- **Lucide React** - Modern icon library
-- **Responsive Design** - Mobile-friendly interface
-
-### Testing
-- **Jest** - Unit and integration testing
-- **Supertest** - HTTP assertion testing
-
-## Database Schema
-
-### Users Collection
-```javascript
-{
-  name: String,
-  email: String (unique, indexed),
-  password: String (hashed),
-  role: String ['admin', 'customer', 'driver'] (indexed),
-  phone: String,
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
-  },
-  isActive: Boolean,
-  createdAt: Date,
-  updatedAt: Date
-}
-```
-
-### Deliveries Collection
-```javascript
-{
-  customerId: ObjectId (ref: User, indexed),
-  driverId: ObjectId (ref: User, indexed),
-  pickupAddress: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
-  },
-  deliveryAddress: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
-  },
-  packageDetails: {
-    description: String,
-    weight: Number,
-    dimensions: {
-      length: Number,
-      width: Number,
-      height: Number
-    },
-    value: Number
-  },
-  status: String ['Pending', 'InTransit', 'Delivered'] (indexed),
-  estimatedDeliveryDate: Date,
-  actualDeliveryDate: Date,
-  deliveryNotes: String,
-  trackingNumber: String (unique, indexed),
-  createdAt: Date (indexed),
-  updatedAt: Date
-}
-```
-
-## Installation & Setup
-
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (v4.4 or higher)
-- npm or yarn
-
-### Backend Setup
-
-1. **Navigate to backend directory**
-   ```bash
-   cd backend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Configuration**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Update the `.env` file with your configuration:
-   ```env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/logistics_db
-   JWT_SECRET=your_jwt_secret_key_here
-   JWT_EXPIRE=7d
-   NODE_ENV=development
-   ```
-
-4. **Start MongoDB**
-   ```bash
-   # Using MongoDB service
-   sudo systemctl start mongod
-   
-   # Or using Docker
-   docker run -d -p 27017:27017 --name mongodb mongo:latest
-   ```
-
-5. **Start the backend server**
-   ```bash
-   # Development mode
-   npm run dev
-   
-   # Production mode
-   npm start
-   ```
-
-   The API will be available at `http://localhost:5000`
-
-### Frontend Setup
-
-1. **Navigate to frontend directory**
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Configuration** (optional)
-   Create `.env` file in frontend directory:
-   ```env
-   REACT_APP_API_URL=http://localhost:5000/api
-   ```
-
-4. **Start the frontend development server**
-   ```bash
-   npm start
-   ```
-
-   The application will be available at `http://localhost:3000`
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `GET /api/auth/me` - Get current user profile
-
-### Users (Admin only)
-- `GET /api/users` - Get all users
-- `GET /api/users/drivers` - Get all drivers
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Deactivate user
-
-### Deliveries
-- `POST /api/deliveries` - Create delivery (Customer)
-- `GET /api/deliveries` - Get deliveries (Role-based filtering)
-- `GET /api/deliveries/:id` - Get delivery by ID
-- `PUT /api/deliveries/:id/assign` - Assign driver (Admin)
-- `PUT /api/deliveries/:id/status` - Update status (Driver/Admin)
-- `GET /api/deliveries/track/:trackingNumber` - Track delivery (Public)
-
-## Testing
-
-### Run Backend Tests
 ```bash
-cd backend
-npm test
+# 1) grab the code
+git clone <your-fork-or-https-url>
+cd logistics-management-system
+
+# 2) install backend things
+cd server
+pnpm install
+cp .env.example .env    # then plug in Mongo URI + JWT secret
+
+# 3) install frontend things
+cd ../client
+pnpm install
+echo "NEXT_PUBLIC_API_URL=http://localhost:5000/api" > .env.local
+
+# 4) fire up both servers (separate terminals)
+cd ../server && pnpm run dev      # API on http://localhost:5000
+cd ../client && pnpm run dev      # Web app on http://localhost:3000
+
+# 5) log in, click around, deliver fake packages
 ```
 
-### Run Frontend Tests
-```bash
-cd frontend
-npm test
+Mongo tip: if you’d rather Docker it, `docker run -d -p 27017:27017 --name mongodb mongo:7` works just fine.
+
+## 🗺️ Dashboards at a glance
+
+| Role | What they can mess with |
+|------|-------------------------|
+| **Admin** | See every user, create new ones, assign deliveries, babysit stats |
+| **Customer** | Book a delivery, check status, peek at history, leave notes |
+| **Driver** | See assigned jobs, flip statuses (Pending → In Transit → Delivered), grab addresses |
+
+Shared perks: real JWT auth, server-side validation, and a tracking page you can share without logging in.
+
+## 🧠 Under the hood
+
+| Area | Tech | Why it’s here |
+|------|------|---------------|
+| Frontend | Next.js 15, TypeScript, Tailwind, React Context, Solar icons | App Router goodies with type safety and quick styling |
+| Backend | Express, TypeScript, Mongoose, express-validator, bcryptjs, JWT | Cozy REST API with typed models and sane auth |
+| Testing | Jest, Supertest, mongodb-memory-server | Unit + integration tests without touching your real DB |
+
+Want to run the API tests? `cd server && pnpm test`. Client tests live in `client` with `pnpm test`, too.
+
+## 🔌 API cheat-sheet
+
+```
+POST   /api/auth/register            # make anyone (admin/customer/driver)
+POST   /api/auth/login               # returns JWT + httpOnly cookie
+GET    /api/auth/me                  # profile info for whoever is logged in
+
+GET    /api/users                    # admin only, lists everyone
+GET    /api/users/drivers            # admin filtered list of drivers
+PUT    /api/users/:id                # admin updates user info
+DELETE /api/users/:id                # admin soft-deletes (deactivates)
+
+POST   /api/deliveries               # customer books a delivery
+GET    /api/deliveries               # role-aware feed (admin sees all)
+PUT    /api/deliveries/:id/assign    # admin assigns a driver
+PUT    /api/deliveries/:id/status    # driver toggles status
+GET    /api/deliveries/track/:code   # public tracking lookup
 ```
 
-## Usage Examples
+Use the password-protected ones with the cookie from `/api/auth/login` (the tests show how if you need a hint).
 
-### 1. Register a New User
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "Password123",
-    "role": "customer",
-    "phone": "1234567890"
-  }'
-```
+## 🧪 Fake accounts & test data
 
-### 2. Login
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "Password123"
-  }'
-```
+Spin up a few seed users manually or just register fresh ones. If you need a baseline idea, here’s what we usually create:
 
-### 3. Create a Delivery (Customer)
-```bash
-curl -X POST http://localhost:5000/api/deliveries \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "pickupAddress": {
-      "street": "123 Main St",
-      "city": "New York",
-      "state": "NY",
-      "zipCode": "10001"
-    },
-    "deliveryAddress": {
-      "street": "456 Oak Ave",
-      "city": "Brooklyn",
-      "state": "NY",
-      "zipCode": "11201"
-    },
-    "packageDetails": {
-      "description": "Electronics package",
-      "weight": 2.5,
-      "value": 299.99
-    }
-  }'
-```
+- **Admin** — `admin@logistics.com` / `Admin123`
+- **Customer** — `customer@example.com` / `Customer123`
+- **Driver** — `driver@example.com` / `Driver123`
 
-### 4. Track a Delivery (Public)
-```bash
-curl -X GET http://localhost:5000/api/deliveries/track/TRK1234567890
-```
+The password strength helper nags you to keep things semi-secure, so toss in capitals + numbers.
 
-## Default User Accounts
+## 🧯 Common “uh oh” moments
 
-For testing purposes, you can create these user accounts:
+- **App can’t reach Mongo** → Double-check the URI in `server/.env`, especially if you renamed the Docker container.
+- **Frontend says 500** → The backend probably isn’t running or your API URL changed. Update `NEXT_PUBLIC_API_URL` and restart `pnpm run dev`.
+- **Tests hang** → Make sure you stopped the dev server; the in-memory Mongo server grabs its own port when tests run.
+- **JWT expired?** → They only last a short while. Login again or tweak `JWT_EXPIRES_IN` in the `.env`.
 
-### Admin Account
-- **Email**: admin@logistics.com
-- **Password**: Admin123
-- **Role**: admin
+## 🤝 Wanna hack on it?
 
-### Customer Account
-- **Email**: customer@example.com
-- **Password**: Customer123
-- **Role**: customer
+1. Fork → clone → branch (`git checkout -b feature/cool-idea`).
+2. Make your tweaks. Extra brownie points for tests in `server/src/tests` or `client/__tests__`.
+3. `pnpm test` in whatever package you touched.
+4. Commit + push + open a PR. Toss a gif in the description if you feel spicy.
 
-### Driver Account
-- **Email**: driver@example.com
-- **Password**: Driver123
-- **Role**: driver
+## 📜 License
 
-## Performance Optimizations
+ISC license because we’re chill like that. Use it, remix it, just don’t blame us if your delivery truck gets lost.
 
-### Database Indexes
-The system includes optimized database indexes for:
-- User email (unique)
-- User role
-- Delivery status
-- Delivery customer ID
-- Delivery driver ID
-- Delivery creation date
-- Delivery tracking number (unique)
+---
 
-### API Features
-- **Pagination**: All list endpoints support pagination
-- **Filtering**: Filter deliveries by status, date, etc.
-- **Sorting**: Sort results by relevant fields
-- **Field Selection**: Optimize queries by selecting only needed fields
-
-## Security Features
-
-- **Password Hashing**: Bcrypt with salt rounds
-- **JWT Tokens**: Secure authentication tokens
-- **Input Validation**: Server-side validation for all inputs
-- **Role-based Access**: Proper authorization checks
-- **CORS Configuration**: Secure cross-origin requests
-- **Security Headers**: Helmet.js security middleware
-- **Error Handling**: Comprehensive error handling without information leakage
-
-## Development
-
-### Code Structure
-```
-logistics-management-system/
-├── backend/
-│   ├── config/          # Database configuration
-│   ├── controllers/     # Route handlers
-│   ├── middleware/      # Custom middleware
-│   ├── models/          # MongoDB models
-│   ├── routes/          # API routes
-│   ├── tests/           # Test files
-│   └── server.js        # Main server file
-├── frontend/
-│   ├── src/
-│   │   ├── components/  # Reusable components
-│   │   ├── contexts/    # React contexts
-│   │   ├── dashboards/  # Role-based dashboards
-│   │   ├── pages/       # Page components
-│   │   ├── services/    # API services
-│   │   └── types/       # TypeScript types
-│   └── public/          # Static files
-└── README.md
-```
-
-### Contributing
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the ISC License.
-
-## Support
-
-For support and questions, please create an issue in the GitHub repository.
+Have questions, ideas, or found a bug? Drop an issue and we’ll nerd out about it together.
