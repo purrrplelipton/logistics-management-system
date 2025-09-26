@@ -52,7 +52,7 @@ export const calculatePasswordStrength = (password: string, userInputs: string[]
     strength,
     score: result.score,
     feedback: buildFeedback(result.score, result.feedback.warning, result.feedback.suggestions),
-    crackTimeDisplay: result.crack_times_display.offline_slow_hashing_1e4_per_second,
+    crackTimeDisplay: String(result.crack_times_display.offline_slow_hashing_1e4_per_second),
     isValid: result.score >= 2,
   };
 };
