@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { IDelivery } from '../types';
+import { createId } from '@paralleldrive/cuid2';
 
 const deliverySchema = new Schema<IDelivery>({
   customerId: {
@@ -107,7 +108,7 @@ deliverySchema.index({ createdAt: -1 });
 // Generate unique tracking number before saving
 deliverySchema.pre('save', function(next) {
   if (!this.trackingNumber) {
-    this.trackingNumber = 'TRK' + Date.now() + Math.random().toString(36).substring(2, 7).toUpperCase();
+    this.trackingNumber = `TRK${createId().toUpperCase()}`;
   }
   next();
 });

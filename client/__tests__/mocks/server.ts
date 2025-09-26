@@ -1,3 +1,4 @@
+import { createId } from '@paralleldrive/cuid2';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
@@ -230,7 +231,7 @@ export const handlers = [
       success: true,
       data: {
         ...mockDelivery,
-        trackingNumber: `TRK${Date.now()}`,
+        trackingNumber: `TRK${createId()}`,
         pickupAddress: data.pickupAddress,
         deliveryAddress: data.deliveryAddress,
         packageDetails: data.packageDetails,
