@@ -14,7 +14,8 @@
     "test:server": "pnpm --filter server test"
   },
   "dependencies": {
-    "zxcvbn": "^4.4.2"
+    "zxcvbn": "^4.4.2",
+    "@paralleldrive/cuid2": "^2.2.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

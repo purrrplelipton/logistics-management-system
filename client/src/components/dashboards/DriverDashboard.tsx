@@ -253,9 +253,9 @@ export default function DriverDashboard() {
                     <h6 className="text-sm font-semibold text-gray-900 mb-1">Package Details</h6>
                     <div className="text-sm text-gray-600">
                       <p>Weight: {delivery.packageDetails.weight} lbs</p>
-                      {delivery.packageDetails.dimensions && (
+                      {delivery.packageDetails && delivery.packageDetails.dimensions && (
                       <p>
-                        Dimensions: {delivery.packageDetails.dimensions.length}&quot; × {delivery.packageDetails.dimensions.width}&quot; × {delivery.packageDetails.dimensions.height}&quot;
+                        Dimensions: {delivery.packageDetails.dimensions.length}&quot; x {delivery.packageDetails.dimensions.width}&quot; x {delivery.packageDetails.dimensions.height}&quot;
                       </p>
                       )}
                       <p>Value: ${delivery.packageDetails.value}</p>

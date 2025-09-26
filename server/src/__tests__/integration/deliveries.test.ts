@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../../server';
 import User from '../../models/User';
 import { IUser } from '../../types';
+import { createId } from '@paralleldrive/cuid2';
 
 const baseDeliveryPayload = {
   pickupAddress: {
@@ -36,8 +37,7 @@ const createUserAndLogin = async (
   role: 'admin' | 'customer' | 'driver'
 ): Promise<{ user: IUser; cookie: string }> => {
   const password = 'StrongP@ssw0rd';
-  const uniqueSuffix = `${Date.now()}-${Math.random()}`;
-  const email = `${role}-${uniqueSuffix}@example.com`;
+  const email = `${role}-${createId()}@example.com`;
 
   const user = await User.create({
     name: `${role} user`,

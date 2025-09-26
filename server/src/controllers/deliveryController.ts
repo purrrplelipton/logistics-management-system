@@ -3,6 +3,7 @@ import { validationResult } from 'express-validator';
 import Delivery from '../models/Delivery';
 import User from '../models/User';
 import { AuthenticatedRequest } from '../types';
+import { createId } from '@paralleldrive/cuid2';
 
 // Create a new delivery (Customer only)
 export const createDelivery = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -25,7 +26,7 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
     } = req.body;
 
     // Generate tracking number
-    const trackingNumber = `TRK${Date.now()}${Math.random().toString(36).substring(2, 8)}`;
+    const trackingNumber = `TRK${createId().toUpperCase()}`;
 
     const delivery = new Delivery({
       customerId: req.user?.id,
