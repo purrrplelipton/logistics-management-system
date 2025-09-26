@@ -1,0 +1,16 @@
+## Netlify configuration for the Next.js client in a pnpm monorepo
+## Docs: https://docs.netlify.com/
+
+[build]
+  # Directory containing the Next.js project
+  base = "client"
+  command = "pnpm build"
+  publish = "client/.next"
+
+# Ensure we use pnpm (can also set in Netlify UI).
+[build.environment]
+  NETLIFY_USE_PNPM = "true"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
