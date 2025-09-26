@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return;
         }
         setUser(response.data.data ?? null);
-      } catch (_error) {
+      } catch {
         // User is not authenticated, which is fine
         // Don't redirect here, let the page components handle routing
         setUser(null);
