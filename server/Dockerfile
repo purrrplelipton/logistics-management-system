@@ -1,24 +1,10 @@
-FROM node:20-alpine
-
-# Install pnpm
-RUN npm install -g pnpm
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ../pnpm-lock.yaml ./
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy source code
+FROM node:lts-alpine
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent && mv node_modules ../
 COPY . .
-
-# Build the application
-RUN pnpm run build
-
-# Expose port
-EXPOSE 8080
-
-# Start the application
-CMD ["pnpm", "start"]
+EXPOSE 5000
+RUN chown -R node /usr/src/app
+USER node
+CMD ["npm", "start"]

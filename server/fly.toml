@@ -1,9 +1,4 @@
-# fly.toml app configuration file generated for lms-api-bold-fog-5747 on 2025-09-26T05:30:30+01:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'lms-api-bold-fog-5747'
+app = 'logistics-management-system-api'
 primary_region = 'iad'
 
 [build]
