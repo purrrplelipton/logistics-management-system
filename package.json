@@ -11,7 +11,10 @@
     "dev:client": "pnpm --filter client dev",
     "dev:server": "pnpm --filter server dev",
     "test:client": "pnpm --filter client test",
-    "test:server": "pnpm --filter server test"
+    "test:server": "pnpm --filter server test",
+    "deploy:server": "flyctl deploy -c fly.toml --remote-only",
+    "deploy:client": "flyctl deploy -c fly.client.toml --remote-only",
+    "deploy": "pnpm run deploy:server && pnpm run deploy:client"
   },
   "dependencies": {
     "zxcvbn": "^4.4.2",

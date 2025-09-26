@@ -114,6 +114,39 @@ The password strength helper nags you to keep things semi-secure, so toss in cap
 - **Tests hang** → Make sure you stopped the dev server; the in-memory Mongo server grabs its own port when tests run.
 - **JWT expired?** → They only last a short while. Login again or tweak `JWT_EXPIRES_IN` in the `.env`.
 
+## 🚢 Fly.io deployment
+
+We now ship both apps with one command using two Fly apps under the hood:
+
+1. Make sure the Fly CLI is installed (`curl -L https://fly.io/install.sh | sh`) and you’re logged in (`flyctl auth login`).
+2. Provision the apps once (pick unique names) and copy in the configs:
+	```bash
+	flyctl launch --copy-config --no-deploy -c fly.toml        # server API app
+	flyctl launch --copy-config --no-deploy -c fly.client.toml # client web app
+	```
+3. Set secrets for each app (update values to match prod):
+	```bash
+	# server
+	flyctl secrets set -c fly.toml \
+	  PORT=8080 \
+	  MONGODB_URI=your-mongodb-uri \
+	  JWT_SECRET=super-secret \
+	  JWT_EXPIRE=7d \
+	  FRONTEND_URL=https://your-client-domain
+
+	# client
+	flyctl secrets set -c fly.client.toml \
+	  PORT=3000 \
+	  NEXT_PUBLIC_API_URL=https://your-api-domain/api
+	```
+4. Deploy both at once (locally or in CI):
+	```bash
+	pnpm run deploy
+	```
+	The script runs `flyctl deploy` for `fly.toml` (server) and `fly.client.toml` (client) sequentially so both apps stay in sync.
+
+GitHub Actions (`.github/workflows/fly-deploy.yml`) mirrors the same flow using your `FLY_API_TOKEN` secret.
+
 ## 🤝 Wanna hack on it?
 
 1. Fork → clone → branch (`git checkout -b feature/cool-idea`).

@@ -1,19 +1,19 @@
-# Copy this config during `fly launch --copy-config --no-deploy`
-app = "logistics-management-system-api"
+# Copy this config during `fly launch --copy-config --no-deploy -c fly.client.toml`
+app = "logistics-management-system-web"
 
 primary_region = "iad"
 kill_signal = "SIGINT"
 kill_timeout = "5s"
 
 [build]
-  dockerfile = "server/Dockerfile"
+  dockerfile = "client/Dockerfile"
 
 [env]
   NODE_ENV = "production"
-  PORT = "8080"
+  PORT = "3000"
 
 [[services]]
-  internal_port = 8080
+  internal_port = 3000
   protocol = "tcp"
   processes = ["app"]
   auto_stop_machines = true
@@ -22,8 +22,8 @@ kill_timeout = "5s"
 
   [services.concurrency]
     type = "connections"
-    hard_limit = 50
-    soft_limit = 40
+    hard_limit = 100
+    soft_limit = 80
 
   [[services.ports]]
     port = 80
@@ -37,6 +37,6 @@ kill_timeout = "5s"
     grace_period = "1m"
     interval = "30s"
     method = "get"
-    path = "/api/health"
+    path = "/"
     protocol = "http"
     timeout = "10s"
