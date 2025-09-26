@@ -13,57 +13,67 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ 
-    className, 
-    type, 
-    startElement, 
-    endElement, 
-    error, 
-    label, 
-    containerClassName,
-    labelClassName,
-    id,
-    required,
-    'aria-describedby': ariaDescribedBy,
-    ...props 
-  }, ref) => {
+  (
+    {
+      className,
+      type,
+      startElement,
+      endElement,
+      error,
+      label,
+      containerClassName,
+      labelClassName,
+      id,
+      required,
+      'aria-describedby': ariaDescribedBy,
+      ...props
+    },
+    ref,
+  ) => {
     const generatedId = useId();
     const inputId = id || generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const finalAriaDescribedBy = [ariaDescribedBy, errorId].filter(Boolean).join(' ') || undefined;
 
     return (
-      <div className={cn("w-full", containerClassName)}>
+      <div className={cn('w-full', containerClassName)}>
         {label && (
-          <label 
-            htmlFor={inputId} 
-            className={cn("block text-sm font-medium text-gray-700 mb-1", labelClassName)}
+          <label
+            htmlFor={inputId}
+            className={cn('mb-1 block text-sm font-medium text-gray-700', labelClassName)}
           >
-            {label} {required && <span className="text-red-500" aria-label="required">*</span>}
+            {label}{' '}
+            {required && (
+              <span className="text-red-500" aria-label="required">
+                *
+              </span>
+            )}
           </label>
         )}
-        
-        <div className={cn(
-          "flex items-center border rounded-md focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors text-gray-900",
-          {
-            "border-red-300 focus-within:border-red-500 focus-within:ring-red-500": error,
-            "border-gray-300": !error
-          }
-        )}>
+
+        <div
+          className={cn(
+            'flex items-center rounded-md border text-gray-900 transition-colors focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500',
+            {
+              'border-red-300 focus-within:border-red-500 focus-within:ring-red-500': error,
+              'border-gray-300': !error,
+            },
+          )}
+        >
           {startElement && (
-            <div className="flex items-center pl-3 flex-shrink-0 text-current/50">
+            <div className="text-current/50 flex flex-shrink-0 items-center pl-3">
               {startElement}
             </div>
           )}
-          
+
           <input
             type={type}
             className={cn(
-              "flex-1 min-w-0 py-2 px-3 outline-none sm:text-sm",
+              'min-w-0 flex-1 px-3 py-2 outline-none sm:text-sm',
               {
-                "text-red-900 placeholder-red-300": error,
+                'text-red-900 placeholder-red-300': error,
               },
-              className
+              className,
             )}
             ref={ref}
             id={inputId}
@@ -72,29 +82,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={finalAriaDescribedBy}
             {...props}
           />
-          
+
           {endElement && (
-            <div className="flex items-center pr-3 flex-shrink-0 text-current/50">
-              {endElement}
-            </div>
+            <div className="text-current/50 flex flex-shrink-0 items-center pr-3">{endElement}</div>
           )}
         </div>
-        
+
         {error && (
-          <p 
-            id={errorId} 
-            role="alert" 
-            className="mt-1 text-sm text-red-600"
-            aria-live="polite"
-          >
+          <p id={errorId} role="alert" className="mt-1 text-sm text-red-600" aria-live="polite">
             {error}
           </p>
         )}
       </div>
     );
-  }
+  },
 );
 
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export { Input };

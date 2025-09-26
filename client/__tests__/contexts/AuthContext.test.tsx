@@ -13,6 +13,7 @@ jest.mock('@/lib/api', () => ({
   },
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { authAPI } = require('@/lib/api');
 
 const waitForAuthSettled = () =>
@@ -28,15 +29,17 @@ const TestComponent = () => {
     <div>
       <div data-testid="loading">{loading ? 'Loading' : 'Not Loading'}</div>
       <div data-testid="user">{user ? user.name : 'No User'}</div>
-      <button onClick={() => login('test@example.com', 'password').catch(() => {})}>
-        Login
-      </button>
-      <button onClick={() => register({
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password',
-        role: 'customer'
-      }).catch(() => {})}>
+      <button onClick={() => login('test@example.com', 'password').catch(() => {})}>Login</button>
+      <button
+        onClick={() =>
+          register({
+            name: 'Test User',
+            email: 'test@example.com',
+            password: 'password',
+            role: 'customer',
+          }).catch(() => {})
+        }
+      >
         Register
       </button>
       <button onClick={logout}>Logout</button>
@@ -45,11 +48,7 @@ const TestComponent = () => {
 };
 
 const renderWithAuthProvider = async (ui: ReactNode) => {
-  const result = render(
-    <AuthProvider>
-      {ui}
-    </AuthProvider>
-  );
+  const result = render(<AuthProvider>{ui}</AuthProvider>);
 
   await act(async () => {});
 
@@ -78,19 +77,17 @@ describe('AuthContext', () => {
 
   it('throws error when useAuth is used outside AuthProvider', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
-    expect(() => render(<TestComponent />)).toThrow(
-      'useAuth must be used within an AuthProvider'
-    );
-    
+
+    expect(() => render(<TestComponent />)).toThrow('useAuth must be used within an AuthProvider');
+
     consoleSpy.mockRestore();
   });
 
   it('provides initial loading state', async () => {
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
-    
+
     await renderWithAuthProvider(<TestComponent />);
-    
+
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading');
     expect(screen.getByTestId('user')).toHaveTextContent('No User');
 
@@ -108,9 +105,9 @@ describe('AuthContext', () => {
     };
 
     authAPI.getMe.mockResolvedValue({ data: { data: mockUser } });
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
       expect(screen.getByTestId('user')).toHaveTextContent('John Doe');
@@ -128,19 +125,22 @@ describe('AuthContext', () => {
 
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
     authAPI.login.mockResolvedValue({ data: { data: { user: mockUser } } });
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     // Wait for initial load
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     const loginButton = screen.getByText('Login');
     await user.click(loginButton);
-    
+
     await waitFor(() => {
-      expect(authAPI.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password' });
+      expect(authAPI.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password',
+      });
       expect(screen.getByTestId('user')).toHaveTextContent('John Doe');
     });
   });
@@ -148,25 +148,28 @@ describe('AuthContext', () => {
   it('handles login failure', async () => {
     const user = userEvent.setup();
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
     authAPI.login.mockRejectedValue(new Error('Invalid credentials'));
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     const loginButton = screen.getByText('Login');
-    
+
     await user.click(loginButton);
 
     await waitFor(() => {
-      expect(authAPI.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password' });
+      expect(authAPI.login).toHaveBeenCalledWith({
+        email: 'test@example.com',
+        password: 'password',
+      });
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
-    
+
     consoleSpy.mockRestore();
   });
 
@@ -181,16 +184,16 @@ describe('AuthContext', () => {
 
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
     authAPI.register.mockResolvedValue({ data: { data: { user: mockUser } } });
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     const registerButton = screen.getByText('Register');
     await user.click(registerButton);
-    
+
     await waitFor(() => {
       expect(authAPI.register).toHaveBeenCalledWith({
         name: 'Test User',
@@ -205,18 +208,18 @@ describe('AuthContext', () => {
   it('handles registration failure', async () => {
     const user = userEvent.setup();
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
     authAPI.register.mockRejectedValue(new Error('Email already exists'));
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     const registerButton = screen.getByText('Register');
-    
+
     await user.click(registerButton);
 
     await waitFor(() => {
@@ -228,7 +231,7 @@ describe('AuthContext', () => {
       });
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
-    
+
     consoleSpy.mockRestore();
   });
 
@@ -243,17 +246,17 @@ describe('AuthContext', () => {
 
     authAPI.getMe.mockResolvedValue({ data: { data: mockUser } });
     authAPI.logout.mockResolvedValue({ data: { data: null } });
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     // Wait for initial user load
     await waitFor(() => {
       expect(screen.getByTestId('user')).toHaveTextContent('John Doe');
     });
-    
+
     const logoutButton = screen.getByText('Logout');
     await user.click(logoutButton);
-    
+
     await waitFor(() => {
       expect(authAPI.logout).toHaveBeenCalled();
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
@@ -272,101 +275,104 @@ describe('AuthContext', () => {
 
     authAPI.getMe.mockResolvedValue({ data: { data: mockUser } });
     authAPI.logout.mockRejectedValue(new Error('Logout failed'));
-    
-  await renderWithAuthProvider(<TestComponent />);
-    
+
+    await renderWithAuthProvider(<TestComponent />);
+
     await waitFor(() => {
       expect(screen.getByTestId('user')).toHaveTextContent('John Doe');
     });
-    
+
     const logoutButton = screen.getByText('Logout');
     await user.click(logoutButton);
-    
+
     // Should still clear user even if logout fails
     await waitFor(() => {
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
-    
+
     consoleSpy.mockRestore();
   });
 
   it('handles getCurrentUser failure during initialization', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+
     authAPI.getMe.mockRejectedValue(new Error('Network error'));
-    
+
     await renderWithAuthProvider(<TestComponent />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
       expect(screen.getByTestId('user')).toHaveTextContent('No User');
     });
-    
+
     consoleSpy.mockRestore();
   });
 
   it('prevents multiple initializations', async () => {
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
-    
+
     const { rerender } = await renderWithAuthProvider(<TestComponent />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     // Rerender and check that getCurrentUser is not called again
     rerender(
       <AuthProvider>
         <TestComponent />
-      </AuthProvider>
+      </AuthProvider>,
     );
-    
+
     expect(authAPI.getMe).toHaveBeenCalledTimes(1);
   });
 
   it('handles server-side rendering', async () => {
     // Mock window as undefined to simulate SSR
     const originalWindow = global.window;
-    // @ts-ignore
+    // @ts-expect-error -- delete window to simulate SSR behavior
     delete global.window;
-    
+
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
-    
+
     await renderWithAuthProvider(<TestComponent />);
-    
+
     // Should not crash during SSR
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading');
-    
+
     // Restore window
     global.window = originalWindow;
   });
 
   it('cleans up properly on unmount', async () => {
     authAPI.getMe.mockResolvedValue({ data: { data: null } });
-    
+
     const { unmount } = await renderWithAuthProvider(<TestComponent />);
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
     });
-    
+
     // Should not throw error on unmount
     expect(() => unmount()).not.toThrow();
   });
 
   it('maintains consistent loading state', async () => {
-    authAPI.getMe.mockImplementation(() => 
-      new Promise(resolve => setTimeout(() => resolve({ data: { data: null } }), 100))
+    authAPI.getMe.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve({ data: { data: null } }), 100)),
     );
-    
+
     await renderWithAuthProvider(<TestComponent />);
-    
+
     // Should start loading
     expect(screen.getByTestId('loading')).toHaveTextContent('Loading');
-    
+
     // Should finish loading after promise resolves
-    await waitFor(() => {
-      expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
-    }, { timeout: 200 });
+    await waitFor(
+      () => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('Not Loading');
+      },
+      { timeout: 200 },
+    );
   });
 });

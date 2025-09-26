@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
@@ -13,12 +13,20 @@ jest.mock('@/lib/queries', () => ({
 }));
 
 // Mock icon component
-jest.mock('@iconify-icon/react', () => ({
-  Icon: ({ icon, className, ...props }: any) => (
-    <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
-  ),
-}));
+jest.mock('@iconify-icon/react', () => {
+  type IconProps = {
+    icon?: unknown;
+    className?: string;
+  } & import('react').HTMLAttributes<HTMLSpanElement>;
 
+  const Icon: import('react').FC<IconProps> = ({ icon, className, ...props }) => (
+    <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
+  );
+
+  return { Icon };
+});
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { useDeliveries, useUsers, useDrivers, useAssignDriver } = require('@/lib/queries');
 
 const createWrapper = () => {
@@ -30,11 +38,11 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  Wrapper.displayName = 'QueryClientWrapper';
+  return Wrapper;
 };
 
 const mockDeliveries = [

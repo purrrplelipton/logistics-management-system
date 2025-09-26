@@ -11,14 +11,14 @@ const baseDeliveryPayload = {
     city: 'Origin City',
     state: 'OC',
     zipCode: '12345',
-    country: 'USA'
+    country: 'USA',
   },
   deliveryAddress: {
     street: '789 Dropoff Ave',
     city: 'Destination City',
     state: 'DC',
     zipCode: '67890',
-    country: 'USA'
+    country: 'USA',
   },
   packageDetails: {
     description: 'Test package',
@@ -26,15 +26,15 @@ const baseDeliveryPayload = {
     dimensions: {
       length: 10,
       width: 5,
-      height: 3
+      height: 3,
     },
-    value: 100
+    value: 100,
   },
-  estimatedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+  estimatedDeliveryDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
 };
 
 const createUserAndLogin = async (
-  role: 'admin' | 'customer' | 'driver'
+  role: 'admin' | 'customer' | 'driver',
 ): Promise<{ user: IUser; cookie: string }> => {
   const password = 'StrongP@ssw0rd';
   const email = `${role}-${createId()}@example.com`;
@@ -44,13 +44,10 @@ const createUserAndLogin = async (
     email,
     password,
     role,
-    isActive: true
+    isActive: true,
   });
 
-  const response = await request(app)
-    .post('/api/auth/login')
-    .send({ email, password })
-    .expect(200);
+  const response = await request(app).post('/api/auth/login').send({ email, password }).expect(200);
 
   const cookies = response.headers['set-cookie'];
   if (!cookies) {
@@ -104,7 +101,7 @@ describe('Delivery routes integration', () => {
     expect(response.body.data).toHaveLength(1);
     expect(response.body.pagination).toMatchObject({
       currentPage: 1,
-      totalItems: 1
+      totalItems: 1,
     });
   });
 
@@ -129,7 +126,8 @@ describe('Delivery routes integration', () => {
 
     expect(assignResponse.body.success).toBe(true);
     const assignedDriver = assignResponse.body.data.driverId;
-    const assignedDriverId = typeof assignedDriver === 'string' ? assignedDriver : assignedDriver?._id;
+    const assignedDriverId =
+      typeof assignedDriver === 'string' ? assignedDriver : assignedDriver?._id;
     expect(assignedDriverId).toBe(driver.user.id);
     expect(assignResponse.body.data.status).toBe('InTransit');
 
@@ -155,9 +153,7 @@ describe('Delivery routes integration', () => {
 
     const trackingNumber = creationResponse.body.data.trackingNumber;
 
-    const response = await request(app)
-      .get(`/api/deliveries/track/${trackingNumber}`)
-      .expect(200);
+    const response = await request(app).get(`/api/deliveries/track/${trackingNumber}`).expect(200);
 
     expect(response.body.success).toBe(true);
     expect(response.body.data.trackingNumber).toBe(trackingNumber);

@@ -1,6 +1,8 @@
 export const __esModule = true;
 
-export default {
+const iconStub = {
   name: 'mock-icon',
   body: '<path d="" />',
 };
+
+export default iconStub

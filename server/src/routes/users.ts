@@ -5,7 +5,7 @@ import {
   getUserById,
   updateUser,
   deactivateUser,
-  activateUser
+  activateUser,
 } from '../controllers/userController';
 import { authenticate } from '../middleware/auth';
 import { validateUserUpdate } from '../middleware/validation';

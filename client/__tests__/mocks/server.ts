@@ -1,6 +1,22 @@
 import { createId } from '@paralleldrive/cuid2';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
+import { RegisterData, DeliveryData } from '@/types';
+
+// Additional types for request bodies
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+interface DriverAssignment {
+  driverId: string;
+}
+
+interface StatusUpdate {
+  status: string;
+  deliveryNotes?: string;
+}
 
 // Mock data
 export const mockUser = {
@@ -76,16 +92,16 @@ export const mockDelivery = {
 export const handlers = [
   // Auth endpoints
   http.post('*/api/auth/register', async ({ request }) => {
-    const data = await request.json() as any;
-    
+    const data = (await request.json()) as RegisterData;
+
     if (data.email === 'existing@example.com') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Email already exists',
-          error: 'EMAIL_EXISTS'
+          error: 'EMAIL_EXISTS',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -105,16 +121,16 @@ export const handlers = [
   }),
 
   http.post('*/api/auth/login', async ({ request }) => {
-    const credentials = await request.json() as any;
-    
+    const credentials = (await request.json()) as LoginCredentials;
+
     if (credentials.email === 'wrong@example.com' || credentials.password === 'wrongpassword') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Invalid credentials',
-          error: 'INVALID_CREDENTIALS'
+          error: 'INVALID_CREDENTIALS',
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -148,7 +164,7 @@ export const handlers = [
   http.get('*/api/users', ({ request }) => {
     const url = new URL(request.url);
     const role = url.searchParams.get('role');
-    
+
     if (role === 'driver') {
       return HttpResponse.json({
         success: true,
@@ -156,7 +172,7 @@ export const handlers = [
         message: 'Drivers retrieved',
       });
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: [mockUser, mockDriverUser],
@@ -174,18 +190,18 @@ export const handlers = [
 
   http.get('*/api/users/:id', ({ params }) => {
     const { id } = params;
-    
+
     if (id === 'nonexistent') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'User not found',
-          error: 'USER_NOT_FOUND'
+          error: 'USER_NOT_FOUND',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: id === 'driver123' ? mockDriverUser : mockUser,
@@ -197,7 +213,7 @@ export const handlers = [
   http.get('*/api/deliveries', ({ request }) => {
     const url = new URL(request.url);
     const customerId = url.searchParams.get('customerId');
-    
+
     if (customerId) {
       return HttpResponse.json({
         success: true,
@@ -205,7 +221,7 @@ export const handlers = [
         message: 'Customer deliveries retrieved',
       });
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: [mockDelivery],
@@ -214,16 +230,16 @@ export const handlers = [
   }),
 
   http.post('*/api/deliveries', async ({ request }) => {
-    const data = await request.json() as any;
-    
+    const data = (await request.json()) as DeliveryData;
+
     if (!data.pickupAddress || !data.deliveryAddress) {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Missing required fields',
-          error: 'VALIDATION_ERROR'
+          error: 'VALIDATION_ERROR',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -242,18 +258,18 @@ export const handlers = [
 
   http.get('*/api/deliveries/:id', ({ params }) => {
     const { id } = params;
-    
+
     if (id === 'nonexistent') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Delivery not found',
-          error: 'DELIVERY_NOT_FOUND'
+          error: 'DELIVERY_NOT_FOUND',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: mockDelivery,
@@ -263,16 +279,16 @@ export const handlers = [
 
   http.put('*/api/deliveries/:id/assign', async ({ params, request }) => {
     const { id } = params;
-    const data = await request.json() as any;
-    
+    const data = (await request.json()) as DriverAssignment;
+
     if (id === 'nonexistent') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Delivery not found',
-          error: 'DELIVERY_NOT_FOUND'
+          error: 'DELIVERY_NOT_FOUND',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -287,10 +303,9 @@ export const handlers = [
     });
   }),
 
-  http.put('*/api/deliveries/:id/status', async ({ params, request }) => {
-    const { id } = params;
-    const data = await request.json() as any;
-    
+  http.put('*/api/deliveries/:id/status', async ({ request }) => {
+    const data = (await request.json()) as StatusUpdate;
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -304,18 +319,18 @@ export const handlers = [
 
   http.get('*/api/deliveries/track/:trackingNumber', ({ params }) => {
     const { trackingNumber } = params;
-    
+
     if (trackingNumber === 'INVALID') {
       return HttpResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           message: 'Tracking number not found',
-          error: 'TRACKING_NOT_FOUND'
+          error: 'TRACKING_NOT_FOUND',
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
-    
+
     return HttpResponse.json({
       success: true,
       data: {
@@ -337,26 +352,26 @@ export const errorHandlers = {
   networkError: http.get('*/api/*', () => {
     return HttpResponse.error();
   }),
-  
+
   serverError: http.get('*/api/*', () => {
     return HttpResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Internal server error',
-        error: 'SERVER_ERROR'
+        error: 'SERVER_ERROR',
       },
-      { status: 500 }
+      { status: 500 },
     );
   }),
-  
+
   authError: http.get('*/api/*', () => {
     return HttpResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Unauthorized',
-        error: 'UNAUTHORIZED'
+        error: 'UNAUTHORIZED',
       },
-      { status: 401 }
+      { status: 401 },
     );
   }),
 };

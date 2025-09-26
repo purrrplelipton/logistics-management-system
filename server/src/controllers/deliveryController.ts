@@ -13,17 +13,12 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
       res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array()
+        errors: errors.array(),
       });
       return;
     }
 
-    const {
-      pickupAddress,
-      deliveryAddress,
-      packageDetails,
-      estimatedDeliveryDate
-    } = req.body;
+    const { pickupAddress, deliveryAddress, packageDetails, estimatedDeliveryDate } = req.body;
 
     // Generate tracking number
     const trackingNumber = `TRK${createId().toUpperCase()}`;
@@ -35,7 +30,7 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
       packageDetails,
       estimatedDeliveryDate,
       trackingNumber,
-      status: 'Pending'
+      status: 'Pending',
     });
 
     await delivery.save();
@@ -44,13 +39,13 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
     res.status(201).json({
       success: true,
       message: 'Delivery created successfully',
-      data: delivery
+      data: delivery,
     });
   } catch (error) {
     console.error('Create delivery error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while creating delivery'
+      message: 'Server error occurred while creating delivery',
     });
   }
 };
@@ -62,7 +57,7 @@ export const getDeliveries = async (req: AuthenticatedRequest, res: Response): P
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
-    let filter: any = {};
+    const filter: Record<string, unknown> = {};
 
     // Role-based filtering
     if (req.user?.role === 'customer') {
@@ -101,14 +96,14 @@ export const getDeliveries = async (req: AuthenticatedRequest, res: Response): P
         currentPage: page,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: limit
-      }
+        itemsPerPage: limit,
+      },
     });
   } catch (error) {
     console.error('Get deliveries error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while fetching deliveries'
+      message: 'Server error occurred while fetching deliveries',
     });
   }
 };
@@ -117,7 +112,7 @@ export const getDeliveries = async (req: AuthenticatedRequest, res: Response): P
 export const getDeliveryById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    
+
     const delivery = await Delivery.findById(id)
       .populate('customerId', 'name email phone address')
       .populate('driverId', 'name email phone');
@@ -125,7 +120,7 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
     if (!delivery) {
       res.status(404).json({
         success: false,
-        message: 'Delivery not found'
+        message: 'Delivery not found',
       });
       return;
     }
@@ -134,7 +129,7 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
     if (req.user?.role === 'customer' && delivery.customerId.toString() !== req.user.id) {
       res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied',
       });
       return;
     }
@@ -142,20 +137,20 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
     if (req.user?.role === 'driver' && delivery.driverId?.toString() !== req.user.id) {
       res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied',
       });
       return;
     }
 
     res.json({
       success: true,
-      data: delivery
+      data: delivery,
     });
   } catch (error) {
     console.error('Get delivery error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while fetching delivery'
+      message: 'Server error occurred while fetching delivery',
     });
   }
 };
@@ -166,7 +161,7 @@ export const assignDriver = async (req: AuthenticatedRequest, res: Response): Pr
     if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied. Admin role required'
+        message: 'Access denied. Admin role required',
       });
       return;
     }
@@ -179,7 +174,7 @@ export const assignDriver = async (req: AuthenticatedRequest, res: Response): Pr
     if (!driver || driver.role !== 'driver' || !driver.isActive) {
       res.status(400).json({
         success: false,
-        message: 'Invalid or inactive driver'
+        message: 'Invalid or inactive driver',
       });
       return;
     }
@@ -188,7 +183,7 @@ export const assignDriver = async (req: AuthenticatedRequest, res: Response): Pr
     if (!delivery) {
       res.status(404).json({
         success: false,
-        message: 'Delivery not found'
+        message: 'Delivery not found',
       });
       return;
     }
@@ -196,7 +191,7 @@ export const assignDriver = async (req: AuthenticatedRequest, res: Response): Pr
     if (delivery.status !== 'Pending') {
       res.status(400).json({
         success: false,
-        message: 'Can only assign driver to pending deliveries'
+        message: 'Can only assign driver to pending deliveries',
       });
       return;
     }
@@ -207,25 +202,28 @@ export const assignDriver = async (req: AuthenticatedRequest, res: Response): Pr
 
     await delivery.populate([
       { path: 'customerId', select: 'name email phone' },
-      { path: 'driverId', select: 'name email phone' }
+      { path: 'driverId', select: 'name email phone' },
     ]);
 
     res.json({
       success: true,
       message: 'Driver assigned successfully',
-      data: delivery
+      data: delivery,
     });
   } catch (error) {
     console.error('Assign driver error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while assigning driver'
+      message: 'Server error occurred while assigning driver',
     });
   }
 };
 
 // Update delivery status (Driver/Admin only)
-export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+export const updateDeliveryStatus = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { status, deliveryNotes } = req.body;
@@ -234,7 +232,7 @@ export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Respo
     if (!validStatuses.includes(status)) {
       res.status(400).json({
         success: false,
-        message: 'Invalid status'
+        message: 'Invalid status',
       });
       return;
     }
@@ -243,7 +241,7 @@ export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Respo
     if (!delivery) {
       res.status(404).json({
         success: false,
-        message: 'Delivery not found'
+        message: 'Delivery not found',
       });
       return;
     }
@@ -253,14 +251,14 @@ export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Respo
       if (!delivery.driverId || delivery.driverId.toString() !== req.user.id) {
         res.status(403).json({
           success: false,
-          message: 'Access denied. Not assigned to this delivery'
+          message: 'Access denied. Not assigned to this delivery',
         });
         return;
       }
     } else if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied',
       });
       return;
     }
@@ -274,7 +272,7 @@ export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Respo
     if (newIndex < currentIndex) {
       res.status(400).json({
         success: false,
-        message: 'Cannot move delivery backwards in status'
+        message: 'Cannot move delivery backwards in status',
       });
       return;
     }
@@ -291,19 +289,19 @@ export const updateDeliveryStatus = async (req: AuthenticatedRequest, res: Respo
     await delivery.save();
     await delivery.populate([
       { path: 'customerId', select: 'name email phone' },
-      { path: 'driverId', select: 'name email phone' }
+      { path: 'driverId', select: 'name email phone' },
     ]);
 
     res.json({
       success: true,
       message: 'Delivery status updated successfully',
-      data: delivery
+      data: delivery,
     });
   } catch (error) {
     console.error('Update delivery status error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while updating delivery status'
+      message: 'Server error occurred while updating delivery status',
     });
   }
 };
@@ -314,27 +312,29 @@ export const trackDelivery = async (req: Request, res: Response): Promise<void> 
     const { trackingNumber } = req.params;
 
     const delivery = await Delivery.findOne({ trackingNumber })
-      .select('trackingNumber status estimatedDeliveryDate actualDeliveryDate deliveryNotes createdAt pickupAddress deliveryAddress packageDetails')
+      .select(
+        'trackingNumber status estimatedDeliveryDate actualDeliveryDate deliveryNotes createdAt pickupAddress deliveryAddress packageDetails',
+      )
       .populate('customerId', 'name')
       .populate('driverId', 'name');
 
     if (!delivery) {
       res.status(404).json({
         success: false,
-        message: 'Delivery not found with this tracking number'
+        message: 'Delivery not found with this tracking number',
       });
       return;
     }
 
     res.json({
       success: true,
-      data: delivery
+      data: delivery,
     });
   } catch (error) {
     console.error('Track delivery error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while tracking delivery'
+      message: 'Server error occurred while tracking delivery',
     });
   }
 };

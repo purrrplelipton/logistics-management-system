@@ -16,14 +16,14 @@ export default function CustomerDashboard() {
       city: '',
       state: '',
       zipCode: '',
-      country: ''
+      country: '',
     },
     deliveryAddress: {
       street: '',
       city: '',
       state: '',
       zipCode: '',
-      country: ''
+      country: '',
     },
     packageDetails: {
       description: '',
@@ -31,10 +31,10 @@ export default function CustomerDashboard() {
       dimensions: {
         length: '',
         width: '',
-        height: ''
+        height: '',
       },
-      value: ''
-    }
+      value: '',
+    },
   });
 
   const { data: deliveries, isLoading } = useCustomerDeliveries(user?._id || '');
@@ -42,12 +42,12 @@ export default function CustomerDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div
           role="status"
           aria-live="polite"
           aria-label="Loading deliveries"
-          className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"
+          className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"
         />
       </div>
     );
@@ -55,50 +55,50 @@ export default function CustomerDashboard() {
 
   const stats = {
     totalDeliveries: deliveries?.length || 0,
-    pendingDeliveries: deliveries?.filter(d => d.status === 'Pending').length || 0,
-    inTransitDeliveries: deliveries?.filter(d => d.status === 'InTransit').length || 0,
-    completedDeliveries: deliveries?.filter(d => d.status === 'Delivered').length || 0,
+    pendingDeliveries: deliveries?.filter((d) => d.status === 'Pending').length || 0,
+    inTransitDeliveries: deliveries?.filter((d) => d.status === 'InTransit').length || 0,
+    completedDeliveries: deliveries?.filter((d) => d.status === 'Delivered').length || 0,
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+
     if (name.startsWith('pickupAddress.') || name.startsWith('deliveryAddress.')) {
       const [addressType, field] = name.split('.');
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         [addressType]: {
           ...prev[addressType as keyof typeof prev],
-          [field]: value
-        }
+          [field]: value,
+        },
       }));
     } else if (name.startsWith('packageDetails.dimensions.')) {
       const field = name.split('.')[2];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         packageDetails: {
           ...prev.packageDetails,
           dimensions: {
             ...prev.packageDetails.dimensions,
-            [field]: value
-          }
-        }
+            [field]: value,
+          },
+        },
       }));
     } else if (name.startsWith('packageDetails.')) {
       const field = name.split('.')[1];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         packageDetails: {
           ...prev.packageDetails,
-          [field]: value
-        }
+          [field]: value,
+        },
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const deliveryData = {
         ...formData,
@@ -109,9 +109,9 @@ export default function CustomerDashboard() {
           dimensions: {
             length: parseFloat(formData.packageDetails.dimensions.length),
             width: parseFloat(formData.packageDetails.dimensions.width),
-            height: parseFloat(formData.packageDetails.dimensions.height)
-          }
-        }
+            height: parseFloat(formData.packageDetails.dimensions.height),
+          },
+        },
       };
 
       await createDeliveryMutation.mutateAsync(deliveryData);
@@ -123,8 +123,8 @@ export default function CustomerDashboard() {
           description: '',
           weight: '',
           dimensions: { length: '', width: '', height: '' },
-          value: ''
-        }
+          value: '',
+        },
       });
     } catch (error) {
       console.error('Failed to create delivery:', error);
@@ -134,8 +134,8 @@ export default function CustomerDashboard() {
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Deliveries</p>
@@ -145,7 +145,7 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
@@ -155,7 +155,7 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">In Transit</p>
@@ -165,7 +165,7 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Completed</p>
@@ -177,11 +177,11 @@ export default function CustomerDashboard() {
       </div>
 
       {/* Create Delivery Button */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">My Deliveries</h2>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           aria-label="Create new delivery request"
         >
           <Icon icon="solar:add-circle-outline" className="text-xl" />
@@ -199,11 +199,15 @@ export default function CustomerDashboard() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Pickup Address */}
           <fieldset>
-            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon="solar:map-point-outline" className="text-xl mr-2 text-green-600" aria-hidden="true" />
+            <legend className="text-md mb-3 flex items-center font-medium text-gray-900">
+              <Icon
+                icon="solar:map-point-outline"
+                className="mr-2 text-xl text-green-600"
+                aria-hidden="true"
+              />
               Pickup Address
             </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Input
                 name="pickupAddress.street"
                 label="Street Address"
@@ -250,11 +254,15 @@ export default function CustomerDashboard() {
 
           {/* Delivery Address */}
           <fieldset>
-            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon="solar:map-point-outline" className="text-xl mr-2 text-red-600" aria-hidden="true" />
+            <legend className="text-md mb-3 flex items-center font-medium text-gray-900">
+              <Icon
+                icon="solar:map-point-outline"
+                className="mr-2 text-xl text-red-600"
+                aria-hidden="true"
+              />
               Delivery Address
             </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Input
                 name="deliveryAddress.street"
                 label="Street Address"
@@ -300,13 +308,20 @@ export default function CustomerDashboard() {
 
           {/* Package Details */}
           <fieldset>
-            <legend className="text-md font-medium text-gray-900 mb-3 flex items-center">
-              <Icon icon="solar:box-outline" className="text-xl mr-2 text-blue-600" aria-hidden="true" />
+            <legend className="text-md mb-3 flex items-center font-medium text-gray-900">
+              <Icon
+                icon="solar:box-outline"
+                className="mr-2 text-xl text-blue-600"
+                aria-hidden="true"
+              />
               Package Details
             </legend>
             <div className="space-y-4">
               <div>
-                <label htmlFor="package-description" className="block text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="package-description"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
                   Package Description *
                 </label>
                 <textarea
@@ -316,7 +331,7 @@ export default function CustomerDashboard() {
                   onChange={handleInputChange}
                   placeholder="Describe contents, fragility, special handling needs..."
                   rows={3}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full rounded-md border border-gray-300 p-3 focus:border-blue-500 focus:ring-blue-500"
                   required
                   aria-describedby="description-help"
                 />
@@ -324,7 +339,7 @@ export default function CustomerDashboard() {
                   Provide a detailed description to help our drivers handle your package properly.
                 </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Input
                   name="packageDetails.weight"
                   type="number"
@@ -387,23 +402,23 @@ export default function CustomerDashboard() {
             </div>
           </fieldset>
 
-          <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+          <div className="flex justify-end space-x-4 border-t border-gray-200 pt-4">
             <button
               type="button"
               onClick={() => setShowCreateModal(false)}
-              className="px-6 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="rounded-md bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createDeliveryMutation.isPending}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed"
+              className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-400"
               aria-describedby="submit-help"
             >
               {createDeliveryMutation.isPending ? (
                 <>
-                  <span className="inline-block animate-spin rounded-full text-base border-b-2 border-white mr-2"></span>
+                  <span className="mr-2 inline-block animate-spin rounded-full border-b-2 border-white text-base"></span>
                   Creating...
                 </>
               ) : (
@@ -418,53 +433,58 @@ export default function CustomerDashboard() {
       </Modal>
 
       {/* Deliveries List */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="rounded-lg border bg-white p-6 shadow-sm">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Tracking #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Driver
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                   Created
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {deliveries?.map(delivery => (
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {deliveries?.map((delivery) => (
                 <tr key={delivery._id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-blue-600">
                     {delivery.trackingNumber}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
                     {delivery.packageDetails.description}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      delivery.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                      delivery.status === 'InTransit' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                        delivery.status === 'Delivered'
+                          ? 'bg-green-100 text-green-800'
+                          : delivery.status === 'InTransit'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {delivery.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {typeof delivery.driverId === 'object' && delivery.driverId ? 
-                      delivery.driverId.name : 
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                    {typeof delivery.driverId === 'object' && delivery.driverId ? (
+                      delivery.driverId.name
+                    ) : (
                       <span className="text-yellow-600">Not assigned</span>
-                    }
+                    )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                     {new Date(delivery.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

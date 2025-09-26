@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 // Polyfills for TextEncoder/TextDecoder required by MSW
-const { TextEncoder, TextDecoder } = require("util");
+const { TextEncoder, TextDecoder } = require('util');
 
 Object.assign(global, {
   TextEncoder,
@@ -18,4 +20,4 @@ Object.assign(global, {
 });
 
 // Polyfill for Fetch API
-require("whatwg-fetch");
+require('whatwg-fetch');

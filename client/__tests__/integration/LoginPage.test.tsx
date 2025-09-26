@@ -17,8 +17,16 @@ jest.mock('@/contexts/AuthContext', () => ({
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {
-  return function MockLink({ children, href, ...props }: any) {
-    return <a href={href} {...props}>{children}</a>;
+  return function MockLink({
+    children,
+    href,
+    ...props
+  }: { children: React.ReactNode; href: string } & React.HTMLAttributes<HTMLAnchorElement>) {
+    return (
+      <a href={href} {...props}>
+        {children}
+      </a>
+    );
   };
 });
 
@@ -43,8 +51,8 @@ describe('LoginPage Integration', () => {
 
     expect(screen.getByText('LogiTrack')).toBeInTheDocument();
     expect(screen.getByText('Sign in to your account')).toBeInTheDocument();
-  expect(screen.getByLabelText(/email/i, { selector: 'input' })).toBeInTheDocument();
-  expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i, { selector: 'input' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
   });
 
@@ -122,7 +130,7 @@ describe('LoginPage Integration', () => {
 
   it('shows loading state during login', async () => {
     const user = userEvent.setup();
-    
+
     // Mock login to be pending
     mockLogin.mockImplementation(() => new Promise(() => {}));
 
@@ -162,10 +170,10 @@ describe('LoginPage Integration', () => {
 
   it('clears error message on new submission attempt', async () => {
     const user = userEvent.setup();
-    
+
     // First attempt fails
     mockLogin.mockRejectedValueOnce(new Error('First error'));
-    
+
     render(<LoginPage />);
 
     const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
@@ -182,7 +190,7 @@ describe('LoginPage Integration', () => {
 
     // Second attempt should clear the error
     mockLogin.mockResolvedValue(undefined);
-    
+
     await user.clear(passwordInput);
     await user.type(passwordInput, 'correctpassword');
     await user.click(submitButton);
@@ -196,9 +204,9 @@ describe('LoginPage Integration', () => {
     render(<LoginPage />);
 
     const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
-    
+
     await user.type(emailInput, 'invalid-email');
-    
+
     // HTML5 validation should prevent submission
     expect(emailInput).toHaveAttribute('type', 'email');
   });
@@ -224,13 +232,13 @@ describe('LoginPage Integration', () => {
 
     const form = screen.getByRole('form');
     const mainElement = screen.getByRole('main');
-    
+
     expect(form).toBeInTheDocument();
     expect(mainElement).toBeInTheDocument();
-    
+
     // Check for proper heading hierarchy
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    
+
     // Check for proper form labels
     expect(screen.getByLabelText(/email/i, { selector: 'input' })).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i, { selector: 'input' })).toBeInTheDocument();
@@ -244,7 +252,7 @@ describe('LoginPage Integration', () => {
 
     const form = screen.getByRole('form');
     const submitSpy = jest.fn();
-    
+
     form.onsubmit = submitSpy;
 
     const emailInput = screen.getByLabelText(/email/i, { selector: 'input' });
@@ -252,7 +260,7 @@ describe('LoginPage Integration', () => {
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
-    
+
     fireEvent.submit(form);
 
     await waitFor(() => {
@@ -299,7 +307,7 @@ describe('LoginPage Integration', () => {
 
     const main = screen.getByRole('main');
     expect(main).toHaveClass('min-h-screen');
-    
+
     // Check for LogiTrack branding
     expect(screen.getByText('LogiTrack')).toBeInTheDocument();
   });

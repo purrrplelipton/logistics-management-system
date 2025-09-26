@@ -8,7 +8,7 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response): Promis
     if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied. Admin role required'
+        message: 'Access denied. Admin role required',
       });
       return;
     }
@@ -17,7 +17,7 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response): Promis
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
-    let filter: any = {};
+    const filter: Record<string, unknown> = {};
 
     // Filter by role if provided
     if (req.query.role) {
@@ -44,14 +44,14 @@ export const getUsers = async (req: AuthenticatedRequest, res: Response): Promis
         currentPage: page,
         totalPages: Math.ceil(total / limit),
         totalItems: total,
-        itemsPerPage: limit
-      }
+        itemsPerPage: limit,
+      },
     });
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while fetching users'
+      message: 'Server error occurred while fetching users',
     });
   }
 };
@@ -62,25 +62,25 @@ export const getDrivers = async (req: AuthenticatedRequest, res: Response): Prom
     if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied. Admin role required'
+        message: 'Access denied. Admin role required',
       });
       return;
     }
 
-    const drivers = await User.find({ 
-      role: 'driver', 
-      isActive: true 
+    const drivers = await User.find({
+      role: 'driver',
+      isActive: true,
     }).select('-password');
 
     res.json({
       success: true,
-      data: drivers
+      data: drivers,
     });
   } catch (error) {
     console.error('Get drivers error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while fetching drivers'
+      message: 'Server error occurred while fetching drivers',
     });
   }
 };
@@ -94,30 +94,30 @@ export const getUserById = async (req: AuthenticatedRequest, res: Response): Pro
     if (req.user?.role !== 'admin' && req.user?.id !== id) {
       res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied',
       });
       return;
     }
 
     const user = await User.findById(id).select('-password');
-    
+
     if (!user) {
       res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
       return;
     }
 
     res.json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while fetching user'
+      message: 'Server error occurred while fetching user',
     });
   }
 };
@@ -132,17 +132,17 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
     if (req.user?.role !== 'admin' && req.user?.id !== id) {
       res.status(403).json({
         success: false,
-        message: 'Access denied'
+        message: 'Access denied',
       });
       return;
     }
 
     const user = await User.findById(id);
-    
+
     if (!user) {
       res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
       return;
     }
@@ -160,13 +160,13 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response): Prom
     res.json({
       success: true,
       message: 'User updated successfully',
-      data: updatedUser
+      data: updatedUser,
     });
   } catch (error) {
     console.error('Update user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while updating user'
+      message: 'Server error occurred while updating user',
     });
   }
 };
@@ -177,7 +177,7 @@ export const deactivateUser = async (req: AuthenticatedRequest, res: Response): 
     if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied. Admin role required'
+        message: 'Access denied. Admin role required',
       });
       return;
     }
@@ -188,17 +188,17 @@ export const deactivateUser = async (req: AuthenticatedRequest, res: Response): 
     if (req.user.id === id) {
       res.status(400).json({
         success: false,
-        message: 'Cannot deactivate your own account'
+        message: 'Cannot deactivate your own account',
       });
       return;
     }
 
     const user = await User.findById(id);
-    
+
     if (!user) {
       res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
       return;
     }
@@ -208,13 +208,13 @@ export const deactivateUser = async (req: AuthenticatedRequest, res: Response): 
 
     res.json({
       success: true,
-      message: 'User deactivated successfully'
+      message: 'User deactivated successfully',
     });
   } catch (error) {
     console.error('Deactivate user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while deactivating user'
+      message: 'Server error occurred while deactivating user',
     });
   }
 };
@@ -225,7 +225,7 @@ export const activateUser = async (req: AuthenticatedRequest, res: Response): Pr
     if (req.user?.role !== 'admin') {
       res.status(403).json({
         success: false,
-        message: 'Access denied. Admin role required'
+        message: 'Access denied. Admin role required',
       });
       return;
     }
@@ -233,11 +233,11 @@ export const activateUser = async (req: AuthenticatedRequest, res: Response): Pr
     const { id } = req.params;
 
     const user = await User.findById(id);
-    
+
     if (!user) {
       res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
       return;
     }
@@ -247,13 +247,13 @@ export const activateUser = async (req: AuthenticatedRequest, res: Response): Pr
 
     res.json({
       success: true,
-      message: 'User activated successfully'
+      message: 'User activated successfully',
     });
   } catch (error) {
     console.error('Activate user error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while activating user'
+      message: 'Server error occurred while activating user',
     });
   }
 };

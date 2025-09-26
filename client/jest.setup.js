@@ -1,8 +1,8 @@
-import "@testing-library/jest-dom";
-import { ReadableStream, TransformStream, WritableStream } from "stream/web";
+import '@testing-library/jest-dom';
+import { ReadableStream, TransformStream, WritableStream } from 'stream/web';
 // Establish API mocking before all tests
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: "error" });
+  server.listen({ onUnhandledRequest: 'error' });
 });
 
 // Reset any request handlers that we may add during the tests,
@@ -17,7 +17,7 @@ afterAll(() => {
 });
 
 // Mock Next.js router
-jest.mock("next/navigation", () => ({
+jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
@@ -29,11 +29,11 @@ jest.mock("next/navigation", () => ({
   useSearchParams: () => ({
     get: jest.fn(),
   }),
-  usePathname: () => "/",
+  usePathname: () => '/',
 }));
 
 // Mock Next.js cookies
-jest.mock("next/headers", () => ({
+jest.mock('next/headers', () => ({
   cookies: () => ({
     get: jest.fn(),
     set: jest.fn(),
@@ -42,10 +42,10 @@ jest.mock("next/headers", () => ({
 }));
 
 // Mock @iconify-icon/react
-jest.mock("@iconify-icon/react", () => ({
+jest.mock('@iconify-icon/react', () => ({
   Icon: ({ icon, className, ...props }) => (
     <span
-      data-testid={`icon-${icon?.name || icon || "unknown"}`}
+      data-testid={`icon-${icon?.name || icon || 'unknown'}`}
       className={className}
       {...props}
     />
@@ -53,34 +53,34 @@ jest.mock("@iconify-icon/react", () => ({
 }));
 
 // Mock iconify icon imports
-jest.mock("@iconify-icons/solar/close-circle-bold", () => ({
+jest.mock('@iconify-icons/solar/close-circle-bold', () => ({
   __esModule: true,
   default: {
-    name: "close-circle-bold",
+    name: 'close-circle-bold',
     body: '<path d="close-icon"/>',
   },
 }));
 
-jest.mock("@iconify-icons/solar/eye-outline", () => ({
+jest.mock('@iconify-icons/solar/eye-outline', () => ({
   __esModule: true,
   default: {
-    name: "eye-outline",
+    name: 'eye-outline',
     body: '<path d="eye-icon"/>',
   },
 }));
 
-jest.mock("@iconify-icons/solar/eye-closed-outline", () => ({
+jest.mock('@iconify-icons/solar/eye-closed-outline', () => ({
   __esModule: true,
   default: {
-    name: "eye-closed-outline",
+    name: 'eye-closed-outline',
     body: '<path d="eye-closed-icon"/>',
   },
 }));
 
-jest.mock("@iconify-icons/solar/lock-password-outline", () => ({
+jest.mock('@iconify-icons/solar/lock-password-outline', () => ({
   __esModule: true,
   default: {
-    name: "lock-password-outline",
+    name: 'lock-password-outline',
     body: '<path d="lock-icon"/>',
   },
 }));
@@ -93,7 +93,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 }));
 
 // Mock window.matchMedia
-Object.defineProperty(window, "matchMedia", {
+Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
@@ -114,21 +114,21 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   disconnect: jest.fn(),
 }));
 
-if (typeof global.TransformStream === "undefined") {
+if (typeof global.TransformStream === 'undefined') {
   // @ts-expect-error - assigning to global in test environment
   global.TransformStream = TransformStream;
 }
 
-if (typeof global.ReadableStream === "undefined") {
+if (typeof global.ReadableStream === 'undefined') {
   // @ts-expect-error - assigning to global in test environment
   global.ReadableStream = ReadableStream;
 }
 
-if (typeof global.WritableStream === "undefined") {
+if (typeof global.WritableStream === 'undefined') {
   // @ts-expect-error - assigning to global in test environment
   global.WritableStream = WritableStream;
 }
 
 // Defer requiring the MSW server until after polyfills are in place
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { server } = require("./__tests__/mocks/server");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { server } = require('./__tests__/mocks/server');

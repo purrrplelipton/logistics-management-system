@@ -51,7 +51,12 @@ describe('calculatePasswordStrength', () => {
 
   it('classifies score 0 and 1 as weak', () => {
     mockedZxcvbn
-      .mockReturnValueOnce(mockResult({ score: 0, feedback: { warning: 'Too common', suggestions: ['Add more words'] } }))
+      .mockReturnValueOnce(
+        mockResult({
+          score: 0,
+          feedback: { warning: 'Too common', suggestions: ['Add more words'] },
+        }),
+      )
       .mockReturnValueOnce(mockResult({ score: 1 }));
 
     let result = calculatePasswordStrength('password');
@@ -66,7 +71,13 @@ describe('calculatePasswordStrength', () => {
 
   it('classifies scores 2 and 3 as okay', () => {
     mockedZxcvbn
-      .mockReturnValueOnce(mockResult({ score: 2, feedback: { warning: '', suggestions: ['Add symbols'] }, crack_times_display: { offline_slow_hashing_1e4_per_second: '3 hours' } }))
+      .mockReturnValueOnce(
+        mockResult({
+          score: 2,
+          feedback: { warning: '', suggestions: ['Add symbols'] },
+          crack_times_display: { offline_slow_hashing_1e4_per_second: '3 hours' },
+        }),
+      )
       .mockReturnValueOnce(mockResult({ score: 3 }));
 
     let result = calculatePasswordStrength('password123');
@@ -83,7 +94,18 @@ describe('calculatePasswordStrength', () => {
   });
 
   it('classifies score 4 as strong and returns celebratory feedback when none provided', () => {
-    mockedZxcvbn.mockReturnValue(mockResult({ score: 4, feedback: { warning: '', suggestions: [] }, crack_times_display: { offline_slow_hashing_1e4_per_second: 'centuries', online_throttling_100_per_hour: '1 year', online_no_throttling_10_per_second: '1 year', offline_fast_hashing_1e10_per_second: 'centuries' } }));
+    mockedZxcvbn.mockReturnValue(
+      mockResult({
+        score: 4,
+        feedback: { warning: '', suggestions: [] },
+        crack_times_display: {
+          offline_slow_hashing_1e4_per_second: 'centuries',
+          online_throttling_100_per_hour: '1 year',
+          online_no_throttling_10_per_second: '1 year',
+          offline_fast_hashing_1e10_per_second: 'centuries',
+        },
+      }),
+    );
 
     const result = calculatePasswordStrength('MyVeryStrongP@ssw0rd!2024');
 

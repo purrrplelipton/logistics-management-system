@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint": "tsc --noEmit"
+    "lint": "eslint src"
   },
   "keywords": [
     "logistics",
@@ -42,10 +42,10 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/supertest": "^6.0.3",
+    "eslint": "^9.15.0",
     "mongodb-memory-server": "^10.2.1",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.4",
-    "ts-jest": "^29.4.4",
     "ts-node": "^10.9.2"
   }
 }
