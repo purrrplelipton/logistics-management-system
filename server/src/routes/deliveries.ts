@@ -5,10 +5,14 @@ import {
   getDeliveryById,
   assignDriver,
   updateDeliveryStatus,
-  trackDelivery
+  trackDelivery,
 } from '../controllers/deliveryController';
 import { authenticate } from '../middleware/auth';
-import { validateDelivery, validateDeliveryStatus, validateDriverAssignment } from '../middleware/validation';
+import {
+  validateDelivery,
+  validateDeliveryStatus,
+  validateDriverAssignment,
+} from '../middleware/validation';
 
 const router: Router = Router();
 

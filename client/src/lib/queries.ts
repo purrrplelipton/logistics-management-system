@@ -97,7 +97,7 @@ export const useDrivers = () => {
 // Mutations
 export const useCreateDelivery = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: deliveryAPI.createDelivery,
     onSuccess: () => {
@@ -108,7 +108,7 @@ export const useCreateDelivery = () => {
 
 export const useUpdateDeliveryStatus = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ id, status, notes }: { id: string; status: string; notes?: string }) =>
       deliveryAPI.updateDeliveryStatus(id, { status, deliveryNotes: notes }),
@@ -120,7 +120,7 @@ export const useUpdateDeliveryStatus = () => {
 
 export const useAssignDriver = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ deliveryId, driverId }: { deliveryId: string; driverId: string }) =>
       deliveryAPI.assignDriver(deliveryId, driverId),

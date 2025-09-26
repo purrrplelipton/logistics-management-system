@@ -17,17 +17,17 @@ export default function DriverDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   const stats = {
     totalAssigned: deliveries?.length || 0,
-    pendingPickup: deliveries?.filter(d => d.status === 'Pending').length || 0,
-    inTransit: deliveries?.filter(d => d.status === 'InTransit').length || 0,
-    completed: deliveries?.filter(d => d.status === 'Delivered').length || 0,
+    pendingPickup: deliveries?.filter((d) => d.status === 'Pending').length || 0,
+    inTransit: deliveries?.filter((d) => d.status === 'InTransit').length || 0,
+    completed: deliveries?.filter((d) => d.status === 'Delivered').length || 0,
   };
 
   const handleStatusUpdate = async () => {
@@ -36,7 +36,7 @@ export default function DriverDashboard() {
         await updateStatusMutation.mutateAsync({
           id: selectedDelivery,
           status: newStatus,
-          notes: deliveryNotes || undefined
+          notes: deliveryNotes || undefined,
         });
         setSelectedDelivery('');
         setNewStatus('');
@@ -65,8 +65,8 @@ export default function DriverDashboard() {
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Assigned</p>
@@ -76,7 +76,7 @@ export default function DriverDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending Pickup</p>
@@ -86,7 +86,7 @@ export default function DriverDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">In Transit</p>
@@ -96,7 +96,7 @@ export default function DriverDashboard() {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Completed</p>
@@ -108,41 +108,39 @@ export default function DriverDashboard() {
       </div>
 
       {/* Quick Status Update */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Update Delivery Status</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">Update Delivery Status</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Delivery
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">Select Delivery</label>
             <select
               value={selectedDelivery}
               onChange={(e) => {
                 setSelectedDelivery(e.target.value);
-                const delivery = deliveries?.find(d => d._id === e.target.value);
+                const delivery = deliveries?.find((d) => d._id === e.target.value);
                 if (delivery && canUpdateStatus(delivery.status)) {
                   setNewStatus(getNextStatus(delivery.status));
                 }
               }}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
             >
               <option value="">Choose delivery...</option>
-              {deliveries?.filter(d => canUpdateStatus(d.status)).map(delivery => (
-                <option key={delivery._id} value={delivery._id}>
-                  {delivery.trackingNumber} - {delivery.status}
-                </option>
-              ))}
+              {deliveries
+                ?.filter((d) => canUpdateStatus(d.status))
+                .map((delivery) => (
+                  <option key={delivery._id} value={delivery._id}>
+                    {delivery.trackingNumber} - {delivery.status}
+                  </option>
+                ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              New Status
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-700">New Status</label>
             <select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="w-full rounded-md border border-gray-300 p-2 focus:border-blue-500 focus:ring-blue-500"
               disabled={!selectedDelivery}
             >
               <option value="">Select status...</option>
@@ -163,7 +161,7 @@ export default function DriverDashboard() {
             <button
               onClick={handleStatusUpdate}
               disabled={!selectedDelivery || !newStatus || updateStatusMutation.isPending}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               {updateStatusMutation.isPending ? 'Updating...' : 'Update Status'}
             </button>
@@ -172,91 +170,113 @@ export default function DriverDashboard() {
       </div>
 
       {/* Assigned Deliveries */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">My Assigned Deliveries</h3>
+      <div className="rounded-lg border bg-white p-6 shadow-sm">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900">My Assigned Deliveries</h3>
         <div className="space-y-4">
-          {deliveries?.map(delivery => (
-            <div key={delivery._id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-start mb-4">
+          {deliveries?.map((delivery) => (
+            <div
+              key={delivery._id}
+              className="rounded-lg border p-4 transition-shadow hover:shadow-md"
+            >
+              <div className="mb-4 flex items-start justify-between">
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-900">
-                    {delivery.trackingNumber}
-                  </h4>
+                  <h4 className="text-lg font-semibold text-gray-900">{delivery.trackingNumber}</h4>
                   <p className="text-gray-600">{delivery.packageDetails.description}</p>
                 </div>
                 <div className="text-right">
-                  <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                    delivery.status === 'Delivered' ? 'bg-green-100 text-green-800' :
-                    delivery.status === 'InTransit' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
-                  }`}>
+                  <span
+                    className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${
+                      delivery.status === 'Delivered'
+                        ? 'bg-green-100 text-green-800'
+                        : delivery.status === 'InTransit'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
                     {delivery.status}
                   </span>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="mt-1 text-sm text-gray-500">
                     Created: {new Date(delivery.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* Pickup Address */}
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h5 className="flex items-center text-sm font-semibold text-gray-900 mb-2">
-                    <Icon icon="solar:map-point-outline" className="text-base mr-2 text-green-600" />
+                <div className="rounded-lg bg-green-50 p-4">
+                  <h5 className="mb-2 flex items-center text-sm font-semibold text-gray-900">
+                    <Icon
+                      icon="solar:map-point-outline"
+                      className="mr-2 text-base text-green-600"
+                    />
                     Pickup Address
                   </h5>
                   <div className="text-sm text-gray-700">
                     <p>{delivery.pickupAddress.street}</p>
-                    <p>{delivery.pickupAddress.city}, {delivery.pickupAddress.state} {delivery.pickupAddress.zipCode}</p>
+                    <p>
+                      {delivery.pickupAddress.city}, {delivery.pickupAddress.state}{' '}
+                      {delivery.pickupAddress.zipCode}
+                    </p>
                     <p>{delivery.pickupAddress.country}</p>
                   </div>
                   <button
                     onClick={() => {
                       const address = `${delivery.pickupAddress.street}, ${delivery.pickupAddress.city}, ${delivery.pickupAddress.state} ${delivery.pickupAddress.zipCode}`;
-                      window.open(`https://maps.google.com/maps?q=${encodeURIComponent(address)}`, '_blank');
+                      window.open(
+                        `https://maps.google.com/maps?q=${encodeURIComponent(address)}`,
+                        '_blank',
+                      );
                     }}
                     className="mt-2 flex items-center text-sm text-green-600 hover:text-green-800"
                   >
-                    <Icon icon="solar:map-arrow-up-outline" className="text-base mr-1" />
+                    <Icon icon="solar:map-arrow-up-outline" className="mr-1 text-base" />
                     Get Directions
                   </button>
                 </div>
 
                 {/* Delivery Address */}
-                <div className="bg-red-50 p-4 rounded-lg">
-                  <h5 className="flex items-center text-sm font-semibold text-gray-900 mb-2">
-                    <Icon icon="solar:map-point-outline" className="text-base mr-2 text-red-600" />
+                <div className="rounded-lg bg-red-50 p-4">
+                  <h5 className="mb-2 flex items-center text-sm font-semibold text-gray-900">
+                    <Icon icon="solar:map-point-outline" className="mr-2 text-base text-red-600" />
                     Delivery Address
                   </h5>
                   <div className="text-sm text-gray-700">
                     <p>{delivery.deliveryAddress.street}</p>
-                    <p>{delivery.deliveryAddress.city}, {delivery.deliveryAddress.state} {delivery.deliveryAddress.zipCode}</p>
+                    <p>
+                      {delivery.deliveryAddress.city}, {delivery.deliveryAddress.state}{' '}
+                      {delivery.deliveryAddress.zipCode}
+                    </p>
                     <p>{delivery.deliveryAddress.country}</p>
                   </div>
                   <button
                     onClick={() => {
                       const address = `${delivery.deliveryAddress.street}, ${delivery.deliveryAddress.city}, ${delivery.deliveryAddress.state} ${delivery.deliveryAddress.zipCode}`;
-                      window.open(`https://maps.google.com/maps?q=${encodeURIComponent(address)}`, '_blank');
+                      window.open(
+                        `https://maps.google.com/maps?q=${encodeURIComponent(address)}`,
+                        '_blank',
+                      );
                     }}
                     className="mt-2 flex items-center text-sm text-red-600 hover:text-red-800"
                   >
-                    <Icon icon="solar:map-arrow-up-outline" className="text-base mr-1" />
+                    <Icon icon="solar:map-arrow-up-outline" className="mr-1 text-base" />
                     Get Directions
                   </button>
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   {/* Package Details */}
                   <div>
-                    <h6 className="text-sm font-semibold text-gray-900 mb-1">Package Details</h6>
+                    <h6 className="mb-1 text-sm font-semibold text-gray-900">Package Details</h6>
                     <div className="text-sm text-gray-600">
                       <p>Weight: {delivery.packageDetails.weight} lbs</p>
                       {delivery.packageDetails && delivery.packageDetails.dimensions && (
-                      <p>
-                        Dimensions: {delivery.packageDetails.dimensions.length}&quot; x {delivery.packageDetails.dimensions.width}&quot; x {delivery.packageDetails.dimensions.height}&quot;
-                      </p>
+                        <p>
+                          Dimensions: {delivery.packageDetails.dimensions.length}&quot; x{' '}
+                          {delivery.packageDetails.dimensions.width}&quot; x{' '}
+                          {delivery.packageDetails.dimensions.height}&quot;
+                        </p>
                       )}
                       <p>Value: ${delivery.packageDetails.value}</p>
                     </div>
@@ -264,15 +284,19 @@ export default function DriverDashboard() {
 
                   {/* Customer Info */}
                   <div>
-                    <h6 className="text-sm font-semibold text-gray-900 mb-1">Customer</h6>
+                    <h6 className="mb-1 text-sm font-semibold text-gray-900">Customer</h6>
                     <div className="text-sm text-gray-600">
-                      <p>{typeof delivery.customerId === 'object' ? delivery.customerId.name : 'Unknown'}</p>
+                      <p>
+                        {typeof delivery.customerId === 'object'
+                          ? delivery.customerId.name
+                          : 'Unknown'}
+                      </p>
                       {typeof delivery.customerId === 'object' && delivery.customerId.phone && (
                         <button
                           onClick={() => window.open(`tel:${delivery.customerId.phone}`)}
-                          className="flex items-center text-blue-600 hover:text-blue-800 mt-1"
+                          className="mt-1 flex items-center text-blue-600 hover:text-blue-800"
                         >
-                          <Icon icon="solar:phone-outline" className="text-base mr-1" />
+                          <Icon icon="solar:phone-outline" className="mr-1 text-base" />
                           {delivery.customerId.phone}
                         </button>
                       )}
@@ -282,7 +306,7 @@ export default function DriverDashboard() {
                   {/* Delivery Notes */}
                   {delivery.deliveryNotes && (
                     <div>
-                      <h6 className="text-sm font-semibold text-gray-900 mb-1">Notes</h6>
+                      <h6 className="mb-1 text-sm font-semibold text-gray-900">Notes</h6>
                       <p className="text-sm text-gray-600">{delivery.deliveryNotes}</p>
                     </div>
                   )}
@@ -296,7 +320,7 @@ export default function DriverDashboard() {
                         setSelectedDelivery(delivery._id);
                         setNewStatus(getNextStatus(delivery.status));
                       }}
-                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700"
                     >
                       {delivery.status === 'Pending' ? 'Start Delivery' : 'Mark as Delivered'}
                     </button>
@@ -307,8 +331,11 @@ export default function DriverDashboard() {
           ))}
 
           {deliveries?.length === 0 && (
-            <div className="text-center py-8">
-              <Icon icon="solar:danger-circle-outline" className="text-5xl text-gray-400 mx-auto mb-4" />
+            <div className="py-8 text-center">
+              <Icon
+                icon="solar:danger-circle-outline"
+                className="mx-auto mb-4 text-5xl text-gray-400"
+              />
               <p className="text-gray-600">No deliveries assigned to you yet.</p>
             </div>
           )}

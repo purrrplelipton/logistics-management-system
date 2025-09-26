@@ -22,8 +22,8 @@ describe('Authentication Endpoints', () => {
         city: 'Test City',
         state: 'TS',
         zipCode: '12345',
-        country: 'USA'
-      }
+        country: 'USA',
+      },
     };
 
     it('should register a new customer successfully', async () => {
@@ -48,20 +48,17 @@ describe('Authentication Endpoints', () => {
           make: 'Ford',
           model: 'Transit',
           year: 2020,
-          licensePlate: 'ABC123'
+          licensePlate: 'ABC123',
         },
         emergencyContact: {
           name: 'Emergency Contact',
-          phone: '9876543210'
+          phone: '9876543210',
         },
         yearsOfExperience: 5,
-        backgroundCheckConsent: true
+        backgroundCheckConsent: true,
       };
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(driverData)
-        .expect(201);
+      const response = await request(app).post('/api/auth/register').send(driverData).expect(201);
 
       expect(response.body.success).toBe(true);
       expect(response.body.data.user.role).toBe('driver');
@@ -87,9 +84,9 @@ describe('Authentication Endpoints', () => {
         expect.arrayContaining([
           expect.objectContaining({
             msg: expect.stringContaining('Password strength must be rated okay or strong'),
-            path: 'password'
-          })
-        ])
+            path: 'password',
+          }),
+        ]),
       );
     });
 
@@ -112,7 +109,7 @@ describe('Authentication Endpoints', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: strongPassword,
-        role: 'customer'
+        role: 'customer',
       });
     });
 
@@ -121,7 +118,7 @@ describe('Authentication Endpoints', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: strongPassword
+          password: strongPassword,
         })
         .expect(200);
 
@@ -135,7 +132,7 @@ describe('Authentication Endpoints', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'wrongpassword'
+          password: 'wrongpassword',
         })
         .expect(401);
 
@@ -151,15 +148,13 @@ describe('Authentication Endpoints', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: strongPassword,
-        role: 'customer'
+        role: 'customer',
       });
 
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'test@example.com',
-          password: strongPassword
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: 'test@example.com',
+        password: strongPassword,
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
       const cookie = cookies?.[0];
@@ -168,19 +163,14 @@ describe('Authentication Endpoints', () => {
     });
 
     it('should get current user with valid cookie', async () => {
-      const response = await request(app)
-        .get('/api/auth/me')
-        .set('Cookie', authCookie)
-        .expect(200);
+      const response = await request(app).get('/api/auth/me').set('Cookie', authCookie).expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.data.email).toBe('test@example.com');
     });
 
     it('should return 401 without cookie', async () => {
-      const response = await request(app)
-        .get('/api/auth/me')
-        .expect(401);
+      const response = await request(app).get('/api/auth/me').expect(401);
 
       expect(response.body.success).toBe(false);
     });
@@ -194,15 +184,13 @@ describe('Authentication Endpoints', () => {
         name: 'Test User',
         email: 'test@example.com',
         password: strongPassword,
-        role: 'customer'
+        role: 'customer',
       });
 
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'test@example.com',
-          password: strongPassword
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: 'test@example.com',
+        password: strongPassword,
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
       const cookie = cookies?.[0];

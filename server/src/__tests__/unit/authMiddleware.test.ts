@@ -7,31 +7,32 @@ import { AuthenticatedRequest, IUser } from '../../types';
 jest.mock('jsonwebtoken', () => ({
   __esModule: true,
   default: {
-    verify: jest.fn()
-  }
+    verify: jest.fn(),
+  },
 }));
 
 jest.mock('../../models/User', () => ({
   __esModule: true,
   default: {
-    findById: jest.fn()
-  }
+    findById: jest.fn(),
+  },
 }));
 
 const mockedJwt = jwt as unknown as { verify: jest.Mock };
 const mockedUserModel = User as unknown as { findById: jest.Mock };
 
-const createMockUser = (overrides: Partial<IUser> = {}): IUser => ({
-  _id: '507f1f77bcf86cd799439011' as unknown as IUser['_id'],
-  id: '507f1f77bcf86cd799439011',
-  name: 'Test User',
-  email: 'test@example.com',
-  password: 'hashed-password',
-  role: 'admin',
-  isActive: true,
-  comparePassword: jest.fn(),
-  ...overrides
-} as unknown as IUser);
+const createMockUser = (overrides: Partial<IUser> = {}): IUser =>
+  ({
+    _id: '507f1f77bcf86cd799439011' as unknown as IUser['_id'],
+    id: '507f1f77bcf86cd799439011',
+    name: 'Test User',
+    email: 'test@example.com',
+    password: 'hashed-password',
+    role: 'admin',
+    isActive: true,
+    comparePassword: jest.fn(),
+    ...overrides,
+  }) as unknown as IUser;
 
 const mockFindByIdSelect = (user: IUser | null) => {
   const select = jest.fn().mockResolvedValue(user);
@@ -58,7 +59,7 @@ describe('authenticate middleware', () => {
   it('returns 401 when no token is provided', async () => {
     const req = {
       cookies: {},
-      header: jest.fn().mockReturnValue(undefined)
+      header: jest.fn().mockReturnValue(undefined),
     } as unknown as AuthenticatedRequest;
 
     const res = createMockResponse();
@@ -68,7 +69,7 @@ describe('authenticate middleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: 'Access denied. No token provided.'
+      message: 'Access denied. No token provided.',
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -76,7 +77,7 @@ describe('authenticate middleware', () => {
   it('returns 401 when token verification fails', async () => {
     const req = {
       cookies: { 'auth-token': 'invalid' },
-      header: jest.fn()
+      header: jest.fn(),
     } as unknown as AuthenticatedRequest;
 
     const res = createMockResponse();
@@ -91,7 +92,7 @@ describe('authenticate middleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: 'Invalid token.'
+      message: 'Invalid token.',
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -99,7 +100,7 @@ describe('authenticate middleware', () => {
   it('returns 401 when user is not found or inactive', async () => {
     const req = {
       cookies: { 'auth-token': 'valid-token' },
-      header: jest.fn()
+      header: jest.fn(),
     } as unknown as AuthenticatedRequest;
 
     const res = createMockResponse();
@@ -113,7 +114,7 @@ describe('authenticate middleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: 'Invalid token or user account disabled.'
+      message: 'Invalid token or user account disabled.',
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -121,7 +122,7 @@ describe('authenticate middleware', () => {
   it('attaches user to request and calls next on success', async () => {
     const req = {
       cookies: { 'auth-token': 'valid-token' },
-      header: jest.fn()
+      header: jest.fn(),
     } as unknown as AuthenticatedRequest;
 
     const res = createMockResponse();
@@ -154,20 +155,20 @@ describe('authorize middleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: 'Authentication required.'
+      message: 'Authentication required.',
     });
     expect(next).not.toHaveBeenCalled();
   });
 
   it('returns 403 when user does not have required role', () => {
     const { res, next } = runAuthorize(['admin'], {
-      user: createMockUser({ role: 'customer' })
+      user: createMockUser({ role: 'customer' }),
     });
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
-      message: 'Access denied. Insufficient permissions.'
+      message: 'Access denied. Insufficient permissions.',
     });
     expect(next).not.toHaveBeenCalled();
   });
@@ -176,9 +177,13 @@ describe('authorize middleware', () => {
     const res = createMockResponse();
     const next = jest.fn();
 
-    authorize('admin')({
-      user: createMockUser({ role: 'admin' })
-    } as AuthenticatedRequest, res, next);
+    authorize('admin')(
+      {
+        user: createMockUser({ role: 'admin' }),
+      } as AuthenticatedRequest,
+      res,
+      next,
+    );
 
     expect(next).toHaveBeenCalledTimes(1);
     expect(res.status).not.toHaveBeenCalled();

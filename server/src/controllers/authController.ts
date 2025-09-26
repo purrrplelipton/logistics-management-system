@@ -6,9 +6,13 @@ import { AuthenticatedRequest, ApiResponse, IUser } from '../types';
 
 // Generate JWT token
 const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: process.env.JWT_EXPIRE || '7d'
-  } as jwt.SignOptions);
+  return jwt.sign(
+    { id },
+    process.env.JWT_SECRET as string,
+    {
+      expiresIn: process.env.JWT_EXPIRE || '7d',
+    } as jwt.SignOptions,
+  );
 };
 
 // Cookie options
@@ -17,13 +21,17 @@ const getCookieOptions = () => ({
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict' as const,
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
 });
 
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-export const register = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+export const register = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     // Check for validation errors
     const errors = validationResult(req);
@@ -31,7 +39,7 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
       res.status(400).json({
         success: false,
         message: 'Validation errors',
-        errors: errors.array()
+        errors: errors.array(),
       });
       return;
     }
@@ -43,7 +51,7 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
     if (existingUser) {
       res.status(400).json({
         success: false,
-        message: 'User already exists with this email'
+        message: 'User already exists with this email',
       });
       return;
     }
@@ -55,7 +63,7 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
       password,
       role,
       phone,
-      address
+      address,
     });
 
     // Generate token and set cookie
@@ -66,8 +74,8 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
       success: true,
       message: 'User registered successfully',
       data: {
-        user
-      }
+        user,
+      },
     };
 
     res.status(201).json(response);
@@ -79,7 +87,11 @@ export const register = async (req: AuthenticatedRequest, res: Response, next: N
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-export const login = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+export const login = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     // Check for validation errors
     const errors = validationResult(req);
@@ -87,7 +99,7 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
       res.status(400).json({
         success: false,
         message: 'Validation errors',
-        errors: errors.array()
+        errors: errors.array(),
       });
       return;
     }
@@ -99,7 +111,7 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
     if (!user || !user.isActive) {
       res.status(401).json({
         success: false,
-        message: 'Invalid credentials or account disabled'
+        message: 'Invalid credentials or account disabled',
       });
       return;
     }
@@ -109,7 +121,7 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
     if (!isPasswordValid) {
       res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid credentials',
       });
       return;
     }
@@ -125,8 +137,8 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
       success: true,
       message: 'Login successful',
       data: {
-        user: userObject as IUser
-      }
+        user: userObject as IUser,
+      },
     };
 
     res.json(response);
@@ -138,19 +150,23 @@ export const login = async (req: AuthenticatedRequest, res: Response, next: Next
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
-export const getMe = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+export const getMe = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     if (!req.user) {
       res.status(401).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
       return;
     }
 
     const response: ApiResponse<IUser> = {
       success: true,
-      data: req.user
+      data: req.user,
     };
     res.json(response);
   } catch (error) {
@@ -161,21 +177,25 @@ export const getMe = async (req: AuthenticatedRequest, res: Response, next: Next
 // @desc    Logout user
 // @route   POST /api/auth/logout
 // @access  Private
-export const logout = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+export const logout = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     res.clearCookie('auth-token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
-      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined
+      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
     });
 
     const response: ApiResponse<null> = {
       success: true,
       message: 'Logged out successfully',
-      data: null
+      data: null,
     };
-    
+
     res.json(response);
   } catch (error) {
     next(error);

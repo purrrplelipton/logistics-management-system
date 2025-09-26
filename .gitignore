@@ -66,4 +66,18 @@ client/.next/
 client/out/
 
 # TypeScript
+# TypeScript
 *.tsbuildinfo
+client/next-env.d.ts
+
+# Client-specific
+client/.pnp
+client/.pnp.*
+client/.yarn/*
+!client/.yarn/patches
+!client/.yarn/plugins
+!client/.yarn/releases
+!client/.yarn/versions
+client/*.pem
+client/.env*
+client/.vercel

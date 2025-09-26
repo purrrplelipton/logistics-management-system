@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { 
-  AuthResponse, 
-  User, 
-  Delivery, 
-  ApiResponse, 
-  RegisterData, 
-  DeliveryData, 
-  UserParams, 
-  DeliveryParams 
+import {
+  AuthResponse,
+  User,
+  Delivery,
+  ApiResponse,
+  RegisterData,
+  DeliveryData,
+  UserParams,
+  DeliveryParams,
 } from '@/types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -29,7 +29,7 @@ api.interceptors.response.use(
     // Don't automatically redirect on 401 errors
     // Let individual components handle authentication state
     return Promise.reject(error);
-  }
+  },
 );
 
 // Auth API
@@ -57,14 +57,22 @@ export const deliveryAPI = {
     api.post<ApiResponse<Delivery>>('/deliveries', deliveryData),
   getAllDeliveries: (params?: DeliveryParams) =>
     api.get<ApiResponse<Delivery[]>>('/deliveries', { params }),
-  getDelivery: (id: string) =>
-    api.get<ApiResponse<Delivery>>(`/deliveries/${id}`),
+  getDelivery: (id: string) => api.get<ApiResponse<Delivery>>(`/deliveries/${id}`),
   assignDriver: (deliveryId: string, driverId: string) =>
     api.put<ApiResponse<Delivery>>(`/deliveries/${deliveryId}/assign`, { driverId }),
   updateDeliveryStatus: (id: string, data: { status: string; deliveryNotes?: string }) =>
     api.put<ApiResponse<Delivery>>(`/deliveries/${id}/status`, data),
   trackDelivery: (trackingNumber: string) =>
-    api.get<ApiResponse<{ trackingNumber: string; status: string; createdAt: string; actualDeliveryDate?: string; estimatedDeliveryDate?: string; deliveryNotes?: string }>>(`/deliveries/track/${trackingNumber}`),
+    api.get<
+      ApiResponse<{
+        trackingNumber: string;
+        status: string;
+        createdAt: string;
+        actualDeliveryDate?: string;
+        estimatedDeliveryDate?: string;
+        deliveryNotes?: string;
+      }>
+    >(`/deliveries/track/${trackingNumber}`),
 };
 
 export default api;

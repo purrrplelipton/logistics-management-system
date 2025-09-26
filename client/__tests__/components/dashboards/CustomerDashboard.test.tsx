@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CustomerDashboard from '@/components/dashboards/CustomerDashboard';
@@ -17,7 +19,19 @@ jest.mock('@/lib/queries', () => ({
 
 // Mock the UI components
 jest.mock('@/components/ui/Modal', () => {
-  return function MockModal({ isOpen, onClose, title, children }: any) {
+  type ModalProps = {
+    isOpen?: boolean;
+    onClose?: () => void;
+    title?: React.ReactNode;
+    children?: React.ReactNode;
+  };
+
+  return function MockModal({
+    isOpen = false,
+    onClose,
+    title,
+    children,
+  }: ModalProps): React.JSX.Element | null {
     if (!isOpen) return null;
     return (
       <div data-testid="modal">
@@ -30,7 +44,7 @@ jest.mock('@/components/ui/Modal', () => {
 });
 
 jest.mock('@iconify-icon/react', () => ({
-  Icon: ({ icon, className, ...props }: any) => (
+  Icon: ({ icon, className, ...props }: React.ComponentProps<'span'> & { icon: string }) => (
     <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
   ),
 }));
@@ -47,11 +61,11 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  Wrapper.displayName = 'QueryClientProviderWrapper';
+  return Wrapper;
 };
 
 const mockUser = {
@@ -149,16 +163,16 @@ const mockDeliveries = [
 describe('CustomerDashboard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     useAuth.mockReturnValue({
       user: mockUser,
     });
-    
+
     useCustomerDeliveries.mockReturnValue({
       data: mockDeliveries,
       isLoading: false,
     });
-    
+
     useCreateDelivery.mockReturnValue({
       mutateAsync: jest.fn(),
       isPending: false,
@@ -197,7 +211,7 @@ describe('CustomerDashboard', () => {
   it('renders create delivery button', () => {
     render(<CustomerDashboard />, { wrapper: createWrapper() });
 
-  const createButton = screen.getByRole('button', { name: /new delivery/i });
+    const createButton = screen.getByRole('button', { name: /new delivery/i });
     expect(createButton).toBeInTheDocument();
   });
 
@@ -205,7 +219,7 @@ describe('CustomerDashboard', () => {
     const user = userEvent.setup();
     render(<CustomerDashboard />, { wrapper: createWrapper() });
 
-  const createButton = screen.getByRole('button', { name: /new delivery/i });
+    const createButton = screen.getByRole('button', { name: /new delivery/i });
     await user.click(createButton);
 
     expect(screen.getByTestId('modal')).toBeInTheDocument();
@@ -217,7 +231,7 @@ describe('CustomerDashboard', () => {
     render(<CustomerDashboard />, { wrapper: createWrapper() });
 
     // Open modal
-  const createButton = screen.getByRole('button', { name: /new delivery/i });
+    const createButton = screen.getByRole('button', { name: /new delivery/i });
     await user.click(createButton);
 
     expect(screen.getByTestId('modal')).toBeInTheDocument();
@@ -233,7 +247,7 @@ describe('CustomerDashboard', () => {
     render(<CustomerDashboard />, { wrapper: createWrapper() });
 
     expect(screen.getByText('My Deliveries')).toBeInTheDocument();
-    
+
     // Check table headers
     expect(screen.getByText('Tracking #')).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
@@ -284,13 +298,11 @@ describe('CustomerDashboard', () => {
     render(<CustomerDashboard />, { wrapper: createWrapper() });
 
     // Open the create modal
-  const createButton = screen.getByRole('button', { name: /new delivery/i });
+    const createButton = screen.getByRole('button', { name: /new delivery/i });
     await user.click(createButton);
 
     // Find form inputs and test input changes
-    const streetInput = screen.getByPlaceholderText(
-      'e.g., 123 Main Street, Apartment 4B'
-    );
+    const streetInput = screen.getByPlaceholderText('e.g., 123 Main Street, Apartment 4B');
     if (streetInput) {
       await user.type(streetInput, '123 Test Street');
       expect(streetInput).toHaveValue('123 Test Street');
@@ -315,7 +327,7 @@ describe('CustomerDashboard', () => {
   it('submits form with correct data', async () => {
     const user = userEvent.setup();
     const mockMutateAsync = jest.fn().mockResolvedValue({});
-    
+
     useCreateDelivery.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,

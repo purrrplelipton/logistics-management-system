@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
@@ -13,12 +13,20 @@ jest.mock('@/lib/queries', () => ({
 }));
 
 // Mock icon component
-jest.mock('@iconify-icon/react', () => ({
-  Icon: ({ icon, className, ...props }: any) => (
-    <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
-  ),
-}));
+jest.mock('@iconify-icon/react', () => {
+  type IconProps = {
+    icon?: unknown;
+    className?: string;
+  } & import('react').HTMLAttributes<HTMLSpanElement>;
 
+  const Icon: import('react').FC<IconProps> = ({ icon, className, ...props }) => (
+    <span data-testid={`icon-${String(icon)}`} className={className} {...props} />
+  );
+
+  return { Icon };
+});
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { useDeliveries, useUsers, useDrivers, useAssignDriver } = require('@/lib/queries');
 
 const createWrapper = () => {
@@ -30,11 +38,11 @@ const createWrapper = () => {
     },
   });
 
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  Wrapper.displayName = 'QueryClientWrapper';
+  return Wrapper;
 };
 
 const mockDeliveries = [
@@ -82,22 +90,22 @@ const mockDrivers = [
 describe('AdminDashboard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     useDeliveries.mockReturnValue({
       data: mockDeliveries,
       isLoading: false,
     });
-    
+
     useUsers.mockReturnValue({
       data: mockUsers,
       isLoading: false,
     });
-    
+
     useDrivers.mockReturnValue({
       data: mockDrivers,
       isLoading: false,
     });
-    
+
     useAssignDriver.mockReturnValue({
       mutateAsync: jest.fn(),
       isPending: false,
@@ -112,7 +120,7 @@ describe('AdminDashboard', () => {
 
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
-  expect(screen.getByTestId('dashboard-loading')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-loading')).toBeInTheDocument();
   });
 
   it('displays correct statistics', () => {
@@ -153,13 +161,13 @@ describe('AdminDashboard', () => {
   it('displays statistics labels correctly', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
-  expect(screen.getByText('Total Deliveries', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('Pending', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('In Transit', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('Completed', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('Total Users', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('Drivers', { selector: 'p' })).toBeInTheDocument();
-  expect(screen.getByText('Customers', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Total Deliveries', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Pending', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('In Transit', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Completed', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Total Users', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Drivers', { selector: 'p' })).toBeInTheDocument();
+    expect(screen.getByText('Customers', { selector: 'p' })).toBeInTheDocument();
   });
 
   it('renders driver assignment section', () => {
@@ -209,7 +217,7 @@ describe('AdminDashboard', () => {
   it('calls assign driver mutation when assign button is clicked', async () => {
     const user = userEvent.setup();
     const mockMutateAsync = jest.fn().mockResolvedValue({});
-    
+
     useAssignDriver.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
@@ -247,7 +255,7 @@ describe('AdminDashboard', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
     expect(screen.getByText('Recent Deliveries')).toBeInTheDocument();
-    
+
     // Check table headers
     expect(screen.getByText('Tracking #')).toBeInTheDocument();
     expect(screen.getByText('Customer')).toBeInTheDocument();
@@ -273,9 +281,9 @@ describe('AdminDashboard', () => {
     render(<AdminDashboard />, { wrapper: createWrapper() });
 
     // Find status badges
-  const pendingBadge = screen.getByText('Pending', { selector: 'span' });
-  const inTransitBadge = screen.getByText('InTransit', { selector: 'span' });
-  const deliveredBadge = screen.getByText('Delivered', { selector: 'span' });
+    const pendingBadge = screen.getByText('Pending', { selector: 'span' });
+    const inTransitBadge = screen.getByText('InTransit', { selector: 'span' });
+    const deliveredBadge = screen.getByText('Delivered', { selector: 'span' });
 
     expect(pendingBadge).toHaveClass('bg-yellow-100', 'text-yellow-800');
     expect(inTransitBadge).toHaveClass('bg-blue-100', 'text-blue-800');
@@ -293,7 +301,7 @@ describe('AdminDashboard', () => {
   it('clears selections after successful assignment', async () => {
     const user = userEvent.setup();
     const mockMutateAsync = jest.fn().mockResolvedValue({});
-    
+
     useAssignDriver.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
@@ -323,7 +331,7 @@ describe('AdminDashboard', () => {
     const user = userEvent.setup();
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
     const mockMutateAsync = jest.fn().mockRejectedValue(new Error('Assignment failed'));
-    
+
     useAssignDriver.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,

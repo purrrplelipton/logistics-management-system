@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Input } from '@/components/ui/Input';
 
@@ -27,11 +27,11 @@ describe('Input Component', () => {
   it('displays error message', () => {
     const errorMessage = 'This field is required';
     render(<Input error={errorMessage} />);
-    
+
     const errorElement = screen.getByRole('alert');
     expect(errorElement).toBeInTheDocument();
     expect(errorElement).toHaveTextContent(errorMessage);
-    
+
     const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('aria-invalid', 'true');
   });
@@ -39,12 +39,12 @@ describe('Input Component', () => {
   it('handles user input', async () => {
     const user = userEvent.setup();
     const mockOnChange = jest.fn();
-    
+
     render(<Input onChange={mockOnChange} />);
     const input = screen.getByRole('textbox');
-    
+
     await user.type(input, 'Hello World');
-    
+
     expect(mockOnChange).toHaveBeenCalled();
     expect(input).toHaveValue('Hello World');
   });
@@ -52,7 +52,7 @@ describe('Input Component', () => {
   it('renders start element', () => {
     const startIcon = <span data-testid="start-icon">@</span>;
     render(<Input startElement={startIcon} />);
-    
+
     const icon = screen.getByTestId('start-icon');
     expect(icon).toBeInTheDocument();
   });
@@ -60,7 +60,7 @@ describe('Input Component', () => {
   it('renders end element', () => {
     const endIcon = <span data-testid="end-icon">✓</span>;
     render(<Input endElement={endIcon} />);
-    
+
     const icon = screen.getByTestId('end-icon');
     expect(icon).toBeInTheDocument();
   });
@@ -68,7 +68,7 @@ describe('Input Component', () => {
   it('forwards ref correctly', () => {
     const ref = React.createRef<HTMLInputElement>();
     render(<Input ref={ref} />);
-    
+
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
 
@@ -83,9 +83,9 @@ describe('Input Component', () => {
       <>
         <Input label="First" />
         <Input label="Second" />
-      </>
+      </>,
     );
-    
+
     const inputs = screen.getAllByRole('textbox');
     expect(inputs[0]).toHaveAttribute('id');
     expect(inputs[1]).toHaveAttribute('id');
@@ -102,7 +102,7 @@ describe('Input Component', () => {
     render(<Input error="Error message" />);
     const input = screen.getByRole('textbox');
     const errorId = input.getAttribute('aria-describedby');
-    
+
     expect(errorId).toBeTruthy();
     expect(screen.getByRole('alert')).toHaveAttribute('id', errorId);
   });

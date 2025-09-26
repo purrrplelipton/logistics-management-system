@@ -3,10 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 interface CustomError extends Error {
   statusCode?: number;
   code?: number;
-  errors?: Record<string, any>;
+  errors?: Record<string, unknown>;
 }
 
-const errorHandler = (err: CustomError, req: Request, res: Response, next: NextFunction): void => {
+const errorHandler = (err: CustomError, _req: Request, res: Response, _next: NextFunction): void => {
   let error = { ...err };
   error.message = err.message;
 
@@ -27,7 +27,10 @@ const errorHandler = (err: CustomError, req: Request, res: Response, next: NextF
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
-    const message = Object.values(err.errors || {}).map((val: any) => val.message).join(', ');
+    const message = Object.values(err.errors || {})
+      .map((val) => (val as { message?: string }).message || '')
+      .filter(Boolean)
+      .join(', ');
     error = { message, statusCode: 400 } as CustomError;
   }
 
@@ -45,7 +48,7 @@ const errorHandler = (err: CustomError, req: Request, res: Response, next: NextF
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   });
 };
 

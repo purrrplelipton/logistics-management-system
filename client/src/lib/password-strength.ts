@@ -24,8 +24,14 @@ const mapScoreToStrength = (score: ZXCVBNScore): PasswordStrength => {
   return 'weak';
 };
 
-const buildFeedback = (score: ZXCVBNScore, warning?: string, suggestions: string[] = []): string[] => {
-  const messages = [warning, ...suggestions].filter((message): message is string => Boolean(message && message.trim()));
+const buildFeedback = (
+  score: ZXCVBNScore,
+  warning?: string,
+  suggestions: string[] = [],
+): string[] => {
+  const messages = [warning, ...suggestions].filter((message): message is string =>
+    Boolean(message && message.trim()),
+  );
 
   if (messages.length === 0 && score >= 4) {
     return ['Excellent password strength!'];
@@ -34,7 +40,10 @@ const buildFeedback = (score: ZXCVBNScore, warning?: string, suggestions: string
   return messages;
 };
 
-export const calculatePasswordStrength = (password: string, userInputs: string[] = []): PasswordStrengthInfo => {
+export const calculatePasswordStrength = (
+  password: string,
+  userInputs: string[] = [],
+): PasswordStrengthInfo => {
   if (!password) {
     return {
       strength: 'weak',
