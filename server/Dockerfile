@@ -1,37 +1,24 @@
-# syntax=docker/dockerfile:1
+FROM node:20-alpine
 
-FROM node:20-slim AS builder
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Install pnpm
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY server/package.json server/package.json
+# Copy package files
+COPY package*.json pnpm-lock.yaml ./
+
+# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-COPY server ./server
-RUN pnpm --filter server build
+# Copy source code
+COPY . .
 
-FROM node:20-slim AS runner
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Build the application
+RUN pnpm run build
 
-WORKDIR /app
-
-ENV NODE_ENV=production
-ENV PORT=8080
-
-COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/server/package.json ./server/package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/server/node_modules ./server/node_modules
-COPY --from=builder /app/server/dist ./server/dist
-
+# Expose port
 EXPOSE 8080
 
-CMD ["pnpm", "--filter", "server", "start"]
+# Start the application
+CMD ["pnpm", "start"]
