@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
     "build": "pnpm -r run build",
+    "start": "pnpm --filter server start",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint",
     "format": "prettier --cache --write .",
