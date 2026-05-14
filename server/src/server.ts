@@ -9,8 +9,10 @@ import path from 'path';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 
-// Load environment variables
-dotenv.config({ path: ['../.env'] });
+// Render injects runtime env vars directly. Dotenv is only for local development.
+if (process.env['NODE_ENV'] !== 'production') {
+  dotenv.config({ path: ['../.env', '.env'], quiet: true });
+}
 
 import connectDB from '#/config/database';
 import errorHandler from '#/middleware/errorHandler';
