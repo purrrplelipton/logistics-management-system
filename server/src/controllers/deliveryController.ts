@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import Delivery from '../models/Delivery';
-import User from '../models/User';
-import { AuthenticatedRequest } from '../types';
+import Delivery from '#/models/Delivery';
+import User from '#/models/User';
+import { AuthenticatedRequest } from '#/types';
 import { createId } from '@paralleldrive/cuid2';
 
 // Create a new delivery (Customer only)
@@ -24,7 +24,7 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
     const trackingNumber = `TRK${createId().toUpperCase()}`;
 
     const delivery = new Delivery({
-      customerId: req.user?.id,
+      customerId: req.user?._id,
       pickupAddress,
       deliveryAddress,
       packageDetails,
@@ -53,31 +53,31 @@ export const createDelivery = async (req: AuthenticatedRequest, res: Response): 
 // Get deliveries with role-based filtering
 export const getDeliveries = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const page = parseInt(req.query['page'] as string) || 1;
+    const limit = parseInt(req.query['limit'] as string) || 10;
     const skip = (page - 1) * limit;
 
     const filter: Record<string, unknown> = {};
 
     // Role-based filtering
     if (req.user?.role === 'customer') {
-      filter.customerId = req.user.id;
+      filter['customerId'] = req.user._id;
     } else if (req.user?.role === 'driver') {
-      filter.driverId = req.user.id;
+      filter['driverId'] = req.user._id;
     }
     // Admin can see all deliveries (no filter)
 
     // Additional filters
-    if (req.query.status) {
-      filter.status = req.query.status;
+    if (req.query['status']) {
+      filter['status'] = req.query['status'];
     }
 
-    if (req.query.customerId && req.user?.role === 'admin') {
-      filter.customerId = req.query.customerId;
+    if (req.query['customerId'] && req.user?.role === 'admin') {
+      filter['customerId'] = req.query['customerId'];
     }
 
-    if (req.query.driverId && req.user?.role === 'admin') {
-      filter.driverId = req.query.driverId;
+    if (req.query['driverId'] && req.user?.role === 'admin') {
+      filter['driverId'] = req.query['driverId'];
     }
 
     const deliveries = await Delivery.find(filter)
@@ -113,6 +113,14 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
   try {
     const { id } = req.params;
 
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        message: '',
+      });
+      return;
+    }
+
     const delivery = await Delivery.findById(id)
       .populate('customerId', 'name email phone address')
       .populate('driverId', 'name email phone');
@@ -126,7 +134,10 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
     }
 
     // Role-based access control
-    if (req.user?.role === 'customer' && delivery.customerId.toString() !== req.user.id) {
+    if (
+      req.user?.role === 'customer' &&
+      delivery.customerId.toString() !== req.user._id.toString()
+    ) {
       res.status(403).json({
         success: false,
         message: 'Access denied',
@@ -134,7 +145,7 @@ export const getDeliveryById = async (req: AuthenticatedRequest, res: Response):
       return;
     }
 
-    if (req.user?.role === 'driver' && delivery.driverId?.toString() !== req.user.id) {
+    if (req.user?.role === 'driver' && delivery.driverId?.toString() !== req.user._id.toString()) {
       res.status(403).json({
         success: false,
         message: 'Access denied',
@@ -248,7 +259,13 @@ export const updateDeliveryStatus = async (
 
     // Role-based access control
     if (req.user?.role === 'driver') {
-      if (!delivery.driverId || delivery.driverId.toString() !== req.user.id) {
+      if (!delivery.driverId) {
+        res.status(403).json({
+          success: false,
+          message: 'Access denied. No driver assigned to this delivery',
+        });
+        return;
+      } else if (delivery.driverId.toString() !== req.user._id.toString()) {
         res.status(403).json({
           success: false,
           message: 'Access denied. Not assigned to this delivery',
@@ -311,7 +328,15 @@ export const trackDelivery = async (req: Request, res: Response): Promise<void> 
   try {
     const { trackingNumber } = req.params;
 
-    const delivery = await Delivery.findOne({ trackingNumber })
+    if (!trackingNumber) {
+      res.status(400).json({
+        success: false,
+        message: '',
+      });
+      return;
+    }
+
+    const delivery = await Delivery.findOne({ trackingNumber: trackingNumber.toString() })
       .select(
         'trackingNumber status estimatedDeliveryDate actualDeliveryDate deliveryNotes createdAt pickupAddress deliveryAddress packageDetails',
       )

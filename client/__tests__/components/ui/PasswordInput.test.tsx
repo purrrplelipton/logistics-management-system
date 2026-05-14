@@ -1,10 +1,11 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { PasswordInput } from '@/components/ui/PasswordInput';
+import { PasswordInput } from '#/components/ui/PasswordInput';
+import type { PasswordStrengthInfo } from '#/lib/password-strength';
 
 // Mock password strength calculation to return predictable results
-jest.mock('@/lib/password-strength', () => ({
+jest.mock('#/lib/password-strength', () => ({
   calculatePasswordStrength: jest.fn((password: string) => {
     if (!password) {
       return {
@@ -277,7 +278,7 @@ describe('PasswordInput Component', () => {
   });
 
   it('uses external strength info when provided', () => {
-    const externalStrengthInfo = {
+    const externalStrengthInfo: PasswordStrengthInfo = {
       strength: 'strong' as const,
       score: 4,
       feedback: [],

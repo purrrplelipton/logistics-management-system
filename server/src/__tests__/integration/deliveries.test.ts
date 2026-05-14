@@ -1,8 +1,8 @@
 import { describe, it, expect } from '@jest/globals';
 import request from 'supertest';
-import app from '../../server';
-import User from '../../models/User';
-import { IUser } from '../../types';
+import app from '#/server';
+import User from '#/models/User';
+import { IUser } from '#/types';
 import { createId } from '@paralleldrive/cuid2';
 
 const baseDeliveryPayload = {
@@ -50,16 +50,11 @@ const createUserAndLogin = async (
   const response = await request(app).post('/api/auth/login').send({ email, password }).expect(200);
 
   const cookies = response.headers['set-cookie'];
-  if (!cookies) {
+  if (!cookies || !cookies[0]) {
     throw new Error('Authentication cookie was not set');
   }
 
-  const cookie = cookies[0];
-  if (!cookie) {
-    throw new Error('Authentication cookie was not set');
-  }
-
-  return { user: user as IUser, cookie };
+  return { user: user as IUser, cookie: cookies[0] };
 };
 
 describe('Delivery routes integration', () => {
@@ -121,14 +116,14 @@ describe('Delivery routes integration', () => {
     const assignResponse = await request(app)
       .put(`/api/deliveries/${deliveryId}/assign`)
       .set('Cookie', admin.cookie)
-      .send({ driverId: driver.user.id })
+      .send({ driverId: driver.user._id })
       .expect(200);
 
     expect(assignResponse.body.success).toBe(true);
     const assignedDriver = assignResponse.body.data.driverId;
     const assignedDriverId =
       typeof assignedDriver === 'string' ? assignedDriver : assignedDriver?._id;
-    expect(assignedDriverId).toBe(driver.user.id);
+    expect(assignedDriverId).toBe(driver.user._id);
     expect(assignResponse.body.data.status).toBe('InTransit');
 
     const statusResponse = await request(app)
@@ -177,7 +172,7 @@ describe('Delivery routes integration', () => {
     await request(app)
       .put(`/api/deliveries/${deliveryId}/assign`)
       .set('Cookie', admin.cookie)
-      .send({ driverId: driverOne.user.id })
+      .send({ driverId: driverOne.user._id })
       .expect(200);
 
     const response = await request(app)

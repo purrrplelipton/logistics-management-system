@@ -6,7 +6,12 @@ interface CustomError extends Error {
   errors?: Record<string, unknown>;
 }
 
-const errorHandler = (err: CustomError, _req: Request, res: Response, _next: NextFunction): void => {
+const errorHandler = (
+  err: CustomError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+): void => {
   let error = { ...err };
   error.message = err.message;
 
@@ -48,7 +53,7 @@ const errorHandler = (err: CustomError, _req: Request, res: Response, _next: Nex
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Server Error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env['NODE_ENV'] === 'development' && { stack: err.stack }),
   });
 };
 

@@ -1,8 +1,9 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../../models/User';
-import { authenticate, authorize } from '../../middleware/auth';
-import { AuthenticatedRequest, IUser } from '../../types';
+import User from '#/models/User';
+import { authenticate, authorize } from '#/middleware/auth';
+import { AuthenticatedRequest, IUser } from '#/types';
+import mongoose from 'mongoose';
 
 jest.mock('jsonwebtoken', () => ({
   __esModule: true,
@@ -11,7 +12,7 @@ jest.mock('jsonwebtoken', () => ({
   },
 }));
 
-jest.mock('../../models/User', () => ({
+jest.mock('#/models/User.js', () => ({
   __esModule: true,
   default: {
     findById: jest.fn(),
@@ -23,18 +24,16 @@ const mockedUserModel = User as unknown as { findById: jest.Mock };
 
 const createMockUser = (overrides: Partial<IUser> = {}): IUser =>
   ({
-    _id: '507f1f77bcf86cd799439011' as unknown as IUser['_id'],
-    id: '507f1f77bcf86cd799439011',
+    _id: new mongoose.Types.ObjectId('507f1f77bcf86cd799439011'),
     name: 'Test User',
     email: 'test@example.com',
     password: 'hashed-password',
     role: 'admin',
     isActive: true,
-    comparePassword: jest.fn(),
     ...overrides,
   }) as unknown as IUser;
 
-const mockFindByIdSelect = (user: IUser | null) => {
+const mockFindByIdSelect = (user?: IUser) => {
   const select = jest.fn().mockResolvedValue(user);
   mockedUserModel.findById.mockReturnValue({ select });
   return select;
@@ -105,12 +104,12 @@ describe('authenticate middleware', () => {
 
     const res = createMockResponse();
 
-    mockedJwt.verify.mockReturnValue({ id: 'user123' });
+    mockedJwt.verify.mockReturnValue({ _id: new mongoose.Types.ObjectId('user123') });
     mockFindByIdSelect(createMockUser({ isActive: false }));
 
     await authenticate(req, res, next);
 
-    expect(mockedUserModel.findById).toHaveBeenCalledWith('user123');
+    expect(mockedUserModel.findById).toHaveBeenCalledWith(new mongoose.Types.ObjectId('user123'));
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       success: false,
@@ -127,14 +126,18 @@ describe('authenticate middleware', () => {
 
     const res = createMockResponse();
 
-    const user = createMockUser({ id: 'user123', role: 'admin', isActive: true });
+    const user = createMockUser({
+      _id: new mongoose.Types.ObjectId('user123'),
+      role: 'admin',
+      isActive: true,
+    });
 
-    mockedJwt.verify.mockReturnValue({ id: 'user123' });
+    mockedJwt.verify.mockReturnValue({ _id: new mongoose.Types.ObjectId('user123') });
     mockFindByIdSelect(user);
 
     await authenticate(req, res, next);
 
-    expect(mockedUserModel.findById).toHaveBeenCalledWith('user123');
+    expect(mockedUserModel.findById).toHaveBeenCalledWith(new mongoose.Types.ObjectId('user123'));
     expect(req.user).toEqual(user);
     expect(next).toHaveBeenCalledTimes(1);
     expect(res.status).not.toHaveBeenCalled();

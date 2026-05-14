@@ -3,14 +3,14 @@
 import React, { useState, forwardRef, useEffect } from 'react';
 import { Icon } from '@iconify-icon/react';
 import { Input, InputProps } from './Input';
-import { cn } from '@/lib/utils';
+import { cn } from '#/lib/utils';
 import {
   calculatePasswordStrength,
   PasswordStrength,
   PasswordStrengthInfo,
-} from '@/lib/password-strength';
+} from '#/lib/password-strength';
 
-export interface PasswordInputProps extends Omit<InputProps, 'type' | 'endElement'> {
+export interface PasswordInputProps extends Omit<InputProps, 'type'> {
   showStrengthIndicator?: boolean;
   showToggle?: boolean;
   strengthInfo?: PasswordStrengthInfo;
@@ -27,6 +27,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       value = '',
       onChange,
       startElement = <Icon icon="solar:lock-password-outline" className="text-xl" />,
+      endElement: customEndElement,
       className,
       disabled,
       ...props
@@ -96,7 +97,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     const activeSegments = getActiveStrengthSegments(strengthInfo);
 
-    const endElement = showToggle ? (
+    const toggleElement = showToggle ? (
       <button
         type="button"
         className={cn(
@@ -114,6 +115,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
         />
       </button>
     ) : undefined;
+    const endElement = customEndElement ?? toggleElement;
 
     return (
       <div className="w-full space-y-2">

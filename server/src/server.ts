@@ -12,29 +12,29 @@ import fs from 'fs/promises';
 // Load environment variables
 dotenv.config({ path: ['../.env'] });
 
-import connectDB from './config/database';
-import errorHandler from './middleware/errorHandler';
+import connectDB from '#/config/database';
+import errorHandler from '#/middleware/errorHandler';
 
 // Route imports
-import authRoutes from './routes/auth';
-import deliveryRoutes from './routes/deliveries';
-import userRoutes from './routes/users';
+import authRoutes from '#/routes/auth';
+import deliveryRoutes from '#/routes/deliveries';
+import userRoutes from '#/routes/users';
 
 const app: Application = express();
 
 // Connect to database (skip automatic connect in test environment)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env['NODE_ENV'] !== 'test') {
   void connectDB();
 }
 
 // Add nonce middleware BEFORE helmet so helmet can read res.locals.nonce
 app.use((_req, res, next) => {
-  res.locals.nonce = crypto.randomUUID();
+  res.locals['nonce'] = crypto.randomUUID();
   next();
 });
 
 // Helmet configuration: strict CSP in production, relaxed in non-production for dev convenience
-if (process.env.NODE_ENV === 'production') {
+if (process.env['NODE_ENV'] === 'production') {
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -62,9 +62,7 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'production'
-      ? false
-      : 'http://localhost:3000',
+    origin: process.env['NODE_ENV'] === 'production' ? false : 'http://localhost:3000',
     credentials: true,
   }),
 );
@@ -105,9 +103,7 @@ async function loadIndexTemplate() {
 void loadIndexTemplate();
 
 // Prevent express.static from automatically serving index.html so we can inject nonces
-app.use(
-  express.static(outDir, { index: false }),
-);
+app.use(express.static(outDir, { index: false }));
 
 // Catch-all: serve index.html but inject nonce into inline scripts/styles per-request
 // (using the user's express route style: '/{*path}')
@@ -144,13 +140,15 @@ app.use((_req, res) => {
 // Error handler middleware (must be last)
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env['PORT'] || 5000;
 
 let server: Server | undefined;
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env['NODE_ENV'] !== 'test') {
   server = app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    console.log(
+      `Server running in ${process.env['NODE_ENV'] || 'development'} mode on port ${PORT}`,
+    );
   });
 
   // Handle unhandled promise rejections

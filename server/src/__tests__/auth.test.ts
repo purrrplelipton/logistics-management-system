@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import request from 'supertest';
-import app from '../server';
-import User from '../models/User';
+import app from '#/server';
+import User from '#/models/User';
 
 describe('Authentication Endpoints', () => {
   const strongPassword = 'VeryStrongP@ssw0rd!2025';
@@ -16,7 +16,7 @@ describe('Authentication Endpoints', () => {
       email: 'test@example.com',
       password: strongPassword,
       phone: '1234567890',
-      role: 'customer',
+      role: 'customer' as const,
       address: {
         street: '123 Test St',
         city: 'Test City',

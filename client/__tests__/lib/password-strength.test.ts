@@ -1,6 +1,6 @@
-import { calculatePasswordStrength } from '@/lib/password-strength';
+import { calculatePasswordStrength } from '#/lib/password-strength';
 
-import zxcvbn, { ZXCVBNResult } from 'zxcvbn';
+import zxcvbn, { ZXCVBNFeedbackWarning, ZXCVBNResult } from 'zxcvbn';
 
 jest.mock('zxcvbn');
 
@@ -26,7 +26,6 @@ const mockResult = (overrides: Partial<ZXCVBNResult>): ZXCVBNResult => ({
   },
   guesses: 1,
   guesses_log10: 0,
-  password: '',
   score: 0,
   sequence: [],
   ...overrides,
@@ -54,7 +53,10 @@ describe('calculatePasswordStrength', () => {
       .mockReturnValueOnce(
         mockResult({
           score: 0,
-          feedback: { warning: 'Too common', suggestions: ['Add more words'] },
+          feedback: {
+            warning: 'Too common' as ZXCVBNFeedbackWarning,
+            suggestions: ['Add more words'],
+          },
         }),
       )
       .mockReturnValueOnce(mockResult({ score: 1 }));
@@ -75,7 +77,12 @@ describe('calculatePasswordStrength', () => {
         mockResult({
           score: 2,
           feedback: { warning: '', suggestions: ['Add symbols'] },
-          crack_times_display: { offline_slow_hashing_1e4_per_second: '3 hours' },
+          crack_times_display: {
+            online_throttling_100_per_hour: 'instant',
+            online_no_throttling_10_per_second: 'instant',
+            offline_slow_hashing_1e4_per_second: '3 hours',
+            offline_fast_hashing_1e10_per_second: 'instant',
+          },
         }),
       )
       .mockReturnValueOnce(mockResult({ score: 3 }));

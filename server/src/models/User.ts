@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser } from '../types';
+import { IUser } from '#/types';
 
 const userSchema = new Schema<IUser>(
   {
@@ -51,28 +51,23 @@ const userSchema = new Schema<IUser>(
 userSchema.index({ role: 1 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error as Error);
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare password method
-userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
+userSchema.method('comparePassword', async function (candidatePassword: string): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password);
-};
+});
 
 // Remove password from JSON output
-userSchema.methods.toJSON = function () {
-  const userObject = this.toObject();
+userSchema.method('toJSON', function () {
+  const userObject = this.toObject() as { password?: string };
   delete userObject.password;
   return userObject;
-};
+});
 
 export default mongoose.model<IUser>('User', userSchema);

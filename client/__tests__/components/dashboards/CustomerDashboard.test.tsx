@@ -4,21 +4,21 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import CustomerDashboard from '@/components/dashboards/CustomerDashboard';
+import CustomerDashboard from '#/components/dashboards/CustomerDashboard';
 
 // Mock the auth context
-jest.mock('@/contexts/AuthContext', () => ({
+jest.mock('#/contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 
 // Mock the queries
-jest.mock('@/lib/queries', () => ({
+jest.mock('#/lib/queries', () => ({
   useCustomerDeliveries: jest.fn(),
   useCreateDelivery: jest.fn(),
 }));
 
 // Mock the UI components
-jest.mock('@/components/ui/Modal', () => {
+jest.mock('#/components/ui/Modal', () => {
   type ModalProps = {
     isOpen?: boolean;
     onClose?: () => void;
@@ -49,8 +49,8 @@ jest.mock('@iconify-icon/react', () => ({
   ),
 }));
 
-const { useAuth } = require('@/contexts/AuthContext');
-const { useCustomerDeliveries, useCreateDelivery } = require('@/lib/queries');
+const { useAuth } = require('#/contexts/AuthContext');
+const { useCustomerDeliveries, useCreateDelivery } = require('#/lib/queries');
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -287,7 +287,11 @@ describe('CustomerDashboard', () => {
 
     // Find and click a delivery row to expand
     const trackingLinks = screen.getAllByText(/TRK\d+/);
-    await user.click(trackingLinks[0]);
+    const firstTrackingLink = trackingLinks[0];
+    if (!firstTrackingLink) {
+      throw new Error('Expected at least one tracking link');
+    }
+    await user.click(firstTrackingLink);
 
     // Should show expanded details (this depends on the implementation)
     // This test would need to be updated based on the actual expand functionality

@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { RegisterData, DeliveryData } from '@/types';
+import { RegisterData, DeliveryData } from '#/types';
 
 // Additional types for request bodies
 interface LoginCredentials {

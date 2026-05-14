@@ -2,11 +2,11 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '#/contexts/AuthContext';
 import { Icon } from '@iconify-icon/react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/Input';
-import { PasswordInput } from '@/components/ui/PasswordInput';
+import { Input } from '#/components/ui/Input';
+import { PasswordInput } from '#/components/ui/PasswordInput';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -124,7 +124,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <div className="flex items-center space-x-2">

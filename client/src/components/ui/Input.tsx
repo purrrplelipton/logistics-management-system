@@ -1,7 +1,7 @@
 'use client';
 
 import React, { forwardRef, ReactNode, useId } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '#/lib/utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   startElement?: ReactNode;
@@ -61,7 +61,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         >
           {startElement && (
-            <div className="text-current/50 flex flex-shrink-0 items-center pl-3">
+            <div className="flex flex-shrink-0 items-center pl-3 text-current/50">
               {startElement}
             </div>
           )}
@@ -84,7 +84,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           />
 
           {endElement && (
-            <div className="text-current/50 flex flex-shrink-0 items-center pr-3">{endElement}</div>
+            <div className="flex flex-shrink-0 items-center pr-3 text-current/50">{endElement}</div>
           )}
         </div>
 

@@ -5,4 +5,4 @@ const iconStub = {
   body: '<path d="" />',
 };
 
-export default iconStub
+export default iconStub;

@@ -6,9 +6,9 @@ import {
   updateUser,
   deactivateUser,
   activateUser,
-} from '../controllers/userController';
-import { authenticate } from '../middleware/auth';
-import { validateUserUpdate } from '../middleware/validation';
+} from '#/controllers/userController';
+import { authenticate } from '#/middleware/auth';
+import { validateUserUpdate } from '#/middleware/validation';
 
 const router: Router = Router();
 

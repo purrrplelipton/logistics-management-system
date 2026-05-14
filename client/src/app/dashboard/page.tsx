@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '#/contexts/AuthContext';
 import { Icon } from '@iconify-icon/react';
-import AdminDashboard from '@/components/dashboards/AdminDashboard';
-import CustomerDashboard from '@/components/dashboards/CustomerDashboard';
-import DriverDashboard from '@/components/dashboards/DriverDashboard';
+import AdminDashboard from '#/components/dashboards/AdminDashboard';
+import CustomerDashboard from '#/components/dashboards/CustomerDashboard';
+import DriverDashboard from '#/components/dashboards/DriverDashboard';
 
 export default function DashboardPage() {
   const { user, logout } = useAuth();

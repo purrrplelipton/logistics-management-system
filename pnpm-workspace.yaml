@@ -1,3 +1,8 @@
 packages:
   - client
   - server
+allowBuilds:
+  mongodb-memory-server: true
+  msw: true
+  sharp: true
+  unrs-resolver: true

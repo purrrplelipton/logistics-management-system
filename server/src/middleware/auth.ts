@@ -1,7 +1,7 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import { AuthenticatedRequest, JwtPayload } from '../types';
+import User from '#/models/User';
+import { AuthenticatedRequest, JwtPayload } from '#/types';
 
 // Verify JWT token and attach user to request
 export const authenticate = async (
@@ -25,7 +25,7 @@ export const authenticate = async (
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = jwt.verify(token, process.env['JWT_SECRET'] as string) as JwtPayload;
     const user = await User.findById(decoded.id).select('-password');
 
     if (!user || !user.isActive) {

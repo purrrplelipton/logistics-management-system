@@ -6,13 +6,13 @@ import {
   assignDriver,
   updateDeliveryStatus,
   trackDelivery,
-} from '../controllers/deliveryController';
-import { authenticate } from '../middleware/auth';
+} from '#/controllers/deliveryController';
+import { authenticate } from '#/middleware/auth';
 import {
   validateDelivery,
   validateDeliveryStatus,
   validateDriverAssignment,
-} from '../middleware/validation';
+} from '#/middleware/validation';
 
 const router: Router = Router();
 

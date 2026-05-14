@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Icon } from '@iconify-icon/react';
-import { useDeliveries, useUsers, useDrivers, useAssignDriver } from '@/lib/queries';
+import { useDeliveries, useUsers, useDrivers, useAssignDriver } from '#/lib/queries';
 
 export default function AdminDashboard() {
   const [selectedDelivery, setSelectedDelivery] = useState<string>('');
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
             <button
               onClick={handleAssignDriver}
               disabled={!selectedDelivery || !selectedDriver || assignDriverMutation.isPending}
-              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               {assignDriverMutation.isPending ? 'Assigning...' : 'Assign Driver'}
             </button>
@@ -203,19 +203,19 @@ export default function AdminDashboard() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Tracking #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Customer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Driver
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Created
                 </th>
               </tr>
@@ -223,20 +223,20 @@ export default function AdminDashboard() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {deliveries?.slice(0, 10).map((delivery) => (
                 <tr key={delivery._id}>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
                     {delivery.trackingNumber}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {typeof delivery.customerId === 'object' ? delivery.customerId.name : 'Unknown'}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {typeof delivery.driverId === 'object' && delivery.driverId ? (
                       delivery.driverId.name
                     ) : (
                       <span className="text-yellow-600">Unassigned</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         delivery.status === 'Delivered'
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
                       {delivery.status}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {new Date(delivery.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

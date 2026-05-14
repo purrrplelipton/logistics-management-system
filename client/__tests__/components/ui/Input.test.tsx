@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Input } from '@/components/ui/Input';
+import { Input } from '#/components/ui/Input';
 
 describe('Input Component', () => {
   it('renders basic input correctly', () => {
@@ -89,7 +89,7 @@ describe('Input Component', () => {
     const inputs = screen.getAllByRole('textbox');
     expect(inputs[0]).toHaveAttribute('id');
     expect(inputs[1]).toHaveAttribute('id');
-    expect(inputs[0].id).not.toBe(inputs[1].id);
+    expect(inputs[0]?.id).not.toBe(inputs[1]?.id);
   });
 
   it('uses provided id', () => {

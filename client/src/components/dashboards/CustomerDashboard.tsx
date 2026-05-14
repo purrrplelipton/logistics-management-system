@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { Icon } from '@iconify-icon/react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useCustomerDeliveries, useCreateDelivery } from '@/lib/queries';
-import { Input } from '@/components/ui/Input';
-import Modal from '@/components/ui/Modal';
+import { useAuth } from '#/contexts/AuthContext';
+import { useCustomerDeliveries, useCreateDelivery } from '#/lib/queries';
+import { Input } from '#/components/ui/Input';
+import Modal from '#/components/ui/Modal';
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -65,6 +65,8 @@ export default function CustomerDashboard() {
 
     if (name.startsWith('pickupAddress.') || name.startsWith('deliveryAddress.')) {
       const [addressType, field] = name.split('.');
+      if (!addressType || !field) return;
+
       setFormData((prev) => ({
         ...prev,
         [addressType]: {
@@ -74,6 +76,8 @@ export default function CustomerDashboard() {
       }));
     } else if (name.startsWith('packageDetails.dimensions.')) {
       const field = name.split('.')[2];
+      if (!field) return;
+
       setFormData((prev) => ({
         ...prev,
         packageDetails: {
@@ -86,6 +90,8 @@ export default function CustomerDashboard() {
       }));
     } else if (name.startsWith('packageDetails.')) {
       const field = name.split('.')[1];
+      if (!field) return;
+
       setFormData((prev) => ({
         ...prev,
         packageDetails: {
@@ -181,7 +187,7 @@ export default function CustomerDashboard() {
         <h2 className="text-2xl font-bold text-gray-900">My Deliveries</h2>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
           aria-label="Create new delivery request"
         >
           <Icon icon="solar:add-circle-outline" className="text-xl" />
@@ -406,14 +412,14 @@ export default function CustomerDashboard() {
             <button
               type="button"
               onClick={() => setShowCreateModal(false)}
-              className="rounded-md bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+              className="rounded-md bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:outline-none"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createDeliveryMutation.isPending}
-              className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-blue-400"
+              className="rounded-md bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-blue-400"
               aria-describedby="submit-help"
             >
               {createDeliveryMutation.isPending ? (
@@ -438,19 +444,19 @@ export default function CustomerDashboard() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Tracking #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Description
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Driver
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                   Created
                 </th>
               </tr>
@@ -458,13 +464,13 @@ export default function CustomerDashboard() {
             <tbody className="divide-y divide-gray-200 bg-white">
               {deliveries?.map((delivery) => (
                 <tr key={delivery._id}>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-blue-600">
+                  <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-blue-600">
                     {delivery.trackingNumber}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-900">
                     {delivery.packageDetails.description}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         delivery.status === 'Delivered'
@@ -477,14 +483,14 @@ export default function CustomerDashboard() {
                       {delivery.status}
                     </span>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {typeof delivery.driverId === 'object' && delivery.driverId ? (
                       delivery.driverId.name
                     ) : (
                       <span className="text-yellow-600">Not assigned</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                     {new Date(delivery.createdAt).toLocaleDateString()}
                   </td>
                 </tr>

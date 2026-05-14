@@ -8,10 +8,10 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
-  process.env.NODE_ENV = 'test';
-  process.env.MONGODB_URI = mongoUri;
-  process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
-  process.env.JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
+  process.env['NODE_ENV'] = 'test';
+  process.env['MONGODB_URI'] = mongoUri;
+  process.env['JWT_SECRET'] = process.env['JWT_SECRET'] || 'test-secret';
+  process.env['JWT_EXPIRE'] = process.env['JWT_EXPIRE'] || '7d';
 
   await mongoose.connect(mongoUri);
 });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Modal from '@/components/ui/Modal';
+import Modal from '#/components/ui/Modal';
 
 // Mock createPortal to render in the same container
 jest.mock('react-dom', () => ({

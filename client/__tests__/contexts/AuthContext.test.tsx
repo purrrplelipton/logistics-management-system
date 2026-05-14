@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '#/contexts/AuthContext';
 
 // Mock the API calls
-jest.mock('@/lib/api', () => ({
+jest.mock('#/lib/api', () => ({
   authAPI: {
     getMe: jest.fn(),
     login: jest.fn(),
@@ -14,7 +14,7 @@ jest.mock('@/lib/api', () => ({
 }));
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { authAPI } = require('@/lib/api');
+const { authAPI } = require('#/lib/api');
 
 const waitForAuthSettled = () =>
   waitFor(() => {

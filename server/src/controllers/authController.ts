@@ -1,16 +1,16 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { validationResult } from 'express-validator';
-import User from '../models/User';
-import { AuthenticatedRequest, ApiResponse, IUser } from '../types';
+import User from '#/models/User';
+import { AuthenticatedRequest, ApiResponse, IUser } from '#/types';
 
 // Generate JWT token
 const generateToken = (id: string): string => {
   return jwt.sign(
     { id },
-    process.env.JWT_SECRET as string,
+    process.env['JWT_SECRET'] as string,
     {
-      expiresIn: process.env.JWT_EXPIRE || '7d',
+      expiresIn: process.env['JWT_EXPIRE'] || '7d',
     } as jwt.SignOptions,
   );
 };
@@ -18,10 +18,10 @@ const generateToken = (id: string): string => {
 // Cookie options
 const getCookieOptions = () => ({
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: process.env['NODE_ENV'] === 'production',
   sameSite: 'strict' as const,
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+  maxAge: 5 * 24 * 60 * 60 * 1000, // 5 days
+  domain: process.env['NODE_ENV'] === 'production' ? process.env['COOKIE_DOMAIN'] : undefined,
 });
 
 // @desc    Register user
@@ -67,7 +67,7 @@ export const register = async (
     });
 
     // Generate token and set cookie
-    const token = generateToken((user._id as string).toString());
+    const token = generateToken(user._id.toString());
     res.cookie('auth-token', token, getCookieOptions());
 
     const response: ApiResponse<{ user: IUser }> = {
@@ -127,7 +127,7 @@ export const login = async (
     }
 
     // Generate token and set cookie
-    const token = generateToken((user._id as string).toString());
+    const token = generateToken(user._id.toString());
     res.cookie('auth-token', token, getCookieOptions());
 
     // Remove password from response
@@ -137,7 +137,7 @@ export const login = async (
       success: true,
       message: 'Login successful',
       data: {
-        user: userObject as IUser,
+        user: userObject as unknown as IUser,
       },
     };
 
@@ -185,9 +185,9 @@ export const logout = async (
   try {
     res.clearCookie('auth-token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env['NODE_ENV'] === 'production',
       sameSite: 'strict',
-      domain: process.env.NODE_ENV === 'production' ? process.env.COOKIE_DOMAIN : undefined,
+      domain: process.env['NODE_ENV'] === 'production' ? process.env['COOKIE_DOMAIN'] : undefined,
     });
 
     const response: ApiResponse<null> = {

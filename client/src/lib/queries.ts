@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { deliveryAPI, userAPI } from './api';
-import { Delivery, User } from '@/types';
+import { Delivery, User } from '#/types';
 
 // Query keys
 export const queryKeys = {
@@ -111,7 +111,10 @@ export const useUpdateDeliveryStatus = () => {
 
   return useMutation({
     mutationFn: ({ id, status, notes }: { id: string; status: string; notes?: string }) =>
-      deliveryAPI.updateDeliveryStatus(id, { status, deliveryNotes: notes }),
+      deliveryAPI.updateDeliveryStatus(id, {
+        status,
+        ...(notes ? { deliveryNotes: notes } : {}),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.deliveries.all });
     },

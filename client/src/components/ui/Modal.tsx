@@ -3,7 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '@iconify-icon/react';
-import { cn } from '@/lib/utils';
+import { cn } from '#/lib/utils';
 
 interface ModalProps {
   isOpen: boolean;
@@ -128,7 +128,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
     <dialog
       ref={dialogRef}
       className={cn(
-        'starting:opacity-0 inset-0 m-auto max-h-[90vh] w-full overflow-auto rounded-lg bg-white shadow-xl transition-all backdrop:bg-black/50 backdrop:backdrop-blur-sm',
+        'inset-0 m-auto max-h-[90vh] w-full overflow-auto rounded-lg bg-white shadow-xl transition-all backdrop:bg-black/50 backdrop:backdrop-blur-sm starting:opacity-0',
         sizeClasses[size],
       )}
       aria-labelledby="modal-title"
@@ -140,7 +140,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'lg' }:
         </h2>
         <button
           onClick={onClose}
-          className="grid place-items-center rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="grid place-items-center rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
           aria-label="Close modal"
         >
           <Icon icon="solar:close-circle-bold" className="text-2xl" />

@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/navigation';
-import LoginPage from '@/app/login/page';
-import { useAuth } from '@/contexts/AuthContext';
+import LoginPage from '#/app/login/page';
+import { useAuth } from '#/contexts/AuthContext';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock auth context
-jest.mock('@/contexts/AuthContext', () => ({
+jest.mock('#/contexts/AuthContext', () => ({
   useAuth: jest.fn(),
 }));
 

@@ -2,13 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '#/contexts/AuthContext';
 import { Icon } from '@iconify-icon/react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/Input';
-import { PasswordInput } from '@/components/ui/PasswordInput';
-import { RegisterData } from '@/types';
-import { PasswordStrengthInfo } from '@/lib/password-strength';
+import { Input } from '#/components/ui/Input';
+import { PasswordInput } from '#/components/ui/PasswordInput';
+import type { RegisterData } from '#/types';
+import type { PasswordStrengthInfo } from '#/lib/password-strength';
 
 type UserRole = 'customer' | 'driver';
 
@@ -77,6 +77,8 @@ export default function RegisterPage() {
       setFormData((prev) => ({ ...prev, [name]: checked }));
     } else if (name.includes('.')) {
       const [parent, child, grandchild] = name.split('.');
+      if (!parent || !child) return;
+
       setFormData((prev) => {
         const currentParent = prev[parent as keyof FormData];
 
@@ -111,26 +113,30 @@ export default function RegisterPage() {
   };
 
   const handleRoleChange = (role: UserRole) => {
-    setFormData((prev) => ({
-      ...prev,
-      role,
-      // Clear driver-specific fields when switching to customer
-      ...(role === 'customer'
-        ? {
-            licenseNumber: undefined,
-            vehicleInfo: undefined,
-            emergencyContact: undefined,
-            yearsExperience: undefined,
-            backgroundCheckConsent: undefined,
-          }
-        : {
-            licenseNumber: '',
-            vehicleInfo: { make: '', model: '', year: '', licensePlate: '' },
-            emergencyContact: { name: '', phone: '' },
-            yearsExperience: '',
-            backgroundCheckConsent: false,
-          }),
-    }));
+    setFormData((prev) => {
+      if (role === 'customer') {
+        const {
+          licenseNumber: _licenseNumber,
+          vehicleInfo: _vehicleInfo,
+          emergencyContact: _emergencyContact,
+          yearsExperience: _yearsExperience,
+          backgroundCheckConsent: _backgroundCheckConsent,
+          ...customerData
+        } = prev;
+
+        return { ...customerData, role };
+      }
+
+      return {
+        ...prev,
+        role,
+        licenseNumber: '',
+        vehicleInfo: { make: '', model: '', year: '', licensePlate: '' },
+        emergencyContact: { name: '', phone: '' },
+        yearsExperience: '',
+        backgroundCheckConsent: false,
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,7 +152,6 @@ export default function RegisterPage() {
     }
 
     try {
-      // Transform form data to match RegisterData interface
       const submitData: RegisterData = {
         name: formData.name,
         email: formData.email,
@@ -160,27 +165,35 @@ export default function RegisterPage() {
           zipCode: formData.address.zipCode,
           country: formData.address.country,
         },
-        ...(formData.role === 'driver' && {
-          licenseNumber: formData.licenseNumber,
-          vehicleInfo: formData.vehicleInfo
-            ? {
-                make: formData.vehicleInfo.make,
-                model: formData.vehicleInfo.model,
-                year: formData.vehicleInfo.year
-                  ? isNaN(parseInt(formData.vehicleInfo.year, 10))
-                    ? undefined
-                    : parseInt(formData.vehicleInfo.year, 10)
-                  : undefined,
-                licensePlate: formData.vehicleInfo.licensePlate,
-              }
-            : undefined,
-          emergencyContact: formData.emergencyContact,
-          yearsOfExperience: formData.yearsExperience
-            ? parseInt(formData.yearsExperience, 10)
-            : undefined,
-          backgroundCheckConsent: formData.backgroundCheckConsent,
-        }),
       };
+
+      if (formData.role === 'driver') {
+        if (formData.licenseNumber) {
+          submitData.licenseNumber = formData.licenseNumber;
+        }
+
+        if (formData.vehicleInfo) {
+          const parsedYear = parseInt(formData.vehicleInfo.year, 10);
+          submitData.vehicleInfo = {
+            make: formData.vehicleInfo.make,
+            model: formData.vehicleInfo.model,
+            ...(Number.isNaN(parsedYear) ? {} : { year: parsedYear }),
+            licensePlate: formData.vehicleInfo.licensePlate,
+          };
+        }
+
+        if (formData.emergencyContact) {
+          submitData.emergencyContact = formData.emergencyContact;
+        }
+
+        if (formData.yearsExperience) {
+          submitData.yearsOfExperience = parseInt(formData.yearsExperience, 10);
+        }
+
+        if (formData.backgroundCheckConsent !== undefined) {
+          submitData.backgroundCheckConsent = formData.backgroundCheckConsent;
+        }
+      }
 
       await register(submitData);
       router.push('/dashboard');
@@ -278,7 +291,7 @@ export default function RegisterPage() {
                         className="text-2xl text-blue-600"
                       />
                       <div>
-                        <div className="font-medium capitalize text-gray-900">{role}</div>
+                        <div className="font-medium text-gray-900 capitalize">{role}</div>
                         <div className="text-sm text-gray-600">
                           {role === 'customer'
                             ? 'Send and track deliveries'
@@ -541,7 +554,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? (
                   <div className="flex items-center space-x-2">

@@ -58,21 +58,21 @@ Mongo tip: if you’d rather Docker it, `docker run -d -p 27017:27017 --name mon
 
 ## 🗺️ Dashboards at a glance
 
-| Role | What they can mess with |
-|------|-------------------------|
-| **Admin** | See every user, create new ones, assign deliveries, babysit stats |
-| **Customer** | Book a delivery, check status, peek at history, leave notes |
-| **Driver** | See assigned jobs, flip statuses (Pending → In Transit → Delivered), grab addresses |
+| Role         | What they can mess with                                                             |
+| ------------ | ----------------------------------------------------------------------------------- |
+| **Admin**    | See every user, create new ones, assign deliveries, babysit stats                   |
+| **Customer** | Book a delivery, check status, peek at history, leave notes                         |
+| **Driver**   | See assigned jobs, flip statuses (Pending → In Transit → Delivered), grab addresses |
 
 Shared perks: real JWT auth, server-side validation, and a tracking page you can share without logging in.
 
 ## 🧠 Under the hood
 
-| Area | Tech | Why it’s here |
-|------|------|---------------|
-| Frontend | Next.js 15, TypeScript, Tailwind, React Context, Solar icons | App Router goodies with type safety and quick styling |
-| Backend | Express, TypeScript, Mongoose, express-validator, bcryptjs, JWT | Cozy REST API with typed models and sane auth |
-| Testing | Jest, Supertest, mongodb-memory-server | Unit + integration tests without touching your real DB |
+| Area     | Tech                                                            | Why it’s here                                          |
+| -------- | --------------------------------------------------------------- | ------------------------------------------------------ |
+| Frontend | Next.js 15, TypeScript, Tailwind, React Context, Solar icons    | App Router goodies with type safety and quick styling  |
+| Backend  | Express, TypeScript, Mongoose, express-validator, bcryptjs, JWT | Cozy REST API with typed models and sane auth          |
+| Testing  | Jest, Supertest, mongodb-memory-server                          | Unit + integration tests without touching your real DB |
 
 Want to run the API tests? `cd server && pnpm test`. Client tests live in `client` with `pnpm test`, too.
 

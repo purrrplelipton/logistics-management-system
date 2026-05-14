@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    "forceConsistentCasingInFileNames": true,
+    "moduleDetection": "force",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "checkJs": false
+  }
+}

@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { Icon } from '@iconify-icon/react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useDriverDeliveries, useUpdateDeliveryStatus } from '@/lib/queries';
-import { Input } from '@/components/ui/Input';
+import { useAuth } from '#/contexts/AuthContext';
+import { useDriverDeliveries, useUpdateDeliveryStatus } from '#/lib/queries';
+import { Input } from '#/components/ui/Input';
 
 export default function DriverDashboard() {
   const { user } = useAuth();
@@ -36,7 +36,7 @@ export default function DriverDashboard() {
         await updateStatusMutation.mutateAsync({
           id: selectedDelivery,
           status: newStatus,
-          notes: deliveryNotes || undefined,
+          ...(deliveryNotes ? { notes: deliveryNotes } : {}),
         });
         setSelectedDelivery('');
         setNewStatus('');
@@ -161,7 +161,7 @@ export default function DriverDashboard() {
             <button
               onClick={handleStatusUpdate}
               disabled={!selectedDelivery || !newStatus || updateStatusMutation.isPending}
-              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-400"
+              className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               {updateStatusMutation.isPending ? 'Updating...' : 'Update Status'}
             </button>

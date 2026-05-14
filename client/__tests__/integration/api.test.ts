@@ -1,6 +1,6 @@
-import { authAPI, userAPI, deliveryAPI } from '@/lib/api';
+import { authAPI, userAPI, deliveryAPI } from '#/lib/api';
 import { server, errorHandlers } from '../mocks/server';
-import { DeliveryData } from '@/types';
+import { DeliveryData } from '#/types';
 
 describe('API Integration Tests', () => {
   describe('Auth API', () => {
@@ -110,7 +110,7 @@ describe('API Integration Tests', () => {
 
         expect(data.success).toBe(true);
         expect(data.data).toHaveLength(1);
-        expect(data.data[0].role).toBe('driver');
+        expect(data.data[0]?.role).toBe('driver');
       });
     });
 
@@ -142,7 +142,7 @@ describe('API Integration Tests', () => {
 
         expect(data.success).toBe(true);
         expect(Array.isArray(data.data)).toBe(true);
-        expect(data.data[0].role).toBe('driver');
+        expect(data.data[0]?.role).toBe('driver');
       });
     });
   });
@@ -216,16 +216,18 @@ describe('API Integration Tests', () => {
           },
         };
 
-        await expect(deliveryAPI.createDelivery(invalidData as DeliveryData)).rejects.toMatchObject({
-          response: {
-            status: 400,
-            data: {
-              success: false,
-              message: 'Missing required fields',
-              error: 'VALIDATION_ERROR',
+        await expect(deliveryAPI.createDelivery(invalidData as DeliveryData)).rejects.toMatchObject(
+          {
+            response: {
+              status: 400,
+              data: {
+                success: false,
+                message: 'Missing required fields',
+                error: 'VALIDATION_ERROR',
+              },
             },
           },
-        });
+        );
       });
     });
 

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '#/lib/utils';
 
 describe('cn (className utility)', () => {
   it('combines class names correctly', () => {
@@ -52,7 +52,7 @@ describe('cn (className utility)', () => {
   it('handles complex conditional scenarios', () => {
     const isActive = true;
     const isDisabled = false;
-    const variant = 'primary';
+    const variant: string = 'primary';
 
     const result = cn(
       'btn',
